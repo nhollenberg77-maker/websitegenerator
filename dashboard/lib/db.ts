@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import path from "path";
 import type { Lead, LeadStats, LeadsQuery, LeadsResponse } from "./types";
+import { slugify, isReservedSlug } from "./slug";
 
 const DB_PATH = path.resolve(process.cwd(), process.env.DB_PATH || "../leads.db");
 
@@ -22,6 +23,10 @@ function ensureMigrated(): void {
       if (!columns.some((c) => c.name === col)) {
         db.exec(`ALTER TABLE leads ADD COLUMN ${col} TEXT DEFAULT NULL`);
       }
+    }
+    if (!columns.some((c) => c.name === "slug")) {
+      db.exec("ALTER TABLE leads ADD COLUMN slug TEXT DEFAULT NULL");
+      db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_slug ON leads(slug) WHERE slug IS NOT NULL");
     }
     db.close();
     migrated = true;
@@ -227,4 +232,43 @@ export function getLeadsWithSite(): Lead[] {
     .all() as Lead[];
   db.close();
   return leads;
+}
+
+// Ensure a unique slug exists for a lead. Returns the slug.
+// - Reuses existing slug if already set.
+// - Generates from lead.name otherwise.
+// - On collision (or reserved word), appends -2, -3, ... or falls back to a
+//   suffix derived from place_id.
+export function ensureSlugForLead(placeId: string): string {
+  const db = getDb(false);
+  try {
+    const row = db.prepare("SELECT slug, name FROM leads WHERE place_id = ?").get(placeId) as
+      | { slug: string | null; name: string }
+      | undefined;
+    if (!row) throw new Error(`Lead ${placeId} not found`);
+    if (row.slug) return row.slug;
+
+    const base = slugify(row.name);
+    let candidate = base;
+    let i = 2;
+    const existsStmt = db.prepare("SELECT 1 FROM leads WHERE slug = ? AND place_id != ?");
+    while (isReservedSlug(candidate) || existsStmt.get(candidate, placeId)) {
+      candidate = `${base}-${i++}`;
+      if (i > 99) {
+        candidate = `${base}-${placeId.slice(-6).toLowerCase()}`;
+        break;
+      }
+    }
+    db.prepare("UPDATE leads SET slug = ? WHERE place_id = ?").run(candidate, placeId);
+    return candidate;
+  } finally {
+    db.close();
+  }
+}
+
+export function getLeadBySlug(slug: string): Lead | undefined {
+  const db = getDb();
+  const lead = db.prepare("SELECT * FROM leads WHERE slug = ?").get(slug) as Lead | undefined;
+  db.close();
+  return lead;
 }

@@ -28,6 +28,7 @@ export interface Lead {
   reviews_json: string | null;
   description: string | null;
   enriched_at: string | null;
+  slug: string | null;
 }
 
 export interface LeadReview {

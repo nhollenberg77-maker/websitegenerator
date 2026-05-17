@@ -10,6 +10,7 @@ import {
 } from "./site-content";
 
 const SITES_DIR = path.resolve(process.cwd(), "public/sites");
+const SUB_DIR = path.resolve(process.cwd(), "public/sub");
 
 function getVariant(lead: Lead): TemplateVariant {
   return CATEGORY_VARIANT[lead.category_query || ""] || "premium";
@@ -1445,14 +1446,33 @@ function getNearbyAreas(city: string, voivodeship: string): string[] {
   return areaMap[key] || [`${voivodeship} i okolice`];
 }
 
-export function generateSiteForLead(lead: Lead): { path: string; url: string } {
+export function generateSiteForLead(lead: Lead): { path: string; url: string; slug: string | null } {
+  // Lazy import to avoid circular dep at module load
+  const { ensureSlugForLead } = require("./db") as typeof import("./db");
+
   const html = generateSiteHtml(lead);
-  const dir = path.join(SITES_DIR, lead.place_id);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
+
+  // 1. Canonical path: /sites/{place_id}/index.html  (stable forever, used internally)
+  const canonicalDir = path.join(SITES_DIR, lead.place_id);
+  fs.mkdirSync(canonicalDir, { recursive: true });
+  fs.writeFileSync(path.join(canonicalDir, "index.html"), html, "utf-8");
+
+  // 2. Subdomain path: /sub/{slug}/index.html  (served as {slug}.stronadlatwojejfirmy.com.pl)
+  let slug: string | null = null;
+  try {
+    slug = ensureSlugForLead(lead.place_id);
+    const subDirForSlug = path.join(SUB_DIR, slug);
+    fs.mkdirSync(subDirForSlug, { recursive: true });
+    fs.writeFileSync(path.join(subDirForSlug, "index.html"), html, "utf-8");
+  } catch (err) {
+    // If slug allocation fails (e.g. db not migrated yet) we still wrote canonical
+    console.error(`Slug allocation failed for ${lead.place_id}:`, err);
+  }
+
   return {
-    path: path.join(dir, "index.html"),
+    path: path.join(canonicalDir, "index.html"),
     url: `/sites/${lead.place_id}/index.html`,
+    slug,
   };
 }
 
@@ -1464,6 +1484,17 @@ export function deleteSite(placeId: string): void {
   const dir = path.join(SITES_DIR, placeId);
   if (fs.existsSync(dir)) {
     fs.rmSync(dir, { recursive: true });
+  }
+  // Also wipe the subdomain copy if we have a slug
+  try {
+    const { getLeadById } = require("./db") as typeof import("./db");
+    const lead = getLeadById(placeId);
+    if (lead?.slug) {
+      const subDirForSlug = path.join(SUB_DIR, lead.slug);
+      if (fs.existsSync(subDirForSlug)) fs.rmSync(subDirForSlug, { recursive: true });
+    }
+  } catch {
+    // best-effort
   }
 }
 
