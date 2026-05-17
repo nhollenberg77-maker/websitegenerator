@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krak-Poż Sp. z o.o. — instalacje elektryczne Kraków · tel. 12 266 99 85</title>
+  <meta name="description" content="Krak-Poż Sp. z o.o. — instalacje elektryczne w Kraków. Zadzwoń: 12 266 99 85. Bezpłatna wycena.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F8FA;
+      --bg-alt: #ECEEF3;
+      --bg-dark: #0B2545;
+      --ink: #0F172A;
+      --ink-soft: #475569;
+      --ink-faint: #94A3B8;
+      --line: #D8DDE5;
+      --line-soft: #E5E9EF;
+      --accent: #1E3A8A;
+      --accent-hover: #2949A8;
+      --accent-soft: #DCE5F2;
+      --whatsapp: #25D366;
+      --whatsapp-hover: #1FA855;
+      --urgent: #B41E1E;
+      --display: 'Space Grotesk', system-ui, sans-serif;
+      --body: 'Inter', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.55; font-size: 16px; letter-spacing: -0.011em; -webkit-font-smoothing: antialiased; padding-bottom: 80px; }
+    @media (min-width: 768px) { body { padding-bottom: 0; font-size: 16.5px; } }
+    .svc-container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    @media (min-width: 768px) { .svc-container { padding: 0 32px; } }
+    h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; letter-spacing: -0.03em; line-height: 1.02; }
+    h1 em, h2 em, h3 em { font-style: normal; color: var(--accent); font-weight: 500; }
+    .eyebrow { font-family: var(--body); font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 8px; }
+    .eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 6px; font-family: var(--body); font-size: 14px; font-weight: 700; text-decoration: none; transition: all 0.15s ease; border: none; cursor: pointer; white-space: nowrap; letter-spacing: -0.005em; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-whatsapp { background: var(--whatsapp); color: white; }
+    .btn-whatsapp:hover { background: var(--whatsapp-hover); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: var(--ink); color: white; border-color: var(--ink); }
+    .btn-lg { padding: 16px 28px; font-size: 15px; }
+
+    /* === Pulse dot (used in small 24/7 badge) === */
+    .svc-pulse { width: 7px; height: 7px; border-radius: 50%; background: #16A34A; flex-shrink: 0; box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5); animation: svc-pulse 2.2s infinite; }
+    @keyframes svc-pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5); } 70% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
+
+    /* === Header === */
+    header.svc-header { position: sticky; top: 0; z-index: 50; background: rgba(247, 248, 250, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .svc-header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; max-width: 1240px; margin: 0 auto; gap: 24px; }
+    .svc-logo { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -0.025em; text-decoration: none; color: var(--ink); flex-shrink: 0; white-space: nowrap; max-width: 280px; overflow: hidden; text-overflow: ellipsis; }
+    .svc-logo span { color: var(--ink-soft); font-weight: 500; }
+    .svc-nav { display: none; gap: 28px; flex: 1; justify-content: center; }
+    @media (min-width: 1024px) { .svc-nav { display: flex; } }
+    .svc-nav a { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; }
+    .svc-nav a:hover { color: var(--accent); }
+    .svc-header-phone { display: none; align-items: center; gap: 8px; padding: 9px 16px; background: var(--accent-soft); color: var(--accent); border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; letter-spacing: -0.01em; }
+    @media (min-width: 768px) { .svc-header-phone { display: inline-flex; } }
+    .svc-header-phone:hover { background: var(--accent); color: white; }
+
+    /* === PHONE-FIRST HERO === */
+    .svc-hero { padding: 56px 24px 40px; background: var(--bg); }
+    @media (min-width: 768px) { .svc-hero { padding: 88px 24px 64px; } }
+    .svc-hero-inner { max-width: 1240px; margin: 0 auto; }
+    .svc-hero-tagline { font-size: clamp(28px, 4.5vw, 48px); margin-bottom: 24px; max-width: 760px; }
+    .svc-hero-phone-link { display: flex; align-items: baseline; gap: 0; flex-wrap: wrap; text-decoration: none; color: var(--ink); padding: 28px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 28px; transition: background 0.15s ease; }
+    .svc-hero-phone-link:hover { background: rgba(15, 61, 140, 0.02); }
+    .svc-hero-phone-label { font-family: var(--body); font-size: 12px; font-weight: 700; color: var(--ink-soft); letter-spacing: 0.14em; text-transform: uppercase; flex-basis: 100%; margin-bottom: 8px; }
+    .svc-hero-phone-number { font-family: var(--display); font-size: clamp(44px, 8vw, 88px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--accent); flex-grow: 1; }
+    .svc-hero-phone-arrow { font-family: var(--display); font-size: clamp(32px, 5vw, 56px); color: var(--accent); margin-left: 16px; transition: transform 0.2s ease; }
+    .svc-hero-phone-link:hover .svc-hero-phone-arrow { transform: translateX(8px); }
+    .svc-hero-subtitle { font-size: 16px; color: var(--ink-soft); margin-bottom: 28px; max-width: 600px; }
+    .svc-hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* === Installer hero (visual, photo-led) === */
+    .svc-hero-installer .svc-hero-inner { max-width: 1240px; }
+    .svc-hero-installer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; margin-bottom: 32px; }
+    @media (min-width: 1024px) { .svc-hero-installer-grid { grid-template-columns: 1.05fr 1fr; gap: 64px; margin-bottom: 40px; } }
+    .svc-hero-installer-text .svc-hero-meta { margin-bottom: 18px; }
+    .svc-hero-installer-h1 { font-family: var(--display); font-weight: 700; letter-spacing: -0.03em; line-height: 1.04; font-size: clamp(34px, 5.5vw, 60px); margin-bottom: 22px; }
+    .svc-hero-installer-h1 em { font-style: normal; color: var(--accent); font-weight: 500; }
+    .svc-hero-installer-text .svc-hero-subtitle { margin-top: 0; margin-bottom: 30px; font-size: 17px; color: var(--ink-soft); line-height: 1.55; max-width: 480px; }
+    .svc-hero-installer-image { aspect-ratio: 4/3; border-radius: 14px; overflow: hidden; background: var(--bg-alt); border: 1px solid var(--line); }
+    @media (min-width: 1024px) { .svc-hero-installer-image { aspect-ratio: 4/5; min-height: 460px; } }
+    .svc-hero-installer-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .svc-badge-star { color: #F59E0B; font-size: 13px; }
+    .svc-hero-installer .svc-hero-stats { margin-top: 0; padding-top: 28px; }
+
+    /* === Hero meta + 24/7 badge === */
+    .svc-hero-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .svc-hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: white; border: 1px solid var(--line); border-radius: 100px; font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+
+    /* === Hero inline stats (replaces dark status bar) === */
+    .svc-hero-stats { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--line); }
+    @media (min-width: 640px) { .svc-hero-stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px 32px; } }
+    .svc-hero-stat { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); letter-spacing: -0.005em; }
+    .svc-hero-stat svg { color: var(--accent); flex-shrink: 0; }
+    .svc-hero-stat-label { color: var(--ink-soft); }
+    .svc-hero-stat-value { font-weight: 600; }
+
+    /* === Blocks (single light bg, no alternation) === */
+    .svc-block { padding: 56px 24px; }
+    @media (min-width: 768px) { .svc-block { padding: 80px 24px; } }
+    .svc-block-head { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px; margin-bottom: 44px; align-items: end; }
+    .svc-block-head > .eyebrow { grid-column: 1 / -1; }
+    .svc-block-head h2 { font-size: clamp(28px, 4vw, 44px); margin: 0; grid-column: 1; }
+    .svc-block-head p { font-size: 16px; color: var(--ink-soft); grid-column: 2; padding-bottom: 6px; }
+    @media (max-width: 900px) { .svc-block-head { grid-template-columns: 1fr; gap: 16px; } .svc-block-head h2, .svc-block-head p { grid-column: 1; padding-bottom: 0; } }
+
+    /* === FAQ early as cards === */
+    .svc-faq-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 768px) { .svc-faq-grid { grid-template-columns: repeat(3, 1fr); } }
+    .svc-faq-card { padding: 28px 28px 30px; background: white; border: 1px solid var(--line); border-radius: 10px; transition: all 0.2s ease; }
+    .svc-faq-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    .svc-faq-card h3 { font-family: var(--body); font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--accent); letter-spacing: -0.015em; line-height: 1.35; }
+    .svc-faq-card p { color: var(--ink); font-size: 15px; line-height: 1.55; }
+
+    /* === Services as list (not grid) === */
+    .svc-list { border-top: 1px solid var(--line); }
+    .svc-list-item { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr); gap: 32px; padding: 24px 0; border-bottom: 1px solid var(--line); align-items: start; transition: padding 0.15s ease; }
+    .svc-list-item:hover { padding-left: 8px; }
+    .svc-list-name { font-family: var(--display); font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); }
+    .svc-list-desc { color: var(--ink-soft); font-size: 15px; line-height: 1.55; }
+    @media (max-width: 768px) { .svc-list-item { grid-template-columns: 1fr; gap: 6px; padding: 20px 0; } }
+
+
+    /* === Gallery (only when we have ≥3 photos) === */
+    .svc-gallery-head { margin-bottom: 36px; }
+    .svc-gallery-head h2 { font-size: clamp(28px, 4vw, 44px); margin: 0; }
+    .svc-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (min-width: 768px) { .svc-gallery { gap: 16px; } }
+    @media (min-width: 1024px) { .svc-gallery-3 { grid-template-columns: repeat(3, 1fr); } .svc-gallery-4 { grid-template-columns: repeat(4, 1fr); } }
+    .svc-gallery-item { aspect-ratio: 4/3; overflow: hidden; border-radius: 10px; background: var(--bg-alt); border: 1px solid var(--line); }
+    .svc-gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; }
+    .svc-gallery-item:hover img { transform: scale(1.05); }
+
+    /* === Reviews horizontal compact === */
+    .svc-reviews { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 640px) { .svc-reviews { grid-template-columns: repeat(2, 1fr); } }
+    .svc-review { padding: 24px 26px; background: var(--bg); border-radius: 8px; border: 1px solid var(--line); }
+    .svc-review-stars { color: #F59E0B; font-size: 14px; letter-spacing: 2px; margin-bottom: 12px; }
+    .svc-review p { font-size: 15px; line-height: 1.55; margin-bottom: 16px; color: var(--ink); }
+    .svc-review-author { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+    .svc-review-author span { font-weight: 400; display: block; margin-top: 2px; font-size: 12px; color: var(--ink-faint); }
+
+    /* === Area with embedded map === */
+    .svc-area-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
+    @media (min-width: 900px) { .svc-area-grid { grid-template-columns: 1fr 1fr; gap: 64px; } }
+    .svc-area-text h2 { font-size: clamp(28px, 4vw, 44px); margin-bottom: 16px; }
+    .svc-area-text p { font-size: 16px; color: var(--ink-soft); margin-bottom: 24px; max-width: 480px; }
+    .svc-area-facts { list-style: none; margin: 28px 0; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 18px; }
+    .svc-area-facts > div { display: grid; grid-template-columns: 1fr; gap: 4px; }
+    @media (min-width: 480px) { .svc-area-facts > div { grid-template-columns: minmax(0, 160px) minmax(0, 1fr); gap: 6px 24px; align-items: baseline; } }
+    .svc-area-facts dt { font-family: var(--body); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0; }
+    .svc-area-facts dd { font-size: 15px; color: var(--ink); margin: 0; font-weight: 500; line-height: 1.45; }
+    .svc-area-cities-line { font-size: 13px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 24px; max-width: 520px; }
+    .svc-area-cities-label { font-family: var(--body); display: block; font-weight: 700; color: var(--ink); text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .svc-area-cta { font-size: 14px; color: var(--ink-soft); line-height: 1.5; max-width: 480px; }
+    .svc-area-cta a { color: var(--accent); font-weight: 700; text-decoration: none; }
+    .svc-area-cta a:hover { text-decoration: underline; }
+    .svc-area-map { aspect-ratio: 4/3; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--bg-alt); position: relative; }
+    @media (min-width: 900px) { .svc-area-map { aspect-ratio: 1; min-height: 420px; } }
+    .svc-area-map iframe { width: 100%; height: 100%; border: 0; display: block; filter: grayscale(0.15) contrast(0.95); }
+
+    /* === About + values combined === */
+    .svc-about { display: grid; grid-template-columns: 1fr; gap: 40px; }
+    @media (min-width: 900px) { .svc-about { grid-template-columns: 1.3fr 1fr; gap: 72px; align-items: start; } }
+    .svc-about-text h2 { font-size: clamp(28px, 4vw, 44px); margin-bottom: 20px; max-width: 16ch; }
+    .svc-about-text p { font-size: 16px; color: var(--ink-soft); margin-bottom: 14px; line-height: 1.6; }
+    .svc-about-values { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
+    .svc-about-values li { padding: 18px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-soft); line-height: 1.5; }
+    .svc-about-values li span { display: inline; font-weight: 700; color: var(--ink); letter-spacing: -0.015em; }
+
+    /* === Contact === */
+    .svc-contact-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+    @media (min-width: 1024px) { .svc-contact-grid { grid-template-columns: 1fr 1.3fr; gap: 64px; } }
+    .svc-contact-info h3 { font-size: 12px; font-family: var(--body); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+    .svc-contact-info .value { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 24px; display: block; color: var(--ink); text-decoration: none; line-height: 1.3; }
+    .svc-contact-info a.value:hover { color: var(--accent); }
+    .svc-form { background: white; padding: 32px; border-radius: 10px; border: 1px solid var(--line); }
+    .svc-form-group { margin-bottom: 18px; }
+    .svc-form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; }
+    .svc-form-group input, .svc-form-group textarea, .svc-form-group select { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-family: var(--body); font-size: 15px; color: var(--ink); }
+    .svc-form-group input:focus, .svc-form-group textarea:focus, .svc-form-group select:focus { outline: none; border-color: var(--accent); background: white; }
+    .svc-form-group textarea { min-height: 100px; resize: vertical; }
+
+    /* === Footer === */
+    footer.svc-footer { padding: 48px 24px 28px; background: #1E293B; color: rgba(255,255,255,0.7); font-size: 14px; border-top: 1px solid var(--line); }
+    .svc-footer-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 32px; }
+    @media (min-width: 768px) { .svc-footer-inner { grid-template-columns: 2fr 1fr 1fr; } }
+    footer.svc-footer .svc-logo { color: white; margin-bottom: 12px; display: block; }
+    footer.svc-footer .svc-logo span { color: rgba(255,255,255,0.5); }
+    .svc-footer-inner p { color: rgba(255,255,255,0.6); }
+    .svc-footer-inner h4 { color: white; font-family: var(--body); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+    .svc-footer-inner ul { list-style: none; }
+    .svc-footer-inner ul li { margin-bottom: 8px; }
+    .svc-footer-inner a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    .svc-footer-inner a:hover { color: white; }
+    .svc-footer-bottom { max-width: 1240px; margin: 32px auto 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.4); flex-wrap: wrap; gap: 12px; }
+
+    /* === Mobile sticky phone bar === */
+    .svc-mobile-cta { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 8px; padding: 10px 12px; background: white; border-top: 1px solid var(--line); z-index: 100; box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.08); }
+    .svc-mobile-cta .btn { flex: 1; justify-content: center; padding: 14px 16px; }
+    @media (min-width: 768px) { .svc-mobile-cta { display: none; } }
+  </style>
+</head>
+<body>
+
+  <header class="svc-header">
+    <div class="svc-header-inner">
+      <a href="#" class="svc-logo">Krak-Poż <span>Sp</span></a>
+      <nav class="svc-nav">
+        <a href="#kontakt">Kontakt</a>
+        <a href="#uslugi">Usługi</a>
+        <a href="#realizacje">Realizacje</a>
+        <a href="#obszar">Obszar</a>
+        <a href="#opinie">Opinie</a>
+        <a href="#o-nas">O nas</a>
+      </nav>
+      <a href="tel:+48122669985" class="svc-header-phone">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        12 266 99 85
+      </a>
+    </div>
+  </header>
+
+  <!-- ====== HERO (variant per type) ====== -->
+  
+  <section class="svc-hero">
+    <div class="svc-hero-inner">
+      <div class="svc-hero-meta">
+        <span class="eyebrow" style="margin-bottom: 0">Kraków · Małopolskie</span>
+        
+      </div>
+      <h1 class="svc-hero-tagline">Sprawna instalacja. <em>Bez bałaganu, w terminie.</em></h1>
+      <a href="tel:+48122669985" class="svc-hero-phone-link">
+        <span class="svc-hero-phone-label">Zadzwoń</span>
+        <span class="svc-hero-phone-number">12 266 99 85</span>
+        <span class="svc-hero-phone-arrow">→</span>
+      </a>
+      <p class="svc-hero-subtitle">Elektryk z uprawnieniami SEP · realizacje w domach i firmach</p>
+      <div class="svc-hero-ctas">
+        <a href="https://wa.me/48122669985" class="btn btn-whatsapp btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345"/></svg>
+          Napisz na WhatsApp
+        </a>
+        <a href="#kontakt" class="btn btn-ghost btn-lg">Zostaw wiadomość</a>
+      </div>
+      <div class="svc-hero-stats">
+        <div class="svc-hero-stat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span class="svc-hero-stat-label">Wolne terminy:</span>
+          <span class="svc-hero-stat-value">Od przyszłego tygodnia</span>
+        </div>
+        <div class="svc-hero-stat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="svc-hero-stat-label">Obszar:</span>
+          <span class="svc-hero-stat-value">Kraków + 30 km</span>
+        </div>
+        <div class="svc-hero-stat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span class="svc-hero-stat-label">Google:</span>
+          <span class="svc-hero-stat-value">5.0 ★ (6)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FAQ EARLY ====== -->
+  <section class="svc-block">
+    <div class="svc-container">
+      <div class="svc-block-head">
+        <div class="eyebrow">Najpierw odpowiadamy</div>
+        <h2>Pytania, które klienci zadają <em>jako pierwsze.</em></h2>
+        <p>Bez bełkotu, konkretne odpowiedzi. Jeśli czegoś tu nie ma — zadzwoń, odpowiemy w 30 sekund.</p>
+      </div>
+      <div class="svc-faq-grid">
+        <div class="svc-faq-card">
+          <h3>Czy macie uprawnienia SEP?</h3>
+          <p>Tak. Posiadamy aktualne uprawnienia SEP do 1 kV w zakresie eksploatacji i dozoru, ubezpieczenie OC oraz wszystkie wymagane certyfikaty. Dokumenty pokazujemy na pierwszym spotkaniu.</p>
+        </div>
+        <div class="svc-faq-card">
+          <h3>Jak wygląda wycena instalacji?</h3>
+          <p>Wycena jest bezpłatna. Po obejrzeniu projektu lub mieszkania przygotowujemy szczegółowy kosztorys w ciągu 2-3 dni roboczych z rozbiciem na materiały i robociznę.</p>
+        </div>
+        <div class="svc-faq-card">
+          <h3>Czy wystawiacie protokoły pomiarowe?</h3>
+          <p>Tak, po każdej instalacji wykonujemy pełne pomiary i wystawiamy protokoły zgodne z normami PN-HD. Są one wymagane przez ubezpieczycieli i przy odbiorach budowlanych.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SERVICES AS LIST ====== -->
+  <section class="svc-block" id="uslugi">
+    <div class="svc-container">
+      <div class="svc-block-head">
+        <div class="eyebrow">Co robimy</div>
+        <h2>Zakres usług.</h2>
+        <p>Każda pozycja to konkretna usługa z osobną wyceną. Bez pakietów, bez gimmicków.</p>
+      </div>
+      <div class="svc-list">
+        <div class="svc-list-item">
+          <div class="svc-list-name">Instalacje elektryczne</div>
+          <div class="svc-list-desc">Kompleksowe instalacje w nowych budynkach i przy remontach. Rozdzielnie, okablowanie, gniazda i oświetlenie zgodnie z normami.</div>
+        </div>
+        <div class="svc-list-item">
+          <div class="svc-list-name">Oświetlenie</div>
+          <div class="svc-list-desc">Projektowanie i montaż oświetlenia wewnętrznego i zewnętrznego. LED, punktowe, dekoracyjne. Efekt wizualny i oszczędność energii.</div>
+        </div>
+        <div class="svc-list-item">
+          <div class="svc-list-name">Smart home</div>
+          <div class="svc-list-desc">Inteligentne sterowanie oświetleniem, roletami, ogrzewaniem. Systemy KNX, Loxone, Wi-Fi. Wygoda na wyciągnięcie ręki.</div>
+        </div>
+        <div class="svc-list-item">
+          <div class="svc-list-name">Monitoring i alarmy</div>
+          <div class="svc-list-desc">Systemy CCTV, alarmy, czujniki ruchu, wideodomofony. Montaż i konfiguracja. Bezpieczeństwo Państwa domu i firmy.</div>
+        </div>
+        <div class="svc-list-item">
+          <div class="svc-list-name">Pompy ciepła</div>
+          <div class="svc-list-desc">Instalacje pomp ciepła i fotowoltaiki. Podłączenie do sieci, konfiguracja, odbiory. Niższe rachunki za prąd od pierwszego miesiąca.</div>
+        </div>
+        <div class="svc-list-item">
+          <div class="svc-list-name">Przeglądy i naprawy</div>
+          <div class="svc-list-desc">Okresowe przeglądy instalacji elektrycznych, pomiary, usuwanie usterek. Protokoły zgodne z wymaganiami ubezpieczycieli.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== ABOUT + WERKWIJZE COMBINED ====== -->
+  <section class="svc-block" id="o-nas">
+    <div class="svc-container">
+      <div class="svc-about">
+        <div class="svc-about-text">
+          <div class="eyebrow">O firmie</div>
+          <h2>Krak-Poż Sp</h2>
+          <p>Specjalizujemy się w instalacjach elektrycznych dla domów jednorodzinnych, mieszkań i małych obiektów komercyjnych. Posiadamy pełne uprawnienia SEP oraz ubezpieczenie OC.</p>
+          <p>Każda praca kończy się protokołem pomiarowym i gwarancją. Pracujemy czysto, terminowo i bez niespodzianek cenowych. Nasi klienci wracają do nas z kolejnymi zleceniami.</p>
+        </div>
+        <ul class="svc-about-values">
+          <li><span>Bezpośredni właściciel</span> — telefon działa codziennie, on prowadzi każde zlecenie.</li>
+          <li><span>Wycena na piśmie</span> — cena i termin w umowie przed startem.</li>
+          <li><span>Stała ekipa</span> — ci sami ludzie od lat, bez podwykonawców z łapanki.</li>
+          <li><span>Termin to termin</span> — co zapisujemy, tego się trzymamy.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="svc-block" id="realizacje">
+    <div class="svc-container">
+      <div class="svc-gallery-head">
+        <div class="eyebrow">Nasza praca</div>
+        <h2>Wybrane <em>realizacje.</em></h2>
+      </div>
+      <div class="svc-gallery svc-gallery-4">
+        <div class="svc-gallery-item"><img src="https://places.googleapis.com/v1/places/ChIJdefM62JbFkcRGRJ11DfKCaQ/photos/Ab43m-tziDqff4gFFwGxKVvcG1K_J89BgnR7edQJ-fqi2VDz9OmrVSW23vq40bYH2UTLYPlYL1kYSDsuVEokmHrYL2utxeF-NnJDjwl9m31exWroOUGNFrxgiu1P81BZtbMfNgEUwBSDgZPoK84HUaKPK_pha6tRJWvScqsZsuhzFjg3OtDZGl431L_C8pmRoglvV_mjni_0KwhFMEfUOq48QCJ5YViQvy2IHbUKLzeuNMOdlLO9l3N3MKkMvk63dPoyKH436nLbKwotc3754qCc4Sy13SkOQARz01znOdjC2YCpYhpMaulQ0E1tDw3sieFIVLt04CmLhAhnUpvhEScsqNFcpNuR7e6L0ORmWRVvTDFLeb8pzxLo7wk2wAN1EC_TLWFVZrpgavem2-ywdzJz3wtwcRtSkz9wRoQvsxmHnw2e5g/media?maxWidthPx=1200&amp;key=AIzaSyCYruQxrhSTw2LTWTA13X15BJRpIs-Q1FE" loading="lazy" alt="Realizacja Krak-Poż Sp. z o.o. 1"></div>
+        <div class="svc-gallery-item"><img src="https://places.googleapis.com/v1/places/ChIJdefM62JbFkcRGRJ11DfKCaQ/photos/Ab43m-vS9PZY8AJfEWuPNGJxsgcbipbIZkiQsvt2aK14z4ebfOF74AmZX5CHzks8PR0wIpzBGDFsBdfum9-pLTQrrb-nglCr91gufPdfW00dxvqO8B5QRC78oLi-HPS2Pe5uWfXdM4dv2x4g7zijhXFCANJO8ZtdWlmlpJ-yMlBOc00clZP-SOvWzKYnip1PnUCTOcWSyunE2oJaKoXyI5zOPqrHoNEDrxsnRELcflZy8ub8HrIMuB6qsL0SLihQicCpftDN4qG-VQ2s7c9Djd-NoKH3ijwZat739AKBiupDbWNpwwkdQlw8N8lVBFrRZpOuSR7zHy607LWxBICYkHOeAnw6qgvkkvGKoCgqYpARt-BeTlmyOM5oPC7Z48YkjPfamABfq1rTkkOU3iRDckGRtnaiTYEd4aLDmq-RFbH2PL8V4Xmg/media?maxWidthPx=1200&amp;key=AIzaSyCYruQxrhSTw2LTWTA13X15BJRpIs-Q1FE" loading="lazy" alt="Realizacja Krak-Poż Sp. z o.o. 2"></div>
+        <div class="svc-gallery-item"><img src="https://places.googleapis.com/v1/places/ChIJdefM62JbFkcRGRJ11DfKCaQ/photos/Ab43m-usVLs-saaUK-y2uYPq5v36TUqlq25pYpSzgqFi4kGTKsMq0G2dv2MFq0CUZc0ipmy4zrn7ebGUnNAq6s-S-nH2eG4-_mwHu5dUgdrY_2XZylR4V-jf8PbcLByU3EIm2A7xlvrP6W_nZJMN138E1p9-_I71NKKLha4-wQvRMEPy9PtZ3_7T7WC4OfLoaQeru6p5oCaK1VuHS3cXh2vd5VuWeF1Mnyv2zY03Hrexb-pZ6yRGLaIOFgPBpSW-ZV3wGv3cXljCqfWPQJq_BDE5un5quvzJy5JbfPzhhJqOR1H3adnkzpokCJG9j7QgOM2EIwxj42YVazPLZ4PoRWrTEJ4XgvVnURHlW_PdNVoutcRQFK9u_9MDbOOinaB4h87nQBhtG5fgmjl-6Og3__hQRrgasBjV1ZPjWDz4FKZWRac/media?maxWidthPx=1200&amp;key=AIzaSyCYruQxrhSTw2LTWTA13X15BJRpIs-Q1FE" loading="lazy" alt="Realizacja Krak-Poż Sp. z o.o. 3"></div>
+        <div class="svc-gallery-item"><img src="https://places.googleapis.com/v1/places/ChIJdefM62JbFkcRGRJ11DfKCaQ/photos/Ab43m-vFTmxdgvizpEQgdC4BzbbUWgDA6A9jfvzCBcF5Jm_uHgGEk0z-9yqEcnc0GxvfL4XckeytBostO4xr7wiSM-YpU41ea79xujRs-oKVcBCpYoR2x9BV56_dlC_mnGQ0HIy5xCghcBDlsSIhSLNp37WDRBk4I9U33kkF1v247EQl9Xc0sohpNAE2tnsIztW1-ajoO2QhopkXhlkQQ0W1J3YsNi4DKjFtR48vlR1qnVyRfyhICXJTWAMUfEhWZj7HdMfEzaPZADn1rI1CmLhHrQySzVH9hCTXLYSAMJx3rOULxNXQoCP2RkHtwZEQJ3oVRtzj_0Q_sdDIBrQXj-OzWIV_rl1fXuzZhqmIRrdZyvv4Wg-XHRURnPkOs9nnUpNxs0tvXgiNS7RXf5AoZr1Xw3X9k_up_hzvN8ReQ-N9ZyXdNc1p/media?maxWidthPx=1200&amp;key=AIzaSyCYruQxrhSTw2LTWTA13X15BJRpIs-Q1FE" loading="lazy" alt="Realizacja Krak-Poż Sp. z o.o. 4"></div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="svc-block" id="opinie" style="background: #FCFCFD;">
+    <div class="svc-container">
+      <div class="svc-block-head">
+        <div class="eyebrow">Opinie z Google</div>
+        <h2>Co mówią klienci, którzy <em>nas wezwali.</em></h2>
+      </div>
+      <div class="svc-reviews">
+        <div class="svc-review">
+          <div class="svc-review-stars">★★★★★</div>
+          <p>"Szukałam gdzie w Krakowie można oddać starą gaśnicę do utylizacji. Bardzo miła obsługa. Przyjechałam ma styk z obawą, że już zamknięte ale pan mnie uspokoił i przyjął gaśnice bez…"</p>
+          <div class="svc-review-author">Alicja<span>10 miesięcy temu</span></div>
+        </div>
+        <div class="svc-review">
+          <div class="svc-review-stars">★★★★★</div>
+          <p>"Szybko sprawnie i bez ceregieli. Miła obsługa."</p>
+          <div class="svc-review-author">Marian Rachwalik<span>8 miesięcy temu</span></div>
+        </div>
+        <div class="svc-review">
+          <div class="svc-review-stars">★★★★★</div>
+          <p>"Profesjonalne doradztwo i pomoc. Polecam!"</p>
+          <div class="svc-review-author">Jagoda Gumulska<span>2 lata temu</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== AREA WITH MAP ====== -->
+  <section class="svc-block" id="obszar">
+    <div class="svc-container">
+      <div class="svc-area-grid">
+        <div class="svc-area-text">
+          <div class="eyebrow">Obszar działania</div>
+          <h2>Pracujemy w <em>Kraków i okolicach.</em></h2>
+          <p>Główny obszar: Kraków + 30 km. Większe zlecenia realizujemy też dalej w Małopolskie.</p>
+          <dl class="svc-area-facts">
+            <div>
+              <dt>Czas dojazdu</dt>
+              <dd>~30 min w Kraków, ~1 h w okolicach</dd>
+            </div>
+            <div>
+              <dt>Wolne terminy</dt>
+              <dd>Sprawdź telefonicznie — aktualizujemy co tydzień</dd>
+            </div>
+            <div>
+              <dt>Koszt dojazdu</dt>
+              <dd>Wliczony w wycenę w promieniu 30 km</dd>
+            </div>
+          </dl>
+          <div class="svc-area-cities-line">
+            <span class="svc-area-cities-label">Często odwiedzamy</span>
+            Kraków · Wieliczka · Niepołomice · Myślenice · Bochnia · Skawina · Wadowice · Nowy Sącz · Tarnów
+          </div>
+          <p class="svc-area-cta">Twojej miejscowości tu nie ma? <a href="tel:+48122669985">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>
+        </div>
+        <div class="svc-area-map">
+          <iframe src="https://maps.google.com/maps?q=50.0387328,19.9227118&z=11&hl=pl&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa lokalizacji: Kraków"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CONTACT ====== -->
+  <section class="svc-block" id="kontakt">
+    <div class="svc-container">
+      <div class="svc-block-head">
+        <div class="eyebrow">Kontakt</div>
+        <h2>Najszybciej: <em>telefonicznie.</em></h2>
+        <p>Wiadomości z formularza odbieramy w godzinach pracy. Awarie w godzinach pracy — zadzwoń.</p>
+      </div>
+      <div class="svc-contact-grid">
+        <div class="svc-contact-info">
+          <h3>Telefon</h3>
+          <a href="tel:+48122669985" class="value">12 266 99 85</a>
+          <h3>Adres</h3>
+          <span class="value" style="font-size:17px">Ceglarska 15, 30-362 Kraków</span>
+          <h3>Godziny pracy</h3>
+          <span class="value" style="font-size:17px">pn-pt 7:00–18:00 · sb 8:00–14:00</span>
+        </div>
+        <form class="svc-form" onsubmit="return svcShowThanks(this)">
+          <div class="svc-form-group">
+            <label for="imie">Imię i nazwisko</label>
+            <input type="text" id="imie" name="imie" placeholder="Jan Kowalski" required>
+          </div>
+          <div class="svc-form-group">
+            <label for="tel">Telefon (do oddzwonienia)</label>
+            <input type="tel" id="tel" name="tel" placeholder="+48 600 000 000" required>
+          </div>
+          <div class="svc-form-group">
+            <label for="zakres">Czego dotyczy?</label>
+            <select id="zakres" name="zakres">
+              <option>Instalacja elektryczna w nowym domu</option>
+              <option>Remont instalacji</option>
+              <option>Oświetlenie</option>
+              <option>Smart home / automatyka</option>
+              <option>Fotowoltaika / pompa ciepła</option>
+              <option>Inne</option>
+            </select>
+          </div>
+          <div class="svc-form-group">
+            <label for="wiadomosc">Krótki opis sytuacji</label>
+            <textarea id="wiadomosc" name="wiadomosc" placeholder="Opisz krótko, z czym się zwracasz..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;">Oddzwońcie do mnie</button>
+        </form>
+        <script>
+          function svcShowThanks(form) {
+            form.innerHTML = '<div style="text-align:center; padding:40px 20px;"><div style="width:56px; height:56px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="font-family:var(--display); font-size:24px; font-weight:700; margin-bottom:10px; letter-spacing:-0.025em;">Dziękujemy!</h3><p style="color:var(--ink-soft); font-size:14px;">Oddzwonimy w ciągu 30 minut w godzinach pracy.</p></div>';
+            return false;
+          }
+        </script>
+      </div>
+    </div>
+  </section>
+
+  <footer class="svc-footer">
+    <div class="svc-footer-inner">
+      <div>
+        <a href="#" class="svc-logo">Krak-Poż <span>Sp</span></a>
+        <p>Krak-Poż Sp. z o.o.<br>Kraków i okolice.</p>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="tel:+48122669985">12 266 99 85</a></li>
+          <li>Ceglarska 15, 30-362 Kraków</li>
+          <li><a href="#kontakt">Formularz</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Firma</h4>
+        <ul>
+          <li><a href="#uslugi">Usługi</a></li>
+          <li><a href="#o-nas">O firmie</a></li>
+          <li><a href="#obszar">Obszar działania</a></li>
+          <li><a href="#opinie">Opinie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="svc-footer-bottom">
+      <div>&copy; 2026 Krak-Poż Sp. z o.o.. Wszelkie prawa zastrzeżone.</div>
+      <div>Strona stworzona przez <a href="#" style="color:rgba(255,255,255,0.6);">stronadlatwojejfirmy.com.pl</a></div>
+    </div>
+  </footer>
+
+  <div class="svc-mobile-cta">
+    <a href="tel:+48122669985" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Zadzwoń
+    </a>
+    <a href="https://wa.me/48122669985" class="btn btn-whatsapp">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345"/></svg>
+      WhatsApp
+    </a>
+  </div>
+
+</body>
+</html>

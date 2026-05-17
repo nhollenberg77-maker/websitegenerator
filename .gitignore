@@ -1,0 +1,47 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Dashboard (Next.js)
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+dashboard/.vercel/
+dashboard/build/
+dashboard/coverage/
+dashboard/*.tsbuildinfo
+dashboard/next-env.d.ts
+
+# Secrets in dashboard
+dashboard/.env
+dashboard/.env.*
+!dashboard/.env.example
+dashboard/settings.json
+!dashboard/settings.example.json
+
+# Runtime state (generated locally, not for git)
+dashboard/agent-log.json
+
+# Discovery CSV exports (intermediate)
+leads-*.csv
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*

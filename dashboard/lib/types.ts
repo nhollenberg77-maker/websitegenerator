@@ -1,0 +1,96 @@
+export interface Lead {
+  place_id: string;
+  name: string;
+  address: string | null;
+  website: string | null;
+  phone_national: string | null;
+  phone_intl: string | null;
+  rating: number | null;
+  rating_count: number | null;
+  primary_type: string | null;
+  types: string | null;
+  business_status: string | null;
+  photo_count: number;
+  latitude: number | null;
+  longitude: number | null;
+  city_query: string | null;
+  voivodeship: string | null;
+  category_query: string | null;
+  discovered_at: string | null;
+  qualified: number | null;
+  bad_site_score: number | null;
+  good_gbp_score: number | null;
+  qualified_at: string | null;
+  emailed_at: string | null;
+  site_generated_at: string | null;
+  photo_refs: string | null;
+  photo_urls: string | null;
+  reviews_json: string | null;
+  description: string | null;
+  enriched_at: string | null;
+}
+
+export interface LeadReview {
+  author: string;
+  rating: number;
+  text: string;
+  language?: string;
+  original_text?: string;
+  original_language?: string;
+  time: string;
+  photo: string;
+}
+
+export interface LeadStats {
+  total: number;
+  qualified: number;
+  rejected: number;
+  pending: number;
+  emailed: number;
+  sites: number;
+  byCity: { city: string; count: number }[];
+  byCategory: { category: string; qualified: number; total: number }[];
+  recentQualified: Lead[];
+}
+
+export interface LeadsQuery {
+  page: number;
+  perPage: number;
+  cities: string[];
+  categories: string[];
+  status: "all" | "qualified" | "rejected" | "pending";
+  search: string;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+}
+
+export interface LeadsResponse {
+  leads: Lead[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+export const CITIES: Record<string, string> = {
+  krakow: "Kraków",
+  warszawa: "Warszawa",
+  wroclaw: "Wrocław",
+  poznan: "Poznań",
+  gdansk: "Gdańsk",
+  lodz: "Łódź",
+  katowice: "Katowice",
+  lublin: "Lublin",
+  bydgoszcz: "Bydgoszcz",
+  szczecin: "Szczecin",
+  wieliczka: "Wieliczka",
+  niepolomice: "Niepołomice",
+};
+
+export const CATEGORIES: Record<string, string> = {
+  roofing_contractor: "Dakdekker",
+  electrician: "Elektricien",
+  plumber: "Loodgieter",
+  painter: "Schilder",
+  general_contractor: "Aannemer",
+};

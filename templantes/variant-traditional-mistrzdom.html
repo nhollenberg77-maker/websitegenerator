@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mistrz-Dom Wiśniewski — Tradycyjne budownictwo · Mazowsze</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,500;9..144,0,600;9..144,1,400;9..144,1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAFAF7;
+      --bg-alt: #F2F0EA;
+      --bg-dark: #8B3A2E;
+      --ink: #1A1A1A;
+      --ink-soft: #5A5A55;
+      --ink-faint: #9A9A95;
+      --line: #E5E2DC;
+      --line-soft: #EFEDE7;
+      --accent: #8B3A2E;
+      --accent-hover: #A04A3E;
+      --accent-soft: #F5E6E1;
+      --whatsapp: #25D366;
+      --whatsapp-hover: #1FA855;
+      --warn: #E8B339;
+      --display: 'Fraunces', Georgia, serif;
+      --body: 'Manrope', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--body);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 80px;
+    }
+
+    @media (min-width: 768px) {
+      body { padding-bottom: 0; font-size: 17px; }
+    }
+
+    .container, .block-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--display);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    h1 em, h2 em, h3 em {
+      font-style: italic;
+      color: var(--ink-soft);
+      font-weight: 400;
+    }
+
+    p { color: var(--ink); }
+
+    .eyebrow {
+      font-family: var(--body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--ink-soft);
+    }
+
+    /* ===== Top announcement bar ===== */
+    .topbar {
+      background: var(--bg-dark);
+      color: rgba(255,255,255,0.85);
+      font-size: 13px;
+      padding: 8px 24px;
+      text-align: center;
+    }
+
+    .topbar a {
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ===== Header / Nav ===== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(250, 250, 247, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 32px;
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+
+    .logo span { color: var(--ink-soft); font-weight: 400; }
+
+    nav.main-nav {
+      display: none;
+      gap: 32px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    @media (min-width: 1024px) {
+      nav.main-nav { display: flex; }
+    }
+
+    nav.main-nav a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    nav.main-nav a:hover { color: var(--accent); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .phone-link {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    @media (min-width: 768px) {
+      .phone-link { display: inline-flex; }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 100px;
+      font-family: var(--body);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+    .btn-whatsapp { background: var(--whatsapp); color: white; }
+    .btn-whatsapp:hover { background: var(--whatsapp-hover); transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .btn-ghost:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+    .btn-lg { padding: 16px 28px; font-size: 16px; }
+
+    /* ===== Hero ===== */
+    .hero { padding: 64px 24px 80px; max-width: 1200px; margin: 0 auto; }
+
+    @media (min-width: 768px) {
+      .hero { padding: 100px 24px 120px; }
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-grid { grid-template-columns: 1.15fr 1fr; gap: 80px; }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 80px);
+      margin-bottom: 28px;
+    }
+
+    .hero-lead {
+      font-size: 18px;
+      color: var(--ink-soft);
+      margin-bottom: 36px;
+      max-width: 520px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+    }
+
+    .hero-meta-item .num {
+      font-family: var(--display);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 600;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .hero-meta-item .label {
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.02em;
+    }
+
+    .hero-image-wrap {
+      position: relative;
+    }
+
+    .hero-image {
+      position: relative;
+      aspect-ratio: 4/5;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-alt) url('https://picsum.photos/seed/mistrzdom-hero/900/1100') center/cover;
+    }
+
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.2), transparent 50%);
+    }
+
+    .hero-tag {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(255,255,255,0.96);
+      padding: 10px 16px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      z-index: 2;
+    }
+
+    .hero-card {
+      position: absolute;
+      bottom: -28px;
+      right: -16px;
+      background: white;
+      padding: 18px 22px;
+      border-radius: 8px;
+      box-shadow: 0 14px 40px rgba(26, 43, 74, 0.12);
+      max-width: 240px;
+      z-index: 3;
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .hero-card { display: block; }
+    }
+
+    .hero-card .stars { color: var(--warn); font-size: 13px; letter-spacing: 2px; margin-bottom: 6px; }
+    .hero-card p { font-size: 13px; color: var(--ink); margin-bottom: 8px; line-height: 1.4; }
+    .hero-card .author { font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+
+    /* ===== Trust strip ===== */
+    .trust-strip {
+      background: var(--bg-alt);
+      padding: 24px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .trust-strip-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px 48px;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-soft);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .trust-strip-inner span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trust-strip-inner svg {
+      color: var(--accent);
+    }
+
+    /* ===== Section base ===== */
+    section.block { padding: 72px 24px; }
+    @media (min-width: 768px) { section.block { padding: 110px 24px; } }
+
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 56px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(32px, 4.5vw, 52px);
+      margin-bottom: 20px;
+    }
+
+    .section-head p {
+      font-size: 18px;
+      color: var(--ink-soft);
+    }
+
+    /* ===== Services ===== */
+    .services { background: var(--bg-alt); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .services-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .service {
+      background: var(--bg);
+      padding: 40px 32px;
+      transition: background 0.2s ease;
+    }
+
+    .service:hover { background: white; }
+
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+
+    .service h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .service p {
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ===== Projects ===== */
+    .projects-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .projects-grid { grid-template-columns: repeat(6, 1fr); grid-auto-rows: 180px; }
+      .project:nth-child(1) { grid-column: span 4; grid-row: span 2; }
+      .project:nth-child(2) { grid-column: span 2; grid-row: span 1; }
+      .project:nth-child(3) { grid-column: span 2; grid-row: span 1; }
+      .project:nth-child(4) { grid-column: span 3; grid-row: span 1; }
+      .project:nth-child(5) { grid-column: span 3; grid-row: span 1; }
+    }
+
+    .project {
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      aspect-ratio: 4/3;
+      background: var(--bg-alt);
+    }
+
+    @media (min-width: 640px) {
+      .project { aspect-ratio: auto; min-height: 180px; }
+    }
+
+    .project img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .project:hover img { transform: scale(1.04); }
+
+    .project-caption {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      background: rgba(255,255,255,0.96);
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ===== Proces ===== */
+    .proces { background: var(--bg-alt); }
+
+    .proces-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    @media (min-width: 768px) {
+      .proces-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .step {
+      padding: 36px 32px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .step {
+        border-bottom: none;
+        border-right: 1px solid var(--line);
+      }
+      .step:last-child { border-right: none; }
+    }
+
+    .step-num {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-faint);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .step h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    /* ===== Why us ===== */
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    @media (min-width: 768px) { .why-grid { grid-template-columns: repeat(2, 1fr); gap: 48px; } }
+    @media (min-width: 1024px) { .why-grid { grid-template-columns: repeat(4, 1fr); gap: 32px; } }
+
+    .why-item {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .why-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .why-item h3 { font-size: 19px; }
+    .why-item p { color: var(--ink-soft); font-size: 15px; }
+
+    /* ===== About ===== */
+    .about { background: var(--bg-alt); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    @media (min-width: 1024px) { .about-grid { grid-template-columns: 1fr 1fr; gap: 88px; } }
+
+    .about-text h2 { font-size: clamp(32px, 4.5vw, 52px); margin-bottom: 24px; }
+    .about-text p { font-size: 17px; color: var(--ink-soft); margin-bottom: 20px; }
+
+    .about-image {
+      aspect-ratio: 4/5;
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg) url('https://picsum.photos/seed/mistrzdom-team/900/1100') center/cover;
+    }
+
+    .about-quote {
+      margin-top: 28px;
+      padding: 24px 28px;
+      background: white;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .about-quote p {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 19px;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .about-quote .author {
+      font-size: 14px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    /* ===== Partners / Materials ===== */
+    .partners-head { text-align: center; max-width: 720px; margin: 0 auto 56px; }
+    .partners-head h2 { font-size: clamp(28px, 4vw, 44px); margin-bottom: 16px; }
+    .partners-head p { font-size: 16px; color: var(--ink-soft); }
+
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) { .partners-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1024px) { .partners-grid { grid-template-columns: repeat(6, 1fr); } }
+
+    .partner {
+      background: var(--bg);
+      padding: 28px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--ink-soft);
+      letter-spacing: -0.01em;
+      transition: all 0.2s ease;
+      min-height: 90px;
+    }
+
+    .partner:hover { background: white; color: var(--ink); }
+
+    /* ===== Reviews ===== */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) { .reviews-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .review {
+      padding: 36px 32px;
+      background: var(--bg-alt);
+      border-radius: 8px;
+    }
+
+    .review-stars {
+      color: var(--warn);
+      margin-bottom: 16px;
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .review p {
+      font-family: var(--display);
+      font-size: 19px;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-bottom: 24px;
+      color: var(--ink);
+    }
+
+    .review-author {
+      font-size: 14px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .review-author span {
+      font-weight: 400;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ===== Area ===== */
+    .area { background: var(--bg-dark); color: white; }
+    .area .eyebrow { color: rgba(255,255,255,0.6); }
+    .area .eyebrow::before { background: rgba(255,255,255,0.6); }
+    .area .section-head h2 { color: white; }
+    .area .section-head h2 em { color: rgba(255,255,255,0.65); }
+    .area .section-head p { color: rgba(255,255,255,0.7); }
+
+    .area-cities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .area-city {
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .area-city.primary { background: white; color: var(--accent); border-color: white; }
+
+    /* ===== FAQ ===== */
+    .faq-list {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--line);
+      padding: 28px 0;
+    }
+
+    .faq-item:first-child { padding-top: 0; }
+
+    .faq-q {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 24px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .faq-q::-webkit-details-marker { display: none; }
+
+    .faq-q h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--ink);
+      flex: 1;
+    }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1;
+      transition: transform 0.2s ease;
+    }
+
+    details[open] .faq-icon { transform: rotate(45deg); }
+
+    .faq-a {
+      padding-top: 16px;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 720px;
+    }
+
+    /* ===== Contact ===== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    @media (min-width: 1024px) { .contact-grid { grid-template-columns: 1fr 1fr; gap: 80px; } }
+
+    .contact-info h3 {
+      font-size: 13px;
+      font-family: var(--body);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 10px;
+    }
+
+    .contact-info .value {
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 500;
+      margin-bottom: 28px;
+      display: block;
+      color: var(--ink);
+      text-decoration: none;
+      line-height: 1.3;
+    }
+
+    .contact-info .value:hover { color: var(--accent); }
+
+    .contact-cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .contact-form {
+      background: var(--bg-alt);
+      padding: 40px 32px;
+      border-radius: 8px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+      font-family: var(--body);
+      font-size: 15px;
+      color: var(--ink);
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group textarea { min-height: 110px; resize: vertical; }
+
+    /* ===== CTA banner ===== */
+    .cta-banner {
+      background: var(--bg-dark);
+      color: white;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      color: white;
+      margin-bottom: 16px;
+    }
+    .cta-banner h2 em { color: rgba(255,255,255,0.6); }
+
+    .cta-banner p {
+      color: rgba(255,255,255,0.75);
+      font-size: 17px;
+      margin-bottom: 32px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-banner .btn-primary {
+      background: white;
+      color: var(--accent);
+    }
+
+    .cta-banner .btn-primary:hover { background: rgba(255,255,255,0.92); }
+
+    .cta-banner-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      padding: 56px 24px 32px;
+      background: var(--ink);
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (min-width: 768px) { .footer-inner { grid-template-columns: 2fr 1fr 1fr 1fr; } }
+
+    footer .logo { color: white; margin-bottom: 12px; display: block; }
+    footer .logo span { color: rgba(255,255,255,0.5); }
+    footer p { margin-bottom: 8px; color: rgba(255,255,255,0.7); }
+    footer h4 { color: white; font-family: var(--body); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+    footer ul { list-style: none; }
+    footer ul li { margin-bottom: 8px; }
+    footer ul a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    footer ul a:hover { color: white; }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* ===== Mobile floating bar ===== */
+    .mobile-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(250, 250, 247, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+      z-index: 100;
+    }
+
+    .mobile-cta .btn { flex: 1; justify-content: center; }
+
+    @media (min-width: 768px) { .mobile-cta { display: none; } }
+
+    /* Entrance animations */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: reveal 0.8s ease forwards;
+      }
+      .reveal:nth-child(2) { animation-delay: 0.1s; }
+      @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Topbar ===== -->
+  <div class="topbar">
+    Wolne terminy realizacji w 2026 — <a href="#kontakt">umów bezpłatną wycenę →</a>
+  </div>
+
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">Mistrz-Dom <span>Wiśniewski</span></a>
+      <nav class="main-nav">
+        <a href="#uslugi">Usługi</a>
+        <a href="#realizacje">Realizacje</a>
+        <a href="#proces">Proces</a>
+        <a href="#o-nas">O nas</a>
+        <a href="#opinie">Opinie</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+      <div class="header-actions">
+        <a href="tel:+48600123456" class="phone-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          +48 600 123 456
+        </a>
+        <a href="#kontakt" class="btn btn-primary">Bezpłatna wycena</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="reveal">
+        <div class="eyebrow">Małopolska · od 2005 roku</div>
+        <h1>Budujemy jak <em>za starych czasów.</em></h1>
+        <p class="hero-lead">
+          Solidna cegła, drewno z lasu, kamień z okolicy. Budujemy domy, które przetrwają trzy pokolenia.
+          Pracujemy bez pośredników — rozmawia z Państwem bezpośrednio właściciel firmy.
+        </p>
+        <div class="hero-ctas">
+          <a href="tel:+48600123456" class="btn btn-primary btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Zadzwoń teraz
+          </a>
+          <a href="https://wa.me/48600123456" class="btn btn-whatsapp btn-lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 0 1-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885 2.654 0 5.145 1.035 7.021 2.91 1.875 1.859 2.909 4.35 2.909 6.99-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 0 0 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411"/></svg>
+            WhatsApp
+          </a>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <div class="num">20+</div>
+            <div class="label">lat na rynku</div>
+          </div>
+          <div class="hero-meta-item">
+            <div class="num">200+</div>
+            <div class="label">zrealizowanych projektów</div>
+          </div>
+          <div class="hero-meta-item">
+            <div class="num">100%</div>
+            <div class="label">terminowość</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-image-wrap reveal">
+        <div class="hero-image">
+          <span class="hero-tag">Realizacja 2024 · Wieliczka</span>
+        </div>
+        <div class="hero-card">
+          <div class="stars">★★★★★</div>
+          <p>"Solidna ekipa, dotrzymują słowa. Polecam każdemu."</p>
+          <div class="author">Anna i Tomasz · Kraków</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Trust strip ===== -->
+  <div class="trust-strip">
+    <div class="trust-strip-inner">
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Pełne uprawnienia budowlane</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Ubezpieczenie OC do 1 mln zł</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Umowa pisemna z harmonogramem</span>
+      <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 5 lat gwarancji na konstrukcję</span>
+    </div>
+  </div>
+
+  <!-- ===== Services ===== -->
+  <section class="block services" id="uslugi">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Zakres usług</div>
+        <h2>Wszystko, czego potrzebuje <em>Państwa budowa.</em></h2>
+        <p>Pracujemy z własną, sprawdzoną ekipą. Bez podwykonawców z łapanki, bez niespodzianek w trakcie.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <h3>Stan surowy zamknięty</h3>
+          <p>Kompleksowe stawianie budynków od fundamentów po dach. Domy jednorodzinne, obiekty komercyjne i agroturystyczne.</p>
+        </div>
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <h3>Wykończenia wnętrz</h3>
+          <p>Tynki, posadzki, malowanie, montaż wykończeniowy. Pracujemy z architektem klienta lub własnym — pod klucz.</p>
+        </div>
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l10-9 10 9"/><path d="M5 10v10h14V10"/></svg>
+          <h3>Dachy</h3>
+          <p>Pokrycia dachowe, więźba, obróbki blacharskie. Materiały od sprawdzonych producentów (Wienerberger, Creaton).</p>
+        </div>
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+          <h3>Elewacje</h3>
+          <p>Ocieplenia, tynki elewacyjne, kamień, klinkier. Zwiększamy estetykę i izolacyjność. Cieplej i taniej w utrzymaniu.</p>
+        </div>
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <h3>Remonty</h3>
+          <p>Remonty mieszkań, domów i lokali użytkowych. Od jednej ściany po kompleksową przebudowę z wyburzeniami.</p>
+        </div>
+        <div class="service">
+          <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <h3>Instalacje</h3>
+          <p>Hydraulika, elektryka, ogrzewanie. Współpraca ze sprawdzonymi, lokalnymi specjalistami. Wszystko z jednej ręki.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Projects ===== -->
+  <section class="block" id="realizacje">
+    <div class="block-inner">
+      <div class="projects-head">
+        <div>
+          <div class="eyebrow">Ostatnie realizacje</div>
+          <h2 style="font-size: clamp(32px, 4.5vw, 52px)">Praca, której nie wstydzimy <em>się pokazać.</em></h2>
+        </div>
+        <a href="#kontakt" class="btn btn-ghost">Zobacz pełne portfolio →</a>
+      </div>
+      <div class="projects-grid">
+        <div class="project">
+          <img src="https://picsum.photos/seed/mistrzdom-p1/1200/800" alt="Realizacja 1">
+          <span class="project-caption">Dom jednorodzinny · Wieliczka · 2024</span>
+        </div>
+        <div class="project">
+          <img src="https://picsum.photos/seed/mistrzdom-p2/800/600" alt="Realizacja 2">
+          <span class="project-caption">Wykończenie · Kraków</span>
+        </div>
+        <div class="project">
+          <img src="https://picsum.photos/seed/mistrzdom-p3/800/600" alt="Realizacja 3">
+          <span class="project-caption">Elewacja · Niepołomice</span>
+        </div>
+        <div class="project">
+          <img src="https://picsum.photos/seed/mistrzdom-p4/1000/600" alt="Realizacja 4">
+          <span class="project-caption">Nowy dach · Myślenice</span>
+        </div>
+        <div class="project">
+          <img src="https://picsum.photos/seed/mistrzdom-p5/1000/600" alt="Realizacja 5">
+          <span class="project-caption">Remont kompleksowy · Bochnia</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Proces ===== -->
+  <section class="block proces" id="proces">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Jak pracujemy</div>
+        <h2>Cztery kroki <em>od pomysłu do kluczy.</em></h2>
+        <p>Pełna przejrzystość na każdym etapie. Wiesz dokładnie, co się dzieje i co będzie dalej.</p>
+      </div>
+      <div class="proces-grid">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Bezpłatna wycena</h3>
+          <p>Spotykamy się na miejscu. Oglądamy działkę lub obiekt, słuchamy planów, doradzamy. Wycena na piśmie w ciągu 5 dni.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Umowa i harmonogram</h3>
+          <p>Szczegółowa umowa z harmonogramem, materiałami i cenami. Bez ukrytych kosztów. Wszystko podpisane przed startem.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Realizacja</h3>
+          <p>Pracujemy w terminie. Cotygodniowe raporty z postępów, zdjęcia, dostępność telefoniczna codziennie. Bez ciszy radiowej.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <h3>Odbiór i gwarancja</h3>
+          <p>Końcowy odbiór z protokołem. Dokumentacja powykonawcza w pełni. 5 lat gwarancji na konstrukcję, 2 lata na wykończenia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Why us ===== -->
+  <section class="block" id="dlaczego-my">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Dlaczego my</div>
+        <h2>Cztery rzeczy, które wyróżniają nas <em>na tle innych.</em></h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-item">
+          <svg class="why-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <h3>Bezpośredni kontakt z właścicielem</h3>
+          <p>Nie znikamy za sekretarką. Telefon do Stanisława działa codziennie, on prowadzi każdą budowę osobiście.</p>
+        </div>
+        <div class="why-item">
+          <svg class="why-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <h3>Terminowość 100%</h3>
+          <p>Termin zapisany w umowie to termin zrealizowany. Ostatnie 50 budów: bez opóźnień. Sprawdzone, nie obiecane.</p>
+        </div>
+        <div class="why-item">
+          <svg class="why-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <h3>Stała, własna ekipa</h3>
+          <p>Ci sami ludzie od 8+ lat. Bez "łapanki" pracowników w sezonie. Każdy zna nasze standardy i ich pilnuje.</p>
+        </div>
+        <div class="why-item">
+          <svg class="why-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <h3>Pełna dokumentacja</h3>
+          <p>Cotygodniowe raporty ze zdjęciami, faktury za materiały, protokoły odbiorów częściowych. Nic nie znika z radaru.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="block about" id="o-nas">
+    <div class="block-inner">
+      <div class="about-grid">
+        <div class="about-text">
+          <div class="eyebrow">O firmie</div>
+          <h2>Rodzinna firma. <em>Trzecie pokolenie w branży.</em></h2>
+          <p>
+            Od 2010 roku realizujemy budowy domów jednorodzinnych i remonty w całej Małopolsce.
+            Założyciel firmy — Stanisław Wiśniewski — pracuje w budownictwie od 30 lat. Synowie pomagają prowadzić firmę od kilku lat.
+          </p>
+          <p>
+            Pracujemy bez pośredników. Z Państwem rozmawia bezpośrednio właściciel. Każdą budowę traktujemy jak własną — bo nasi klienci często są naszymi sąsiadami.
+          </p>
+          <p>
+            Posiadamy wszystkie wymagane uprawnienia budowlane, ubezpieczenie OC do 1 mln zł, własną ekipę 12 osób i sprawdzonych podwykonawców branżowych (instalacje, stolarka).
+          </p>
+          <div class="about-quote">
+            <p>"Mój ojciec budował tak, jak jego ojciec. Ja buduję tak samo — bo to po prostu działa."</p>
+            <div class="author">Stanisław Wiśniewski · Właściciel</div>
+          </div>
+        </div>
+        <div class="about-image"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Partners / Materials ===== -->
+  <section class="block">
+    <div class="block-inner">
+      <div class="partners-head">
+        <div class="eyebrow" style="margin-left: auto; margin-right: auto;">Materiały i dostawcy</div>
+        <h2>Pracujemy <em>z markami, którym ufamy.</em></h2>
+        <p>Tańsze rozwiązania są dostępne — ale na budowie nie warto oszczędzać na materiałach, które będą służyć dekady.</p>
+      </div>
+      <div class="partners-grid">
+        <div class="partner">Wienerberger</div>
+        <div class="partner">Knauf</div>
+        <div class="partner">Caparol</div>
+        <div class="partner">Rockwool</div>
+        <div class="partner">Atlas</div>
+        <div class="partner">Solbet</div>
+        <div class="partner">Roben</div>
+        <div class="partner">Cersanit</div>
+        <div class="partner">Velux</div>
+        <div class="partner">Geberit</div>
+        <div class="partner">Śnieżka</div>
+        <div class="partner">Creaton</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Reviews ===== -->
+  <section class="block" id="opinie" style="background: var(--bg-alt);">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Opinie klientów</div>
+        <h2>Co mówią o nas <em>ci, dla których budowaliśmy.</em></h2>
+        <p>Pełne opinie i Google reviews dostępne pod numerem +48 600 123 456.</p>
+      </div>
+      <div class="reviews-grid">
+        <div class="review">
+          <div class="review-stars">★★★★★</div>
+          <p>"Pan Nowak prowadził budowę naszego domu od fundamentów po klucz. Wszystko zgodnie z umową, w terminie, bez ukrytych kosztów. Polecam każdemu."</p>
+          <div class="review-author">Marek K.<span>Wieliczka · budowa domu 2023</span></div>
+        </div>
+        <div class="review">
+          <div class="review-stars">★★★★★</div>
+          <p>"Solidna ekipa, dotrzymują słowa. Po remoncie kuchni wracaliśmy do nich z łazienką, a potem z elewacją. Dwa lata później dalej polecamy znajomym."</p>
+          <div class="review-author">Anna i Tomasz<span>Kraków · remont kompleksowy 2022</span></div>
+        </div>
+        <div class="review">
+          <div class="review-stars">★★★★★</div>
+          <p>"Zawsze odbiera telefon, wszystko wyjaśnia, nie pcha się z dodatkami. Stary szkoły fachowiec — dziś już rzadko spotykany. Dach robił szybko i czysto."</p>
+          <div class="review-author">Piotr W.<span>Niepołomice · nowy dach 2024</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Area ===== -->
+  <section class="block area" id="obszar">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Obszar działania</div>
+        <h2>Pracujemy <em>w całej Małopolsce.</em></h2>
+        <p>Główny obszar działania to Kraków i powiaty ościenne. Większe inwestycje realizujemy też dalej — zapraszamy do kontaktu, dojedziemy.</p>
+      </div>
+      <div class="area-cities">
+        <div class="area-city primary">Kraków</div>
+        <div class="area-city primary">Wieliczka</div>
+        <div class="area-city primary">Niepołomice</div>
+        <div class="area-city">Myślenice</div>
+        <div class="area-city">Bochnia</div>
+        <div class="area-city">Skawina</div>
+        <div class="area-city">Wadowice</div>
+        <div class="area-city">Brzesko</div>
+        <div class="area-city">Tarnów</div>
+        <div class="area-city">Proszowice</div>
+        <div class="area-city">Olkusz</div>
+        <div class="area-city">Chrzanów</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="block" id="faq">
+    <div class="block-inner">
+      <div class="section-head" style="text-align: center; margin-left: auto; margin-right: auto;">
+        <div class="eyebrow" style="margin-left: auto; margin-right: auto;">Najczęstsze pytania</div>
+        <h2>Nim zadzwonisz — <em>na pewno to przeczytaj.</em></h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Czy macie wszystkie wymagane uprawnienia budowlane?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Tak. Posiadamy pełne uprawnienia konstrukcyjno-budowlane bez ograniczeń, wpis do Izby Inżynierów Budownictwa, ubezpieczenie OC do 1 mln zł oraz wszystkie wymagane przez prawo polisy odpowiedzialności zawodowej. Dokumenty pokazujemy na pierwszym spotkaniu.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Jak wygląda proces wyceny? Czy jest płatny?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Wycena jest całkowicie bezpłatna i niezobowiązująca. Po pierwszym kontakcie umawiamy się na spotkanie na miejscu inwestycji (zwykle w ciągu tygodnia). Po wizycie przygotowujemy szczegółowy kosztorys na piśmie w ciągu 5 dni roboczych — z rozbiciem na materiały, robociznę i etapy.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Czy podpisujemy umowę pisemną?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Zawsze. Umowa pisemna z szczegółowym harmonogramem, kosztorysem materiałowym i zapisami o gwarancjach to absolutna podstawa. Nigdy nie pracujemy "na słowo" — to zabezpiecza obie strony.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Co z ukrytymi kosztami i dodatkowymi pracami w trakcie?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Kosztorys, który dostają Państwo przed podpisaniem umowy, jest kompletny — zawiera wszystkie pozycje materiałowe i robocze. Jedyne dodatkowe koszty mogą wystąpić tylko jeśli inwestor zmieni zakres prac w trakcie (np. dołoży piętro, zmieni materiał wykończenia) — i zawsze będą uzgodnione na piśmie przed wykonaniem.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Ile czasu trwa typowa budowa domu jednorodzinnego?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Stan surowy zamknięty: 4-6 miesięcy w zależności od metrażu i poziomu skomplikowania. Pod klucz z wykończeniem: 9-12 miesięcy. Dokładny harmonogram dla Państwa inwestycji opracowujemy przed podpisaniem umowy.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Czy mogę odwiedzić wcześniejsze realizacje?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">Tak, bardzo to zalecamy. Po wstępnej rozmowie chętnie zaprowadzimy Państwa na dwie-trzy nasze realizacje w okolicy — najlepiej na różnych etapach: aktualnie prowadzoną budowę i dom oddany 2-3 lata temu. Można też porozmawiać z naszymi klientami bez naszego udziału.</div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-q">
+            <h3>Jakie macie gwarancje na wykonane prace?</h3>
+            <span class="faq-icon">+</span>
+          </summary>
+          <div class="faq-a">5 lat gwarancji na konstrukcję, 2 lata na wykończenia wnętrz, 5 lat na pokrycie dachowe. Materiały objęte są dodatkowo gwarancjami producenta (najczęściej 10-25 lat). Wszystkie warunki są zapisane w umowie.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA banner ===== -->
+  <section class="cta-banner">
+    <h2>Planują Państwo budowę lub remont? <em>Porozmawiajmy.</em></h2>
+    <p>Wycena jest bezpłatna i niezobowiązująca. Najczęściej odpowiadamy tego samego dnia.</p>
+    <div class="cta-banner-ctas">
+      <a href="tel:+48600123456" class="btn btn-primary btn-lg">Zadzwoń: +48 600 123 456</a>
+      <a href="https://wa.me/48600123456" class="btn btn-whatsapp btn-lg">Napisz na WhatsApp</a>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section class="block" id="kontakt">
+    <div class="block-inner">
+      <div class="section-head">
+        <div class="eyebrow">Kontakt</div>
+        <h2>Porozmawiajmy o <em>Państwa inwestycji.</em></h2>
+        <p>Wypełnij formularz lub zadzwoń bezpośrednio. Każde zapytanie traktujemy poważnie.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>Telefon</h3>
+          <a href="tel:+48600123456" class="value">+48 600 123 456</a>
+
+          <h3>E-mail</h3>
+          <a href="mailto:kontakt@mistrz-dom.pl" class="value">kontakt@mistrz-dom.pl</a>
+
+          <h3>Biuro</h3>
+          <span class="value" style="display:block">ul. Wielicka 158<br>30-663 Kraków</span>
+
+          <h3>Godziny pracy</h3>
+          <span class="value" style="font-size: 17px; font-family: var(--body); font-weight: 500">pn-pt 7:00–18:00 · sb 8:00–14:00</span>
+
+          <div class="contact-cta">
+            <a href="tel:+48600123456" class="btn btn-primary">Zadzwoń</a>
+            <a href="https://wa.me/48600123456" class="btn btn-whatsapp">WhatsApp</a>
+          </div>
+        </div>
+        <form class="contact-form">
+          <div class="form-group">
+            <label for="imie">Imię i nazwisko</label>
+            <input type="text" id="imie" name="imie" placeholder="Jan Kowalski">
+          </div>
+          <div class="form-group">
+            <label for="tel">Telefon</label>
+            <input type="tel" id="tel" name="tel" placeholder="+48 600 000 000">
+          </div>
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="jan@example.com">
+          </div>
+          <div class="form-group">
+            <label for="zakres">Czego dotyczy zapytanie?</label>
+            <select id="zakres" name="zakres">
+              <option>Budowa domu od zera</option>
+              <option>Wykończenie wnętrz</option>
+              <option>Remont / przebudowa</option>
+              <option>Dach / elewacja</option>
+              <option>Inne</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="wiadomosc">Krótki opis inwestycji</label>
+            <textarea id="wiadomosc" name="wiadomosc" placeholder="Planuję budowę domu ok. 150 m² w okolicy Wieliczki, działka kupiona, projekt mam..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">Wyślij zapytanie</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <a href="#" class="logo">Mistrz-Dom <span>Wiśniewski</span></a>
+        <p>Solidne wykonawstwo od 2005 roku.<br>Małopolska i okolice.</p>
+        <p style="margin-top: 16px;">NIP: 000-000-00-00<br>REGON: 000000000</p>
+      </div>
+      <div>
+        <h4>Usługi</h4>
+        <ul>
+          <li><a href="#uslugi">Stan surowy</a></li>
+          <li><a href="#uslugi">Wykończenia</a></li>
+          <li><a href="#uslugi">Dachy</a></li>
+          <li><a href="#uslugi">Elewacje</a></li>
+          <li><a href="#uslugi">Remonty</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Firma</h4>
+        <ul>
+          <li><a href="#o-nas">O nas</a></li>
+          <li><a href="#realizacje">Realizacje</a></li>
+          <li><a href="#proces">Proces</a></li>
+          <li><a href="#opinie">Opinie</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="tel:+48600123456">+48 600 123 456</a></li>
+          <li><a href="mailto:kontakt@mistrz-dom.pl">kontakt@mistrz-dom.pl</a></li>
+          <li>ul. Wielicka 158, Kraków</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Mistrz-Dom Wiśniewski. Wszelkie prawa zastrzeżone.</div>
+      <div>Strona stworzona przez <a href="#" style="color: rgba(255,255,255,0.6);">stronadlatwojejfirmy.com.pl</a></div>
+    </div>
+  </footer>
+
+  <!-- ===== Mobile floating CTAs ===== -->
+  <div class="mobile-cta">
+    <a href="tel:+48600123456" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Zadzwoń
+    </a>
+    <a href="https://wa.me/48600123456" class="btn btn-whatsapp">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.197.295-.771.964-.944 1.162-.175.195-.349.21-.646.075-.3-.15-1.263-.465-2.403-1.485-.888-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.136-.135.301-.345.451-.523.146-.181.194-.301.297-.496.1-.21.049-.375-.025-.524-.075-.15-.672-1.62-.922-2.206-.24-.584-.487-.51-.672-.51-.172-.015-.371-.015-.571-.015-.2 0-.523.074-.797.359-.273.3-1.045 1.02-1.045 2.475s1.07 2.865 1.219 3.075c.149.195 2.105 3.195 5.1 4.485.714.3 1.27.48 1.704.629.714.227 1.365.195 1.88.121.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345"/></svg>
+      WhatsApp
+    </a>
+  </div>
+
+</body>
+</html>
