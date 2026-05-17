@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Suspense, useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,14 @@ import type { Lead, LeadsResponse } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 
 export default function LeadsPage() {
+  return (
+    <Suspense fallback={<div className="p-4 sm:p-6 lg:p-8 text-ink-soft">Laden…</div>}>
+      <LeadsPageContent />
+    </Suspense>
+  );
+}
+
+function LeadsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -115,7 +123,7 @@ export default function LeadsPage() {
           className="w-full sm:w-56"
         />
 
-        <Select value={status} onValueChange={(v) => updateParams({ status: v })}>
+        <Select value={status} onValueChange={(v) => updateParams({ status: v ?? "" })}>
           <SelectTrigger className="flex-1 sm:flex-none sm:w-40 min-w-[120px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -128,7 +136,7 @@ export default function LeadsPage() {
         </Select>
 
         {data?.availableCities && (
-          <Select value={city || "all"} onValueChange={(v) => updateParams({ city: v === "all" ? "" : v })}>
+          <Select value={city || "all"} onValueChange={(v) => updateParams({ city: !v || v === "all" ? "" : v })}>
             <SelectTrigger className="flex-1 sm:flex-none sm:w-40 min-w-[120px]">
               <SelectValue placeholder="Stad" />
             </SelectTrigger>
@@ -142,7 +150,7 @@ export default function LeadsPage() {
         )}
 
         {data?.availableCategories && (
-          <Select value={category || "all"} onValueChange={(v) => updateParams({ category: v === "all" ? "" : v })}>
+          <Select value={category || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? "" : v })}>
             <SelectTrigger className="flex-1 sm:flex-none sm:w-44 min-w-[140px]">
               <SelectValue placeholder="Categorie" />
             </SelectTrigger>

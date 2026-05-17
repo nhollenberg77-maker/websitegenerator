@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Globe, RefreshCw, Trash2, Sparkles, ExternalLink, Loader2 } from "lucide-react";
@@ -199,20 +199,15 @@ export default function SitesPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
+                    <a
+                      href={`/sites/${lead.place_id}/index.html`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
                     >
-                      <a
-                        href={`/sites/${lead.place_id}/index.html`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                        Bekijk
-                      </a>
-                    </Button>
+                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                      Bekijk
+                    </a>
                     <Button
                       variant="outline"
                       size="sm"

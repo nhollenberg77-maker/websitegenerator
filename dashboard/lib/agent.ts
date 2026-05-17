@@ -1,4 +1,4 @@
-import cron from "node-cron";
+import cron, { type ScheduledTask } from "node-cron";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
@@ -16,7 +16,7 @@ export interface AgentLogEntry {
   message: string;
 }
 
-let cronTask: cron.ScheduledTask | null = null;
+let cronTask: ScheduledTask | null = null;
 let isRunning = false;
 
 function appendLog(entry: AgentLogEntry): void {

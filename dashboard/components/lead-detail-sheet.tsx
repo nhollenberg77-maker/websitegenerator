@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScoreBadge } from "@/components/score-badge";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, Phone, Globe, ExternalLink, Star, Mail, Eye, Send, Loader2, Check } from "lucide-react";
 import type { Lead } from "@/lib/types";
@@ -117,25 +117,27 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
           )}
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" asChild>
+            <a
+              href={`https://www.google.com/maps/place/?q=place_id:${lead.place_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <MapPin className="h-3.5 w-3.5 mr-1.5" />
+              Google Maps
+              <ExternalLink className="h-3 w-3 ml-1.5" />
+            </a>
+            {lead.website && (
               <a
-                href={`https://www.google.com/maps/place/?q=place_id:${lead.place_id}`}
+                href={lead.website}
                 target="_blank"
                 rel="noopener noreferrer"
+                className={buttonVariants({ variant: "outline", size: "sm" })}
               >
-                <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                Google Maps
+                <Globe className="h-3.5 w-3.5 mr-1.5" />
+                Website
                 <ExternalLink className="h-3 w-3 ml-1.5" />
               </a>
-            </Button>
-            {lead.website && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={lead.website} target="_blank" rel="noopener noreferrer">
-                  <Globe className="h-3.5 w-3.5 mr-1.5" />
-                  Website
-                  <ExternalLink className="h-3 w-3 ml-1.5" />
-                </a>
-              </Button>
             )}
           </div>
 
