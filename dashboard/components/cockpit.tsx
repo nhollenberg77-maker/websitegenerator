@@ -105,6 +105,15 @@ export function Cockpit() {
     setStarting(false);
   };
 
+  const [deploying, setDeploying] = useState(false);
+  const handleDeploy = async () => {
+    setDeploying(true);
+    await fetch("/api/deploy", { method: "POST" });
+    await fetchAll();
+    // Keep deploying flag for ~3s so user sees feedback
+    setTimeout(() => setDeploying(false), 3000);
+  };
+
   const smtpConfigured = !!(settings?.smtp?.host && settings?.smtp?.user && settings?.smtp?.pass);
   const citiesConfigured = (settings?.agent?.cities?.length || 0) > 0;
   const categoriesConfigured = (settings?.agent?.categories?.length || 0) > 0;
@@ -156,24 +165,45 @@ export function Cockpit() {
                   : "Vindt nieuwe leads, kwalificeert, verrijkt, bouwt sites en verstuurt mails."}
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={handleRun}
-              disabled={starting || status?.running || !canRun}
-              className="bg-white text-navy hover:bg-white/90 font-semibold px-8 py-6 text-base shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {starting || status?.running ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Bezig…
-                </>
-              ) : (
-                <>
-                  <Play className="h-5 w-5 mr-2" fill="currentColor" />
-                  Start cyclus
-                </>
-              )}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+              <Button
+                size="lg"
+                onClick={handleDeploy}
+                disabled={deploying || status?.running}
+                className="bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium px-5 py-6 text-sm disabled:opacity-50"
+                title="Push huidige sites naar Vercel + voeg ontbrekende subdomeinen toe"
+              >
+                {deploying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Deployen…
+                  </>
+                ) : (
+                  <>
+                    <Globe className="h-4 w-4 mr-2" />
+                    Deploy nu
+                  </>
+                )}
+              </Button>
+              <Button
+                size="lg"
+                onClick={handleRun}
+                disabled={starting || status?.running || !canRun}
+                className="bg-white text-navy hover:bg-white/90 font-semibold px-8 py-6 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {starting || status?.running ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Bezig…
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-5 w-5 mr-2" fill="currentColor" />
+                    Start cyclus
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* ============ PIPELINE STRIP ============ */}

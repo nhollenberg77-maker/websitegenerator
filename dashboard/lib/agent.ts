@@ -6,6 +6,7 @@ import { getSettings, isSmtpConfigured } from "./settings";
 import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenerated } from "./db";
 import { sendLeadEmail } from "./mailer";
 import { generateSiteForLead, siteExists } from "./site-generator";
+import { syncVercelDomains } from "./vercel-domains";
 
 const LOG_PATH = path.resolve(process.cwd(), "agent-log.json");
 const MAX_LOG_ENTRIES = 200;
@@ -49,6 +50,83 @@ export function getAgentStatus(): { running: boolean; enabled: boolean; schedule
     schedule: settings.agent.cronSchedule,
     nextRun: null,
   };
+}
+
+// Run an arbitrary command. cwd defaults to dashboard/.
+function runCmd(
+  cmd: string,
+  args: string[],
+  cwd?: string
+): Promise<{ code: number; stdout: string; stderr: string }> {
+  return new Promise((resolve) => {
+    const proc = spawn(cmd, args, { cwd: cwd || process.cwd(), env: { ...process.env } });
+    let stdout = "";
+    let stderr = "";
+    proc.stdout.on("data", (d: Buffer) => (stdout += d.toString()));
+    proc.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
+    proc.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    proc.on("error", (err) => resolve({ code: 1, stdout, stderr: err.message }));
+  });
+}
+
+// Auto-deploy: git push generated sites + sync Vercel domains.
+// Best-effort — errors are logged but don't abort the cycle.
+export async function autoDeploy(): Promise<void> {
+  const ts = () => new Date().toISOString();
+  const projectRoot = path.resolve(process.cwd(), "..");
+
+  // Only push if there are changes in the relevant paths
+  const status = await runCmd(
+    "git",
+    ["status", "--porcelain", "dashboard/public/sites", "dashboard/public/sub", "leads.db"],
+    projectRoot
+  );
+  if (status.code !== 0) {
+    appendLog({ timestamp: ts(), type: "error", message: `git status faalde: ${status.stderr.slice(0, 120)}` });
+    return;
+  }
+
+  if (status.stdout.trim()) {
+    appendLog({ timestamp: ts(), type: "info", message: "Deploy: git commit + push" });
+    await runCmd("git", ["add", "dashboard/public/sites", "dashboard/public/sub", "leads.db"], projectRoot);
+    const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const commit = await runCmd("git", ["commit", "-m", `auto: pipeline ${stamp}`], projectRoot);
+    if (commit.code !== 0 && !commit.stdout.includes("nothing to commit")) {
+      appendLog({ timestamp: ts(), type: "error", message: `git commit faalde: ${(commit.stderr || commit.stdout).slice(0, 120)}` });
+      return;
+    }
+    const push = await runCmd("git", ["push", "origin", "main"], projectRoot);
+    if (push.code !== 0) {
+      appendLog({ timestamp: ts(), type: "error", message: `git push faalde: ${push.stderr.slice(0, 200)}` });
+      return;
+    }
+    appendLog({ timestamp: ts(), type: "success", message: "Git push ✓ — Vercel build draait" });
+  } else {
+    appendLog({ timestamp: ts(), type: "info", message: "Deploy: geen wijzigingen om te pushen" });
+  }
+
+  // Sync Vercel domains (idempotent — already-configured slugs zijn no-op)
+  try {
+    const result = await syncVercelDomains();
+    if (result.skipped) {
+      appendLog({ timestamp: ts(), type: "info", message: `Vercel sync overgeslagen: ${result.skipReason}` });
+      return;
+    }
+    appendLog({
+      timestamp: ts(),
+      type: "success",
+      message: `Vercel domains: ${result.added.length} nieuw, ${result.existed.length} bestonden, ${result.failed.length} mislukt`,
+    });
+    for (const f of result.failed) {
+      appendLog({ timestamp: ts(), type: "error", message: `  ✗ ${f.domain}: ${f.error.slice(0, 100)}` });
+    }
+  } catch (err) {
+    appendLog({
+      timestamp: ts(),
+      type: "error",
+      message: `Vercel sync faalde: ${err instanceof Error ? err.message : "onbekend"}`,
+    });
+  }
 }
 
 function runScript(scriptPath: string, args: string[]): Promise<{ code: number; stdout: string; stderr: string }> {
@@ -149,6 +227,10 @@ export async function runAgentCycle(): Promise<void> {
     }
     appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Sites: ${generated} gegenereerd, ${genFailed} mislukt` });
   }
+
+  // Deploy (git push + Vercel domain sync) — always run, picks up any new slugs
+  appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Deploy starten…" });
+  await autoDeploy();
 
   // Email
   if (agent.autoEmail && isSmtpConfigured()) {
