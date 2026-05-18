@@ -1,6 +1,9 @@
 // Server-side e-mail extractor voor lead-websites.
 // Probeert: mailto-links, plain-text emails, Cloudflare-decoded email-protection.
+// Fallback (smart guess): info@/kontakt@/biuro@<domein> mits MX records bestaan.
 // Geeft het meest waarschijnlijke contact-adres terug.
+
+import { promises as dns } from "dns";
 
 const EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
 
@@ -117,6 +120,36 @@ function scoreEmail(email: string, domain: string): number {
   // Shorter is usually better
   score -= local.length * 0.5;
   return score;
+}
+
+/**
+ * Smart e-mail guess: verifieert eerst dat het domein MX-records heeft (mail accepteert),
+ * dan returnt het meest aannemelijke contact-adres (info@ → kontakt@ → biuro@).
+ * Gebruik dit alleen als findContactEmail() niets vond.
+ */
+export async function guessEmailForWebsite(websiteUrl: string): Promise<string | null> {
+  let base: URL;
+  try {
+    base = new URL(websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`);
+  } catch {
+    return null;
+  }
+  const domain = base.hostname.toLowerCase().replace(/^www\./, "");
+  if (!domain || !domain.includes(".")) return null;
+
+  // MX-check: bestaan er mail-servers voor dit domein?
+  try {
+    const mx = await dns.resolveMx(domain);
+    if (!mx || mx.length === 0) return null;
+  } catch {
+    return null;
+  }
+
+  // Best-guess prefixes in volgorde van waarschijnlijkheid voor PL bouwbedrijven
+  const candidates = [`info@${domain}`, `kontakt@${domain}`, `biuro@${domain}`, `office@${domain}`];
+  // Returnt de eerste — we kunnen niet checken of localpart bestaat zonder SMTP-probe
+  // (wat ons IP kan rate-limiten). info@ is de veiligste keuze voor PL.
+  return candidates[0];
 }
 
 export async function findContactEmail(websiteUrl: string): Promise<string | null> {

@@ -62,6 +62,7 @@ interface AgentSettings {
   targetReadyLeads: number;
   minGbpScore: number;
   maxCyclesPerRun: number;
+  autoBroadenOnStagnation: boolean;
 }
 
 export default function SettingsPage() {
@@ -70,7 +71,7 @@ export default function SettingsPage() {
   });
   const [agent, setAgent] = useState<AgentSettings>({
     enabled: false, cronSchedule: "0 9 * * *", cities: [], categories: [], radius: 30000, limitPerCategory: 20, autoEmail: true,
-    targetReadyLeads: 5, minGbpScore: 5, maxCyclesPerRun: 3,
+    targetReadyLeads: 5, minGbpScore: 5, maxCyclesPerRun: 3, autoBroadenOnStagnation: true,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -308,6 +309,28 @@ export default function SettingsPage() {
               Een &quot;bruikbare lead&quot; = qualified <strong>én</strong> GBP-score haalt drempel <strong>én</strong> heeft een e-mailadres.
               De agent blijft zoeken (max. {agent.maxCyclesPerRun} {agent.maxCyclesPerRun === 1 ? "ronde" : "rondes"}) totdat hij er {agent.targetReadyLeads} heeft.
             </p>
+
+            <button
+              type="button"
+              onClick={() => setAgent((a) => ({ ...a, autoBroadenOnStagnation: !a.autoBroadenOnStagnation }))}
+              className={`mt-3 flex items-center gap-3 px-3 py-2 rounded-lg border w-full text-left transition-colors ${
+                agent.autoBroadenOnStagnation
+                  ? "bg-navy/5 border-navy/30 hover:bg-navy/10"
+                  : "bg-background-alt border-line hover:border-ink-soft/40"
+              }`}
+            >
+              <div className={`h-5 w-9 rounded-full relative transition-colors shrink-0 ${agent.autoBroadenOnStagnation ? "bg-navy" : "bg-ink-soft/30"}`}>
+                <span className={`absolute top-0.5 h-4 w-4 bg-white rounded-full shadow transition-all ${agent.autoBroadenOnStagnation ? "left-4" : "left-0.5"}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-ink">
+                  Auto-broaden bij stagnatie
+                </p>
+                <p className="text-xs text-ink-soft">
+                  Als een ronde 0 nieuwe bruikbare leads oplevert, voegt de agent automatisch een ongebruikte categorie of stad toe.
+                </p>
+              </div>
+            </button>
           </SettingsSection>
 
           {/* SCHEMA */}

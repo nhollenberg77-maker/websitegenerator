@@ -27,7 +27,7 @@ import { CATEGORIES } from "@/lib/types";
 
 const DEFAULT_STATUS = "qualified";
 const DEFAULT_MIN_GBP = "5";
-const DEFAULT_HAS_EMAIL = "yes";
+const DEFAULT_HAS_EMAIL = "any";
 const DEFAULT_PER_PAGE = "5";
 
 export default function LeadsPage() {
@@ -339,32 +339,39 @@ function LeadsPageContent() {
           />
         </div>
 
-        {data && !loading && (
-          <div className="mt-4 pt-4 border-t border-line text-sm">
-            {data.total >= requestedCount ? (
-              <p className="text-ink-soft">
-                <span className="font-medium text-ink">{Math.min(data.total, requestedCount)}</span> leads
-                {hasEmail === "yes" ? " klaar om te mailen" : " gevonden"} — uit {data.total} matchende leads
-              </p>
-            ) : data.total > 0 ? (
-              <p className="text-warning flex items-start gap-1.5">
-                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>
-                  Slechts <span className="font-medium">{data.total}</span> van je gevraagde {requestedCount} leads voldoen.
-                  Run <span className="font-medium">Start cyclus</span> in de cockpit om meer leads te vinden,
-                  of versoepel je filter.
-                </span>
-              </p>
-            ) : (
-              <p className="text-ink-soft flex items-start gap-1.5">
-                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>
-                  Geen leads matchen dit filter. Versoepel de criteria of run <span className="font-medium">Start cyclus</span>.
-                </span>
-              </p>
-            )}
-          </div>
-        )}
+        {data && !loading && (() => {
+          const withEmail = data.leads.filter((l) => l.contact_email).length;
+          const withoutEmail = data.leads.length - withEmail;
+          return (
+            <div className="mt-4 pt-4 border-t border-line text-sm">
+              {data.total >= requestedCount ? (
+                <p className="text-ink-soft">
+                  <span className="font-medium text-ink">{Math.min(data.total, requestedCount)}</span> leads getoond uit {data.total} matchende
+                  {withoutEmail > 0 && (
+                    <span> · <span className="text-success font-medium">{withEmail} met e-mail</span> · <span className="text-warning">{withoutEmail} zonder</span></span>
+                  )}
+                </p>
+              ) : data.total > 0 ? (
+                <p className="text-warning flex items-start gap-1.5">
+                  <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>
+                    Slechts <span className="font-medium">{data.total}</span> van je gevraagde {requestedCount} leads voldoen
+                    {withoutEmail > 0 && <> ({withEmail} met e-mail, {withoutEmail} zonder)</>}.
+                    Run <span className="font-medium">Start cyclus</span> in de cockpit om meer leads te vinden,
+                    of versoepel je filter.
+                  </span>
+                </p>
+              ) : (
+                <p className="text-ink-soft flex items-start gap-1.5">
+                  <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>
+                    Geen leads matchen dit filter. Versoepel de criteria of run <span className="font-medium">Start cyclus</span>.
+                  </span>
+                </p>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       <div className="bg-card border border-line rounded-lg overflow-x-auto">

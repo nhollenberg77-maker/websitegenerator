@@ -7,7 +7,7 @@ import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenera
 import { sendLeadEmail } from "./mailer";
 import { generateSiteForLead, siteExists } from "./site-generator";
 import { syncVercelDomains } from "./vercel-domains";
-import { findContactEmail } from "./email-scraper";
+import { findContactEmail, guessEmailForWebsite } from "./email-scraper";
 import { generateScreenshot, hasScreenshot, getScreenshotEmailUrl, waitForUrl } from "./screenshot";
 import { isAiConfigured } from "./ai";
 import { curatePhotosForLead } from "./ai-photo-curator";
@@ -176,6 +176,14 @@ export async function runAgentCycle(): Promise<void> {
   const qualifyScript = path.resolve(process.cwd(), process.env.QUALIFY_SCRIPT || "../qualify.py");
   const dbPath = path.resolve(process.cwd(), process.env.DB_PATH || "../leads.db");
 
+  // Fallback-pools voor auto-broaden bij stagnatie
+  const FALLBACK_CATEGORIES = ["plumber", "electrician", "roofing_contractor", "painter", "general_contractor"];
+  const FALLBACK_CITIES = ["krakow", "warszawa", "wroclaw", "poznan", "gdansk", "lodz", "katowice", "lublin"];
+
+  // Werkkopieën van settings die de cycle mag verbreden
+  const activeCities = [...agent.cities];
+  const activeCategories = [...agent.categories];
+
   for (let round = 1; round <= maxCycles; round++) {
     const readyBefore = countReadyLeads(minGbp);
     if (readyBefore >= target) {
@@ -183,14 +191,14 @@ export async function runAgentCycle(): Promise<void> {
       break;
     }
 
-    appendLog({ timestamp: ts(), type: "info", message: `Ronde ${round}/${maxCycles} — nu ${readyBefore}/${target} bruikbare leads, op zoek naar meer` });
+    appendLog({ timestamp: ts(), type: "info", message: `Ronde ${round}/${maxCycles} — nu ${readyBefore}/${target} bruikbare leads, op zoek naar meer (${activeCities.length} ${activeCities.length === 1 ? "stad" : "steden"} × ${activeCategories.length} ${activeCategories.length === 1 ? "categorie" : "categorieën"})` });
 
     // Discovery per stad
-    for (const city of agent.cities) {
+    for (const city of activeCities) {
       appendLog({ timestamp: ts(), type: "info", message: `Discovery: ${city}` });
       const args = [
         "--city", city,
-        "--categories", ...agent.categories,
+        "--categories", ...activeCategories,
         "--radius", String(agent.radius),
         "--limit", String(agent.limitPerCategory),
         "--db", dbPath,
@@ -216,7 +224,7 @@ export async function runAgentCycle(): Promise<void> {
       appendLog({ timestamp: ts(), type: "success", message: `Qualification klaar: ${qualCount} qualified` });
     }
 
-    // E-mail scraping voor nieuw-gequalificeerde leads zonder e-mail
+    // E-mail scraping (1) — HTML scrapen van de site
     const needScrape = getLeadsNeedingEmailScrape();
     if (needScrape.length > 0) {
       appendLog({ timestamp: ts(), type: "info", message: `E-mail zoeken op ${needScrape.length} websites…` });
@@ -235,7 +243,25 @@ export async function runAgentCycle(): Promise<void> {
         }
       }
       await Promise.all(Array.from({ length: Math.min(concurrency, needScrape.length) }, scrapeWorker));
-      appendLog({ timestamp: ts(), type: "success", message: `E-mails gevonden: ${scrapedFound} van ${needScrape.length} sites` });
+      appendLog({ timestamp: ts(), type: "success", message: `E-mails uit HTML: ${scrapedFound} van ${needScrape.length} sites` });
+    }
+
+    // E-mail guess (2) — voor leads zonder gevonden mail: info@/kontakt@/biuro@ + MX-check
+    const stillNeed = getLeadsNeedingEmailScrape();
+    if (stillNeed.length > 0) {
+      appendLog({ timestamp: ts(), type: "info", message: `Smart e-mail-guess voor ${stillNeed.length} resterende leads…` });
+      let guessed = 0;
+      for (const lead of stillNeed) {
+        if (!lead.website) continue;
+        try {
+          const guess = await guessEmailForWebsite(lead.website);
+          if (guess) {
+            setLeadContactEmail(lead.place_id, guess);
+            guessed++;
+          }
+        } catch { /* ignore */ }
+      }
+      appendLog({ timestamp: ts(), type: "success", message: `Smart guess: ${guessed} van ${stillNeed.length} ingevuld (info@<domein> waar MX bestaat)` });
     }
 
     const readyAfter = countReadyLeads(minGbp);
@@ -245,12 +271,26 @@ export async function runAgentCycle(): Promise<void> {
       appendLog({ timestamp: ts(), type: "success", message: `Doel bereikt na ${round} ${round === 1 ? "ronde" : "rondes"}` });
       break;
     }
-    if (readyAfter === readyBefore && round < maxCycles) {
-      appendLog({ timestamp: ts(), type: "info", message: "Geen nieuwe bruikbare leads in deze ronde — verdere rondes overgeslagen. Voeg steden of categorieën toe voor meer." });
-      break;
+
+    // Auto-broaden bij stagnatie: voeg een ongebruikte categorie/stad toe voor de volgende ronde
+    if (agent.autoBroadenOnStagnation && round < maxCycles && readyAfter < target) {
+      const newCat = FALLBACK_CATEGORIES.find((c) => !activeCategories.includes(c));
+      if (newCat) {
+        activeCategories.push(newCat);
+        appendLog({ timestamp: ts(), type: "info", message: `🔎 Auto-broaden: categorie '${newCat}' toegevoegd voor ronde ${round + 1}` });
+      } else {
+        const newCity = FALLBACK_CITIES.find((c) => !activeCities.includes(c));
+        if (newCity) {
+          activeCities.push(newCity);
+          appendLog({ timestamp: ts(), type: "info", message: `🔎 Auto-broaden: stad '${newCity}' toegevoegd voor ronde ${round + 1}` });
+        } else {
+          appendLog({ timestamp: ts(), type: "info", message: `Geen extra steden/categorieën meer om toe te voegen — cycle gaat door met huidige set.` });
+        }
+      }
     }
+
     if (round === maxCycles && readyAfter < target) {
-      appendLog({ timestamp: ts(), type: "info", message: `Max. rondes bereikt. ${readyAfter}/${target} gehaald — voeg steden/categorieën toe of verhoog max. rondes.` });
+      appendLog({ timestamp: ts(), type: "info", message: `Max. rondes bereikt. ${readyAfter}/${target} gehaald — verhoog max. rondes of voeg steden/categorieën toe.` });
     }
   }
 

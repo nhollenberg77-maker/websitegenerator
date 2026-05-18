@@ -24,6 +24,7 @@ export interface AgentSettings {
   targetReadyLeads: number;
   minGbpScore: number;
   maxCyclesPerRun: number;
+  autoBroadenOnStagnation: boolean;
 }
 
 export interface AppSettings {
@@ -52,6 +53,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     targetReadyLeads: 5,
     minGbpScore: 5,
     maxCyclesPerRun: 3,
+    autoBroadenOnStagnation: true,
   },
 };
 
