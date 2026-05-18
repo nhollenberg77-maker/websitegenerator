@@ -19,10 +19,25 @@ function getVariant(lead: Lead): TemplateVariant {
 
 type TemplateStyle = "editorial" | "service" | "established";
 
+// Trefwoorden die wijzen op een echte 24/7 noodservice — alleen die krijgen
+// het phone-first urgency-template. Een normale loodgieter/elektricien zonder
+// deze signalen wordt afspraak-gebaseerd verkocht via het editorial-template.
+const EMERGENCY_KEYWORDS = [
+  "24h", "24/7", "pogotowie", "awari", "całodobow", "całodobow",
+  "interwencj", "emergency", "non-stop", "nonstop", " noc", "noc ",
+];
+
+function isEmergencyService(lead: Lead): boolean {
+  const haystack = `${lead.name || ""} ${lead.types || ""}`.toLowerCase();
+  return EMERGENCY_KEYWORDS.some((k) => haystack.includes(k));
+}
+
 function getTemplateStyle(lead: Lead): TemplateStyle {
-  const cat = lead.category_query || "";
-  if (cat === "plumber" || cat === "electrician") return "service";
-  if (cat === "roofing_contractor") return "established";
+  // Echte noodservice (24h locksmith/hydraulik/elektryk pogotowie) → phone-first
+  if (isEmergencyService(lead)) return "service";
+  // Dakdekkers → established (traditioneel, gevestigd gevoel)
+  if (lead.category_query === "roofing_contractor") return "established";
+  // Default: editorial — nette site die de service verkoopt
   return "editorial";
 }
 

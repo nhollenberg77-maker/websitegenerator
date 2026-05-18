@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getLeadById, getLeadsWithSite, getQualifiedLeadsWithoutSite, markSiteGenerated } from "@/lib/db";
-import { generateSiteForLead, siteExists, deleteSite, listGeneratedSites } from "@/lib/site-generator";
+import { generateSiteForLead, deleteSite, listGeneratedSites } from "@/lib/site-generator";
+import { deleteScreenshot } from "@/lib/screenshot";
 
 export async function GET() {
   try {
@@ -39,6 +40,29 @@ export async function POST(request: NextRequest) {
       }
 
       return Response.json({ ok: true, generated: results.length, results });
+    }
+
+    if (action === "regenerate-all") {
+      // Regenereer ALLE qualified leads (overschrijft bestaande sites + screenshots).
+      // Gebruik dit wanneer site-generator-logica/template is gewijzigd.
+      const { getLeads } = await import("@/lib/db");
+      const allQualified = getLeads({
+        page: 1, perPage: 500,
+        cities: [], categories: [],
+        status: "qualified", search: "",
+        sortBy: "qualified_at", sortDir: "desc",
+        minGbp: null, hasEmail: null,
+      }).leads;
+
+      const results: { placeId: string; name: string; url: string }[] = [];
+      for (const lead of allQualified) {
+        deleteSite(lead.place_id);
+        deleteScreenshot(lead.place_id);
+        const r = generateSiteForLead(lead);
+        markSiteGenerated(lead.place_id);
+        results.push({ placeId: lead.place_id, name: lead.name, url: r.url });
+      }
+      return Response.json({ ok: true, regenerated: results.length, results });
     }
 
     if (action === "regenerate" && placeId) {
