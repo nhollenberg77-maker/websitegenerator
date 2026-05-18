@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import type { Lead, LeadReview } from "./types";
+import { applyPhotoCuration } from "./ai-photo-curator";
 import {
   CATEGORY_CONTENT,
   CATEGORY_VARIANT,
@@ -104,7 +105,7 @@ export function generateSiteHtml(lead: Lead): string {
   const ratingCount = lead.rating_count ?? 0;
   const categoryPl = CATEGORY_PL[lead.category_query || ""] || "usługi budowlane";
 
-  const photoUrls: string[] = parseJson(lead.photo_urls, []);
+  const photoUrls: string[] = applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish);
   const reviews: LeadReview[] = parseJson<LeadReview[]>(lead.reviews_json, [])
     .filter((r) => r.rating >= 4 && r.text && r.text.trim().length >= 20)
     .map((r) => {
@@ -845,7 +846,7 @@ function generateServiceSiteHtml(lead: Lead): string {
       return true;
     });
 
-  const photoUrls: string[] = parseJson(lead.photo_urls, []);
+  const photoUrls: string[] = applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish);
   const showGallery = photoUrls.length >= 3;
   const heroImg = photoUrls[0] || "";
 

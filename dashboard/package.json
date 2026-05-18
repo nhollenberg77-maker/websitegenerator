@@ -10,6 +10,7 @@
     "sync-domains": "node --env-file=.env scripts/sync-vercel-domains.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
     "@base-ui/react": "^1.4.1",
     "better-sqlite3": "^12.10.0",
     "class-variance-authority": "^0.7.1",

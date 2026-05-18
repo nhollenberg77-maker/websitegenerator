@@ -210,6 +210,18 @@ export function setLeadContactEmail(placeId: string, email: string | null): void
   db.close();
 }
 
+export function setLeadAiPolish(placeId: string, json: string | null): void {
+  const db = getDb(false);
+  db.prepare("UPDATE leads SET ai_polish = ? WHERE place_id = ?").run(json, placeId);
+  db.close();
+}
+
+export function setLeadAiEmail(placeId: string, json: string | null): void {
+  const db = getDb(false);
+  db.prepare("UPDATE leads SET ai_email = ? WHERE place_id = ?").run(json, placeId);
+  db.close();
+}
+
 export function countReadyLeads(minGbp: number): number {
   const db = getDb();
   const row = db

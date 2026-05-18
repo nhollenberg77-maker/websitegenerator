@@ -3,12 +3,17 @@ import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
 import { getSettings, isSmtpConfigured } from "./settings";
-import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenerated, countReadyLeads, getLeadsNeedingEmailScrape, setLeadContactEmail } from "./db";
+import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenerated, countReadyLeads, getLeadsNeedingEmailScrape, setLeadContactEmail, setLeadAiPolish, setLeadAiEmail, getLeadById } from "./db";
 import { sendLeadEmail } from "./mailer";
 import { generateSiteForLead, siteExists } from "./site-generator";
 import { syncVercelDomains } from "./vercel-domains";
 import { findContactEmail } from "./email-scraper";
 import { generateScreenshot, hasScreenshot, getScreenshotEmailUrl, waitForUrl } from "./screenshot";
+import { isAiConfigured } from "./ai";
+import { curatePhotosForLead } from "./ai-photo-curator";
+import { personalizeEmailForLead } from "./ai-email-personalizer";
+import { reviewEmailForLead } from "./ai-email-reviewer";
+import { generateEmailHtml, generateEmailSubject } from "./email-template";
 
 const LOG_PATH = path.resolve(process.cwd(), "agent-log.json");
 const MAX_LOG_ENTRIES = 200;
@@ -261,10 +266,35 @@ export async function runAgentCycle(): Promise<void> {
     appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Enrichment klaar: ${enrichCount} leads verrijkt` });
   }
 
-  // Site generation
-  const leadsWithoutSite = getQualifiedLeadsWithoutSite();
+  // AI Foto-curatie (vóór site-gen, zodat sites de gecureerde foto's gebruiken)
+  const aiOn = isAiConfigured();
+  if (aiOn) {
+    const needsCuration = getQualifiedLeadsWithoutSite().filter((l) => l.photo_urls && !l.ai_polish);
+    if (needsCuration.length > 0) {
+      appendLog({ timestamp: ts(), type: "info", message: `AI foto-curatie voor ${needsCuration.length} leads…` });
+      let cured = 0, curFail = 0;
+      for (const lead of needsCuration) {
+        try {
+          const curation = await curatePhotosForLead(lead);
+          if (curation) {
+            setLeadAiPolish(lead.place_id, JSON.stringify(curation));
+            cured++;
+          } else {
+            curFail++;
+          }
+        } catch (err) {
+          curFail++;
+          appendLog({ timestamp: ts(), type: "error", message: `Foto-curatie fout (${lead.name}): ${err instanceof Error ? err.message : "onbekend"}` });
+        }
+      }
+      appendLog({ timestamp: ts(), type: "success", message: `Foto-curatie: ${cured} klaar, ${curFail} mislukt` });
+    }
+  }
+
+  // Site generation (gebruikt nu ai_polish om foto's te ordenen)
+  const leadsWithoutSite = getQualifiedLeadsWithoutSite().map((l) => getLeadById(l.place_id) || l);
   if (leadsWithoutSite.length > 0) {
-    appendLog({ timestamp: new Date().toISOString(), type: "info", message: `${leadsWithoutSite.length} qualified leads zonder site` });
+    appendLog({ timestamp: ts(), type: "info", message: `${leadsWithoutSite.length} qualified leads zonder site` });
     let generated = 0;
     let genFailed = 0;
     for (const lead of leadsWithoutSite) {
@@ -274,10 +304,10 @@ export async function runAgentCycle(): Promise<void> {
         generated++;
       } catch (err) {
         genFailed++;
-        appendLog({ timestamp: new Date().toISOString(), type: "error", message: `Site fout voor ${lead.name}: ${err instanceof Error ? err.message : "onbekend"}` });
+        appendLog({ timestamp: ts(), type: "error", message: `Site fout voor ${lead.name}: ${err instanceof Error ? err.message : "onbekend"}` });
       }
     }
-    appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Sites: ${generated} gegenereerd, ${genFailed} mislukt` });
+    appendLog({ timestamp: ts(), type: "success", message: `Sites: ${generated} gegenereerd, ${genFailed} mislukt` });
   }
 
   // Screenshot generation — voor alle qualified leads met site maar zonder screenshot
@@ -304,32 +334,77 @@ export async function runAgentCycle(): Promise<void> {
   // Email
   if (agent.autoEmail && isSmtpConfigured()) {
     const leads = getUnmailedQualifiedLeads();
-    appendLog({ timestamp: new Date().toISOString(), type: "info", message: `${leads.length} qualified leads nog niet gemaild` });
+    appendLog({ timestamp: ts(), type: "info", message: `${leads.length} qualified leads nog niet gemaild` });
+
+    // AI Email-personalisatie voor leads zonder ai_email
+    if (aiOn) {
+      const needsPersonalize = leads.filter((l) => !l.ai_email);
+      if (needsPersonalize.length > 0) {
+        appendLog({ timestamp: ts(), type: "info", message: `AI email-personalisatie voor ${needsPersonalize.length} leads…` });
+        let perFail = 0;
+        for (const lead of needsPersonalize) {
+          try {
+            const personalization = await personalizeEmailForLead(lead);
+            if (personalization) {
+              setLeadAiEmail(lead.place_id, JSON.stringify(personalization));
+            } else { perFail++; }
+          } catch (err) {
+            perFail++;
+            appendLog({ timestamp: ts(), type: "error", message: `Personalisatie fout (${lead.name}): ${err instanceof Error ? err.message : "onbekend"}` });
+          }
+        }
+        appendLog({ timestamp: ts(), type: "success", message: `Personalisatie: ${needsPersonalize.length - perFail}/${needsPersonalize.length} klaar` });
+      }
+    }
 
     let sent = 0;
     let failed = 0;
     let withScreenshot = 0;
+    let reviewWarnings = 0;
     for (const lead of leads) {
-      const siteUrl = siteExists(lead.place_id)
-        ? `/sites/${lead.place_id}/index.html`
+      // Refetch om de nieuwste ai_email/ai_polish te krijgen
+      const fresh = getLeadById(lead.place_id) || lead;
+      const siteUrl = siteExists(fresh.place_id)
+        ? `/sites/${fresh.place_id}/index.html`
         : undefined;
-      let screenshotUrl = getScreenshotEmailUrl(lead.place_id, lead.slug);
+      let screenshotUrl = getScreenshotEmailUrl(fresh.place_id, fresh.slug);
       if (screenshotUrl) {
         const live = await waitForUrl(screenshotUrl, 45_000);
         if (!live) screenshotUrl = null;
         else withScreenshot++;
       }
-      const result = await sendLeadEmail(lead, settings.smtp, siteUrl, screenshotUrl);
+
+      // AI Email-review vóór versturen
+      if (aiOn) {
+        try {
+          const subject = generateEmailSubject(fresh);
+          const html = generateEmailHtml(fresh, siteUrl, screenshotUrl);
+          const emailReview = await reviewEmailForLead(fresh, subject, html);
+          if (emailReview) {
+            if (!emailReview.pass) {
+              reviewWarnings++;
+              appendLog({ timestamp: ts(), type: "info", message: `⚠ Email-review ${fresh.name}: ${emailReview.score}/10 — versturen voortgezet (logging-only)` });
+              for (const issue of emailReview.issues.filter((i) => i.severity === "high").slice(0, 2)) {
+                appendLog({ timestamp: ts(), type: "info", message: `  · ${issue.description}` });
+              }
+            }
+          }
+        } catch (err) {
+          appendLog({ timestamp: ts(), type: "error", message: `Email-review fout (${fresh.name}): ${err instanceof Error ? err.message : "onbekend"}` });
+        }
+      }
+
+      const result = await sendLeadEmail(fresh, settings.smtp, siteUrl, screenshotUrl);
       if (result.ok) {
         sent++;
       } else {
         failed++;
         if (result.error !== "No email address found for lead") {
-          appendLog({ timestamp: new Date().toISOString(), type: "error", message: `Mail fout voor ${lead.name}: ${result.error}` });
+          appendLog({ timestamp: ts(), type: "error", message: `Mail fout voor ${fresh.name}: ${result.error}` });
         }
       }
     }
-    appendLog({ timestamp: new Date().toISOString(), type: "success", message: `E-mail: ${sent} verstuurd (${withScreenshot} met screenshot), ${failed} mislukt` });
+    appendLog({ timestamp: ts(), type: "success", message: `E-mail: ${sent} verstuurd (${withScreenshot} met screenshot, ${reviewWarnings} met review-warning), ${failed} mislukt` });
   } else if (agent.autoEmail) {
     appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Auto-email overgeslagen: SMTP niet geconfigureerd" });
   }

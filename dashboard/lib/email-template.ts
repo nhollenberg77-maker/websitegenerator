@@ -61,19 +61,41 @@ export function generateEmailSubject(lead: Lead): string {
   return `Strona dla ${lead.name} — bezpłatny szkic`;
 }
 
+interface AiEmailData {
+  branza_pl?: string;
+  nisza_pl?: string;
+  hero_title?: string;
+  hero_sub?: string;
+  hero_cta?: string;
+  firma_krotka?: string;
+}
+
+function parseAiEmail(lead: Lead): AiEmailData {
+  if (!lead.ai_email) return {};
+  try {
+    return JSON.parse(lead.ai_email) as AiEmailData;
+  } catch {
+    return {};
+  }
+}
+
 export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: string | null): string {
+  const ai = parseAiEmail(lead);
+
   const firma = esc(lead.name);
-  const firmaKrotka = esc(shortName(lead.name));
+  const firmaKrotka = esc(ai.firma_krotka || shortName(lead.name));
   const miasto = esc(lead.city_query || "Państwa miasta");
-  const nisza = NISZA_PL[lead.category_query || ""] || "usługach budowlanych";
-  const branza = BRANZA_PL[lead.category_query || ""] || "budowlanych";
+  const nisza = ai.nisza_pl || NISZA_PL[lead.category_query || ""] || "usługach budowlanych";
+  const branza = ai.branza_pl || BRANZA_PL[lead.category_query || ""] || "budowlanych";
 
   const linkDomena = esc(domainFromSiteUrl(siteUrl, lead.slug));
   const linkPodglad = esc(previewUrl(siteUrl, lead.slug));
 
-  const heroTitle = esc(`Profesjonalne ${nisza} w ${lead.city_query || "Polsce"}`);
-  const heroSub = esc(`${lead.name} — jakość, na której można polegać`);
-  const heroCta = "Zobacz ofertę";
+  const heroTitle = esc(ai.hero_title || `Profesjonalne ${nisza} w ${lead.city_query || "Polsce"}`);
+  const heroSub = esc(ai.hero_sub || `${lead.name} — jakość, na której można polegać`);
+  const heroCta = esc(ai.hero_cta || "Zobacz ofertę");
+  const niszaEsc = esc(nisza);
+  const branzaEsc = esc(branza);
 
   const replyMailto = `mailto:${REPLY_TO}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
 
@@ -167,8 +189,8 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: 
             <p style="margin:0 0 18px 0;font-weight:500;">Dzień dobry,</p>
 
             <p style="margin:0 0 18px 0;">
-              Trafiliśmy na <strong style="font-weight:600;">${firma}</strong> podczas przeglądania firm ${branza} w ${miasto}.
-              Zwróciła naszą uwagę Wasza specjalizacja w ${nisza} — to obszar, w którym
+              Trafiliśmy na <strong style="font-weight:600;">${firma}</strong> podczas przeglądania firm ${branzaEsc} w ${miasto}.
+              Zwróciła naszą uwagę Wasza specjalizacja w ${niszaEsc} — to obszar, w którym
               liczy się precyzja i zaufanie klientów. Pomyśleliśmy, że dobrze zaprojektowana
               strona może to zaufanie pokazać już od pierwszej wizyty.
             </p>
