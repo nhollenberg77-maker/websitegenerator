@@ -61,7 +61,7 @@ export function generateEmailSubject(lead: Lead): string {
   return `Strona dla ${lead.name} — bezpłatny szkic`;
 }
 
-export function generateEmailHtml(lead: Lead, siteUrl?: string): string {
+export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: string | null): string {
   const firma = esc(lead.name);
   const firmaKrotka = esc(shortName(lead.name));
   const miasto = esc(lead.city_query || "Państwa miasta");
@@ -78,6 +78,49 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string): string {
   const replyMailto = `mailto:${REPLY_TO}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
 
   const preheader = `Przygotowaliśmy bezpłatny szkic strony dla ${lead.name} — wystarczy spojrzeć, bez zobowiązań.`;
+
+  // Preview-block: als we een echte screenshot hebben, embedden we die.
+  // Anders fallback naar de tekst-gebaseerde faux-browser preview.
+  const previewBlock = screenshotUrl
+    ? `<tr>
+                <td style="background:#f7f5ef;padding:8px 12px;border-bottom:1px solid #efece4;font-size:0;line-height:0;">
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;">&nbsp;</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0;background:#ffffff;">
+                  <a href="${linkPodglad}" style="display:block;line-height:0;text-decoration:none;">
+                    <img src="${esc(screenshotUrl)}" alt="Voorbeeld van strona ${firma}" width="600" style="display:block;width:100%;max-width:600px;height:auto;border:0;" />
+                  </a>
+                </td>
+              </tr>`
+    : `<tr>
+                <td style="background:#f7f5ef;padding:8px 12px;border-bottom:1px solid #efece4;font-size:0;line-height:0;">
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
+                  <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;">&nbsp;</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px 22px;background:linear-gradient(180deg,#f3efe7 0%,#e7e1d4 100%);">
+                  <div style="font-size:10px;letter-spacing:0.08em;font-weight:600;color:#1c1d1a;text-transform:uppercase;">${firmaKrotka}</div>
+                  <div style="margin-top:14px;font-size:22px;line-height:1.15;font-weight:600;letter-spacing:-0.02em;color:#1c1d1a;max-width:80%;">
+                    ${heroTitle}
+                  </div>
+                  <div style="margin-top:8px;font-size:11px;line-height:1.5;color:#4a4b46;max-width:70%;">
+                    ${heroSub}
+                  </div>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;">
+                    <tr>
+                      <td style="background:#2a2a2a;color:#ffffff;font-size:10px;font-weight:600;letter-spacing:0.04em;padding:6px 10px;border-radius:4px;">
+                        ${heroCta} →
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>`;
 
   return `<!DOCTYPE html>
 <html lang="pl">
@@ -137,44 +180,14 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string): string {
 
             <!-- PREVIEW CARD -->
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 28px 0;border:1px solid #e6e2d8;border-radius:10px;background:#ffffff;overflow:hidden;">
+              ${previewBlock}
               <tr>
-                <td style="background:#f3efe7;padding:0;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                      <td style="padding:8px 12px;background:#f7f5ef;border-bottom:1px solid #efece4;font-size:0;line-height:0;">
-                        <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
-                        <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;margin-right:4px;">&nbsp;</span>
-                        <span style="display:inline-block;width:7px;height:7px;background:#d9d3c5;border-radius:50%;">&nbsp;</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding:24px 22px;background:linear-gradient(180deg,#f3efe7 0%,#e7e1d4 100%);">
-                        <div style="font-size:10px;letter-spacing:0.08em;font-weight:600;color:#1c1d1a;text-transform:uppercase;">${firmaKrotka}</div>
-                        <div style="margin-top:14px;font-size:22px;line-height:1.15;font-weight:600;letter-spacing:-0.02em;color:#1c1d1a;max-width:80%;">
-                          ${heroTitle}
-                        </div>
-                        <div style="margin-top:8px;font-size:11px;line-height:1.5;color:#4a4b46;max-width:70%;">
-                          ${heroSub}
-                        </div>
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;">
-                          <tr>
-                            <td style="background:#2a2a2a;color:#ffffff;font-size:10px;font-weight:600;letter-spacing:0.04em;padding:6px 10px;border-radius:4px;">
-                              ${heroCta} →
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:14px 18px;">
+                <td style="padding:14px 18px;background:#ffffff;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
                       <td style="font-size:11px;color:#7d7e78;letter-spacing:0.04em;text-transform:uppercase;padding-bottom:2px;">Podgląd strony</td>
-                      <td align="right" rowspan="2" style="vertical-align:middle;">
-                        <a href="${linkPodglad}" style="display:inline-block;color:#2a2a2a;font-weight:600;font-size:13px;text-decoration:none;padding:8px 12px;border:1px solid #2a2a2a;border-radius:6px;background:#ffffff;">
+                      <td align="right" rowspan="2" style="vertical-align:middle;white-space:nowrap;">
+                        <a href="${linkPodglad}" style="display:inline-block;color:#2a2a2a;font-weight:600;font-size:13px;text-decoration:none;padding:8px 12px;border:1px solid #2a2a2a;border-radius:6px;background:#ffffff;white-space:nowrap;">
                           Zobacz na żywo →
                         </a>
                       </td>

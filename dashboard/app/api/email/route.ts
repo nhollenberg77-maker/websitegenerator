@@ -1,8 +1,11 @@
-import { getLeadById, setLeadContactEmail, getLeadsNeedingEmailScrape } from "@/lib/db";
+import { getLeadById, setLeadContactEmail, getLeadsNeedingEmailScrape, ensureSlugForLead } from "@/lib/db";
 import { getSettings, isSmtpConfigured } from "@/lib/settings";
 import { sendEmailToAddress } from "@/lib/mailer";
 import { generateEmailHtml, generateEmailSubject } from "@/lib/email-template";
 import { findContactEmail } from "@/lib/email-scraper";
+import { generateScreenshot, hasScreenshot, getScreenshotEmailUrl, getScreenshotLocalUrl, waitForUrl } from "@/lib/screenshot";
+import { generateSiteForLead, siteExists } from "@/lib/site-generator";
+import { autoDeploy } from "@/lib/agent";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -14,9 +17,39 @@ export async function POST(request: Request) {
     const lead = getLeadById(body.placeId);
     if (!lead) return Response.json({ error: "Lead not found" }, { status: 404 });
 
+    // Zorg dat er een gegenereerde site is (anders kan screenshot niet)
+    if (!siteExists(lead.place_id)) {
+      try {
+        generateSiteForLead(lead);
+      } catch {
+        // Site-gen fout: preview blijft mogelijk zonder screenshot
+      }
+    }
+
+    // Zorg dat er een slug is (nodig voor screenshot-URL)
+    let slug = lead.slug;
+    if (!slug) {
+      try { slug = ensureSlugForLead(lead.place_id); } catch { /* ignore */ }
+    }
+
+    // Genereer screenshot on-demand als hij nog niet bestaat
+    if (!hasScreenshot(lead.place_id)) {
+      try {
+        await generateScreenshot(lead.place_id);
+      } catch {
+        // Screenshot-fout: template valt terug op faux preview
+      }
+    }
+
+    // Voor preview-iframe: lokale URL (werkt direct, geen deploy nodig)
+    const localUrl = getScreenshotLocalUrl(lead.place_id);
+    // Voor metadata: ook de live URL meegeven (waar de echte mail naar wijst)
+    const emailUrl = getScreenshotEmailUrl(lead.place_id, slug);
+
     return Response.json({
       subject: generateEmailSubject(lead),
-      html: generateEmailHtml(lead),
+      html: generateEmailHtml(lead, undefined, localUrl),
+      screenshotUrl: emailUrl,
     });
   }
 
@@ -78,7 +111,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "SMTP niet geconfigureerd" }, { status: 400 });
     }
 
-    const lead = getLeadById(body.placeId);
+    let lead = getLeadById(body.placeId);
     if (!lead) return Response.json({ error: "Lead not found" }, { status: 404 });
 
     const recipient = body.action === "send-saved" ? lead.contact_email : body.toEmail;
@@ -89,9 +122,39 @@ export async function POST(request: Request) {
       return Response.json({ error: "Ongeldig e-mailadres" }, { status: 400 });
     }
 
+    // 1. Zorg dat site bestaat
+    if (!siteExists(lead.place_id)) {
+      try { generateSiteForLead(lead); } catch { /* fall through */ }
+    }
+    // 2. Zorg dat slug bestaat
+    if (!lead.slug) {
+      try { ensureSlugForLead(lead.place_id); lead = getLeadById(body.placeId) || lead; } catch { /* ignore */ }
+    }
+    // 3. Genereer screenshot als die ontbreekt
+    if (!hasScreenshot(lead.place_id)) {
+      try { await generateScreenshot(lead.place_id); } catch { /* fall through */ }
+    }
+
+    let screenshotUrl: string | null = getScreenshotEmailUrl(lead.place_id, lead.slug);
+
+    // 4. Deploy (idempotent — pusht alleen als er wijzigingen zijn)
+    //    en wacht tot screenshot publiek live is op het subdomain
+    if (screenshotUrl) {
+      try {
+        await autoDeploy();
+        const live = await waitForUrl(screenshotUrl, 60_000);
+        if (!live) {
+          // Screenshot niet binnen 60s live → laat 'm weg ipv broken image
+          screenshotUrl = null;
+        }
+      } catch {
+        screenshotUrl = null;
+      }
+    }
+
     const settings = getSettings();
-    const result = await sendEmailToAddress(lead, recipient, settings.smtp);
-    return Response.json(result);
+    const result = await sendEmailToAddress(lead, recipient, settings.smtp, undefined, screenshotUrl);
+    return Response.json({ ...result, screenshotEmbedded: !!screenshotUrl });
   }
 
   return Response.json({ error: "Unknown action" }, { status: 400 });

@@ -8,6 +8,7 @@ import { sendLeadEmail } from "./mailer";
 import { generateSiteForLead, siteExists } from "./site-generator";
 import { syncVercelDomains } from "./vercel-domains";
 import { findContactEmail } from "./email-scraper";
+import { generateScreenshot, hasScreenshot, getScreenshotEmailUrl, waitForUrl } from "./screenshot";
 
 const LOG_PATH = path.resolve(process.cwd(), "agent-log.json");
 const MAX_LOG_ENTRIES = 200;
@@ -79,7 +80,7 @@ export async function autoDeploy(): Promise<void> {
   // Only push if there are changes in the relevant paths
   const status = await runCmd(
     "git",
-    ["status", "--porcelain", "dashboard/public/sites", "dashboard/public/sub", "leads.db"],
+    ["status", "--porcelain", "dashboard/public/sites", "dashboard/public/sub", "dashboard/public/preview", "leads.db"],
     projectRoot
   );
   if (status.code !== 0) {
@@ -89,7 +90,7 @@ export async function autoDeploy(): Promise<void> {
 
   if (status.stdout.trim()) {
     appendLog({ timestamp: ts(), type: "info", message: "Deploy: git commit + push" });
-    await runCmd("git", ["add", "dashboard/public/sites", "dashboard/public/sub", "leads.db"], projectRoot);
+    await runCmd("git", ["add", "dashboard/public/sites", "dashboard/public/sub", "dashboard/public/preview", "leads.db"], projectRoot);
     const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
     const commit = await runCmd("git", ["commit", "-m", `auto: pipeline ${stamp}`], projectRoot);
     if (commit.code !== 0 && !commit.stdout.includes("nothing to commit")) {
@@ -279,7 +280,24 @@ export async function runAgentCycle(): Promise<void> {
     appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Sites: ${generated} gegenereerd, ${genFailed} mislukt` });
   }
 
-  // Deploy (git push + Vercel domain sync) — always run, picks up any new slugs
+  // Screenshot generation — voor alle qualified leads met site maar zonder screenshot
+  if (agent.autoEmail) {
+    const unmailedLeads = getUnmailedQualifiedLeads();
+    const needScreenshot = unmailedLeads.filter((l) => siteExists(l.place_id) && !hasScreenshot(l.place_id));
+    if (needScreenshot.length > 0) {
+      appendLog({ timestamp: new Date().toISOString(), type: "info", message: `Screenshots maken voor ${needScreenshot.length} sites…` });
+      let shot = 0;
+      let shotFailed = 0;
+      for (const lead of needScreenshot) {
+        const result = await generateScreenshot(lead.place_id);
+        if (result) shot++;
+        else shotFailed++;
+      }
+      appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Screenshots: ${shot} klaar, ${shotFailed} mislukt` });
+    }
+  }
+
+  // Deploy (git push + Vercel domain sync) — always run, picks up any new slugs/screenshots
   appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Deploy starten…" });
   await autoDeploy();
 
@@ -290,11 +308,18 @@ export async function runAgentCycle(): Promise<void> {
 
     let sent = 0;
     let failed = 0;
+    let withScreenshot = 0;
     for (const lead of leads) {
       const siteUrl = siteExists(lead.place_id)
         ? `/sites/${lead.place_id}/index.html`
         : undefined;
-      const result = await sendLeadEmail(lead, settings.smtp, siteUrl);
+      let screenshotUrl = getScreenshotEmailUrl(lead.place_id, lead.slug);
+      if (screenshotUrl) {
+        const live = await waitForUrl(screenshotUrl, 45_000);
+        if (!live) screenshotUrl = null;
+        else withScreenshot++;
+      }
+      const result = await sendLeadEmail(lead, settings.smtp, siteUrl, screenshotUrl);
       if (result.ok) {
         sent++;
       } else {
@@ -304,7 +329,7 @@ export async function runAgentCycle(): Promise<void> {
         }
       }
     }
-    appendLog({ timestamp: new Date().toISOString(), type: "success", message: `E-mail: ${sent} verstuurd, ${failed} mislukt` });
+    appendLog({ timestamp: new Date().toISOString(), type: "success", message: `E-mail: ${sent} verstuurd (${withScreenshot} met screenshot), ${failed} mislukt` });
   } else if (agent.autoEmail) {
     appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Auto-email overgeslagen: SMTP niet geconfigureerd" });
   }

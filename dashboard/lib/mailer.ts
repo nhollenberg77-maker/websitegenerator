@@ -19,10 +19,8 @@ export async function testSmtpConnection(smtp: SmtpSettings): Promise<{ ok: bool
   }
 }
 
-export async function sendLeadEmail(lead: Lead, smtp: SmtpSettings, siteUrl?: string): Promise<{ ok: boolean; error?: string }> {
-  if (!lead.website) return { ok: false, error: "Lead has no website" };
-
-  const recipientEmail = extractEmailFromWebsite(lead.website, lead.phone_national);
+export async function sendLeadEmail(lead: Lead, smtp: SmtpSettings, siteUrl?: string, screenshotUrl?: string | null): Promise<{ ok: boolean; error?: string }> {
+  const recipientEmail = lead.contact_email || extractEmailFromWebsite(lead.website || "", lead.phone_national);
   if (!recipientEmail) {
     return { ok: false, error: "No email address found for lead" };
   }
@@ -39,7 +37,7 @@ export async function sendLeadEmail(lead: Lead, smtp: SmtpSettings, siteUrl?: st
       from: `"${smtp.fromName}" <${smtp.fromEmail}>`,
       to: recipientEmail,
       subject: generateEmailSubject(lead),
-      html: generateEmailHtml(lead, siteUrl),
+      html: generateEmailHtml(lead, siteUrl, screenshotUrl),
     });
 
     markLeadEmailed(lead.place_id);
@@ -60,7 +58,8 @@ export async function sendEmailToAddress(
   lead: Lead,
   toEmail: string,
   smtp: SmtpSettings,
-  siteUrl?: string
+  siteUrl?: string,
+  screenshotUrl?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const transport = nodemailer.createTransport({
@@ -74,7 +73,7 @@ export async function sendEmailToAddress(
       from: `"${smtp.fromName}" <${smtp.fromEmail}>`,
       to: toEmail,
       subject: generateEmailSubject(lead),
-      html: generateEmailHtml(lead, siteUrl),
+      html: generateEmailHtml(lead, siteUrl, screenshotUrl),
     });
 
     markLeadEmailed(lead.place_id);
