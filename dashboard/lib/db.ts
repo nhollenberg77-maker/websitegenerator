@@ -28,6 +28,9 @@ function ensureMigrated(): void {
       db.exec("ALTER TABLE leads ADD COLUMN slug TEXT DEFAULT NULL");
       db.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_slug ON leads(slug) WHERE slug IS NOT NULL");
     }
+    if (!columns.some((c) => c.name === "contact_email")) {
+      db.exec("ALTER TABLE leads ADD COLUMN contact_email TEXT DEFAULT NULL");
+    }
     db.close();
     migrated = true;
   } catch {
@@ -113,6 +116,11 @@ export function getLeads(query: LeadsQuery): LeadsResponse {
     conditions.push("qualified IS NULL");
   }
 
+  if (query.minGbp !== null && query.minGbp !== undefined) {
+    conditions.push("good_gbp_score >= ?");
+    params.push(query.minGbp);
+  }
+
   if (query.search) {
     conditions.push("name LIKE ?");
     params.push(`%${query.search}%`);
@@ -188,6 +196,12 @@ export function getUnmailedQualifiedLeads(): Lead[] {
     .all() as Lead[];
   db.close();
   return leads;
+}
+
+export function setLeadContactEmail(placeId: string, email: string | null): void {
+  const db = getDb(false);
+  db.prepare("UPDATE leads SET contact_email = ? WHERE place_id = ?").run(email, placeId);
+  db.close();
 }
 
 export function markLeadEmailed(placeId: string): void {

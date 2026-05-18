@@ -29,6 +29,7 @@ export interface Lead {
   description: string | null;
   enriched_at: string | null;
   slug: string | null;
+  contact_email: string | null;
 }
 
 export interface LeadReview {
@@ -63,6 +64,7 @@ export interface LeadsQuery {
   search: string;
   sortBy: string;
   sortDir: "asc" | "desc";
+  minGbp: number | null;
 }
 
 export interface LeadsResponse {

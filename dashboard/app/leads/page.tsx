@@ -21,9 +21,12 @@ import {
 } from "@/components/ui/table";
 import { ScoreBadge } from "@/components/score-badge";
 import { LeadDetailSheet } from "@/components/lead-detail-sheet";
-import { Eye, ExternalLink, Star, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Eye, ExternalLink, Star, ChevronLeft, ChevronRight, ArrowUpDown, Mail, Loader2, Check, AlertCircle } from "lucide-react";
 import type { Lead, LeadsResponse } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
+
+const DEFAULT_STATUS = "qualified";
+const DEFAULT_MIN_GBP = "5";
 
 export default function LeadsPage() {
   return (
@@ -41,12 +44,15 @@ function LeadsPageContent() {
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [mailingId, setMailingId] = useState<string | null>(null);
+  const [mailResult, setMailResult] = useState<Record<string, { ok: boolean; error?: string }>>({});
 
   const page = parseInt(searchParams.get("page") || "1");
-  const status = searchParams.get("status") || "all";
+  const status = searchParams.get("status") ?? DEFAULT_STATUS;
   const city = searchParams.get("city") || "";
   const category = searchParams.get("category") || "";
   const search = searchParams.get("search") || "";
+  const minGbp = searchParams.get("minGbp") ?? DEFAULT_MIN_GBP;
   const sortBy = searchParams.get("sortBy") || "discovered_at";
   const sortDir = (searchParams.get("sortDir") || "desc") as "asc" | "desc";
 
@@ -62,11 +68,13 @@ function LeadsPageContent() {
     params.set("sortBy", sortBy);
     params.set("sortDir", sortDir);
 
+    if (minGbp) params.set("minGbp", minGbp);
+
     const res = await fetch(`/api/leads?${params}`);
     const json = await res.json();
     setData(json);
     setLoading(false);
-  }, [page, status, city, category, search, sortBy, sortDir]);
+  }, [page, status, city, category, search, sortBy, sortDir, minGbp]);
 
   useEffect(() => {
     fetchLeads();
@@ -80,6 +88,30 @@ function LeadsPageContent() {
     }
     if (!updates.page) params.set("page", "1");
     router.push(`/leads?${params}`);
+  }
+
+  async function handleQuickMail(lead: Lead, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!lead.contact_email || mailingId) return;
+    setMailingId(lead.place_id);
+    setMailResult((prev) => ({ ...prev, [lead.place_id]: { ok: false, error: undefined } }));
+    try {
+      const res = await fetch("/api/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send-saved", placeId: lead.place_id }),
+      });
+      const json = await res.json();
+      setMailResult((prev) => ({ ...prev, [lead.place_id]: json }));
+      if (json.ok) fetchLeads();
+    } catch (err) {
+      setMailResult((prev) => ({
+        ...prev,
+        [lead.place_id]: { ok: false, error: err instanceof Error ? err.message : "Onbekende fout" },
+      }));
+    } finally {
+      setMailingId(null);
+    }
   }
 
   function toggleSort(col: string) {
@@ -135,6 +167,21 @@ function LeadsPageContent() {
           </SelectContent>
         </Select>
 
+        <Select
+          value={minGbp || "any"}
+          onValueChange={(v) => updateParams({ minGbp: !v || v === "any" ? "" : v })}
+        >
+          <SelectTrigger className="flex-1 sm:flex-none sm:w-36 min-w-[120px]">
+            <SelectValue placeholder="Min GBP" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="any">GBP: alle</SelectItem>
+            <SelectItem value="5">GBP ≥ 5</SelectItem>
+            <SelectItem value="6">GBP ≥ 6</SelectItem>
+            <SelectItem value="7">GBP = 7</SelectItem>
+          </SelectContent>
+        </Select>
+
         {data?.availableCities && (
           <Select value={city || "all"} onValueChange={(v) => updateParams({ city: !v || v === "all" ? "" : v })}>
             <SelectTrigger className="flex-1 sm:flex-none sm:w-40 min-w-[120px]">
@@ -178,19 +225,20 @@ function LeadsPageContent() {
               <SortHeader col="bad_site_score">Site</SortHeader>
               <SortHeader col="qualified">Status</SortHeader>
               <TableHead>Web</TableHead>
+              <TableHead>Mail</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={11} className="text-center py-8 text-ink-soft">
+                <TableCell colSpan={12} className="text-center py-8 text-ink-soft">
                   Laden…
                 </TableCell>
               </TableRow>
             ) : data?.leads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={11} className="text-center py-8 text-ink-soft">
+                <TableCell colSpan={12} className="text-center py-8 text-ink-soft">
                   Geen leads gevonden.
                 </TableCell>
               </TableRow>
@@ -241,6 +289,39 @@ function LeadsPageContent() {
                     )}
                   </TableCell>
                   <TableCell>
+                    {(() => {
+                      const result = mailResult[lead.place_id];
+                      const isMailing = mailingId === lead.place_id;
+                      const hasEmail = !!lead.contact_email;
+                      const alreadySent = !!lead.emailed_at;
+                      const title = !hasEmail
+                        ? "Geen e-mailadres opgeslagen — open lead om er een toe te voegen"
+                        : alreadySent
+                          ? `Eerder gemaild op ${new Date(lead.emailed_at!).toLocaleDateString("nl-NL")} — klik om opnieuw te sturen`
+                          : `Verstuur template naar ${lead.contact_email}`;
+                      return (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          disabled={!hasEmail || isMailing}
+                          title={title}
+                          onClick={(e) => handleQuickMail(lead, e)}
+                        >
+                          {isMailing ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : result?.ok ? (
+                            <Check className="h-3.5 w-3.5 text-success" />
+                          ) : result && !result.ok ? (
+                            <AlertCircle className="h-3.5 w-3.5 text-warning" />
+                          ) : (
+                            <Mail className={`h-3.5 w-3.5 ${alreadySent ? "text-success" : ""}`} />
+                          )}
+                        </Button>
+                      );
+                    })()}
+                  </TableCell>
+                  <TableCell>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -287,6 +368,7 @@ function LeadsPageContent() {
       )}
 
       <LeadDetailSheet
+        key={selectedLead?.place_id ?? "no-lead"}
         lead={selectedLead}
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}

@@ -6,6 +6,10 @@ export async function GET(request: NextRequest) {
   try {
     const sp = request.nextUrl.searchParams;
 
+    const minGbpRaw = sp.get("minGbp");
+    const minGbpParsed = minGbpRaw === null || minGbpRaw === "" ? null : parseInt(minGbpRaw);
+    const minGbp = minGbpParsed !== null && !Number.isNaN(minGbpParsed) ? minGbpParsed : null;
+
     const query: LeadsQuery = {
       page: Math.max(1, parseInt(sp.get("page") || "1")),
       perPage: Math.min(100, Math.max(1, parseInt(sp.get("perPage") || "50"))),
@@ -15,6 +19,7 @@ export async function GET(request: NextRequest) {
       search: sp.get("search") || "",
       sortBy: sp.get("sortBy") || "discovered_at",
       sortDir: (sp.get("sortDir") as "asc" | "desc") || "desc",
+      minGbp,
     };
 
     const result = getLeads(query);

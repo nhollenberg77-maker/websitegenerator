@@ -11,7 +11,7 @@ import { ScoreBadge } from "@/components/score-badge";
 import { Separator } from "@/components/ui/separator";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Phone, Globe, ExternalLink, Star, Mail, Eye, Send, Loader2, Check } from "lucide-react";
+import { MapPin, Phone, Globe, ExternalLink, Star, Mail, Eye, Send, Loader2, Check, Save } from "lucide-react";
 import type { Lead } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 
@@ -22,7 +22,10 @@ interface LeadDetailSheetProps {
 }
 
 export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
-  const [emailTo, setEmailTo] = useState("");
+  const [emailTo, setEmailTo] = useState(lead?.contact_email || "");
+  const [savedEmail, setSavedEmail] = useState<string | null>(lead?.contact_email ?? null);
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [saveResult, setSaveResult] = useState<{ ok: boolean; error?: string } | null>(null);
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ ok: boolean; error?: string } | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
@@ -57,13 +60,32 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
     setSending(false);
   }
 
+  async function handleSaveEmail() {
+    setSavingEmail(true);
+    setSaveResult(null);
+    const value = emailTo.trim();
+    const res = await fetch("/api/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save-email", placeId: lead!.place_id, email: value || null }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setSavedEmail(value || null);
+      setSaveResult({ ok: true });
+    } else {
+      setSaveResult({ ok: false, error: data.error });
+    }
+    setSavingEmail(false);
+  }
+
   return (
     <Sheet open={open} onOpenChange={(o) => {
       if (!o) {
         onClose();
         setPreviewHtml(null);
         setSendResult(null);
-        setEmailTo("");
+        setSaveResult(null);
       }
     }}>
       <SheetContent className="w-[440px] sm:max-w-[440px] overflow-y-auto">
@@ -231,26 +253,59 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
                     </div>
                   )}
 
-                  <div className="flex gap-2">
-                    <Input
-                      type="email"
-                      placeholder="E-mailadres ontvanger"
-                      value={emailTo}
-                      onChange={(e) => setEmailTo(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      size="sm"
-                      className="bg-navy hover:bg-navy/90"
-                      onClick={handleSend}
-                      disabled={sending || !emailTo}
-                    >
-                      {sending ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Send className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
+                  <div>
+                    <label className="text-xs text-ink-soft mb-1 block">
+                      Contact e-mail (opgeslagen bij lead)
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="email"
+                        placeholder="bijv. info@bedrijf.pl"
+                        value={emailTo}
+                        onChange={(e) => setEmailTo(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleSaveEmail}
+                        disabled={savingEmail || emailTo.trim() === (savedEmail || "")}
+                        title="Opslaan bij deze lead — daarna kun je vanuit de leadslijst direct mailen"
+                      >
+                        {savingEmail ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Save className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-navy hover:bg-navy/90"
+                        onClick={handleSend}
+                        disabled={sending || !emailTo}
+                        title="Verstuur nu naar bovenstaand adres"
+                      >
+                        {sending ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Send className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    </div>
+                    {savedEmail && (
+                      <p className="text-xs text-ink-soft mt-1">
+                        Opgeslagen: <span className="font-medium">{savedEmail}</span>
+                      </p>
+                    )}
+                    {saveResult && (
+                      <p className={`text-xs mt-1 ${saveResult.ok ? "text-success" : "text-warning"}`}>
+                        {saveResult.ok ? (
+                          <><Check className="h-3 w-3 inline mr-1" />Opgeslagen</>
+                        ) : (
+                          saveResult.error
+                        )}
+                      </p>
+                    )}
                   </div>
 
                   {sendResult && (

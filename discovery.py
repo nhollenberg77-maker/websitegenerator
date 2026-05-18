@@ -15,6 +15,7 @@ import os
 import sys
 import csv
 import json
+import math
 import sqlite3
 import logging
 import argparse
@@ -319,12 +320,13 @@ def discover_city(
     for cat in categories:
         log.info(f"  → Categorie: {cat}")
         try:
-            results = api.search_nearby(
-                lat=city["lat"],
-                lng=city["lng"],
+            results = tiled_search_nearby(
+                api=api,
+                center_lat=city["lat"],
+                center_lng=city["lng"],
                 radius_m=radius_m,
-                included_types=[cat],
-                max_results=limit_per_category,
+                category=cat,
+                limit_per_tile=limit_per_category,
             )
         except requests.HTTPError as e:
             log.error(f"     API faalt voor {cat}: {e}")
@@ -338,9 +340,70 @@ def discover_city(
             seen_place_ids.add(p.place_id)
 
         all_leads.extend(new_in_run)
-        log.info(f"     {len(parsed)} resultaten, {len(new_in_run)} nieuwe (na run-dedup)")
+        log.info(f"     {len(parsed)} unieke resultaten over tiles, {len(new_in_run)} nieuw in deze run")
 
     return all_leads
+
+
+# 9 tile-offsets: centrum + 4 cardinaal + 4 diagonaal — geeft 9 verschillende
+# "top-20 dichtstbij" sets per categorie, ipv altijd dezelfde top-20 vanaf het stadscentrum.
+TILE_OFFSETS = [
+    (0, 0),
+    (1, 0), (-1, 0), (0, 1), (0, -1),
+    (1, 1), (1, -1), (-1, 1), (-1, -1),
+]
+
+
+def tiled_search_nearby(
+    api: "PlacesAPI",
+    center_lat: float,
+    center_lng: float,
+    radius_m: int,
+    category: str,
+    limit_per_tile: int,
+) -> list[dict]:
+    """Doe searchNearby vanuit meerdere offset-centra rond de stad. Google
+    rankt op afstand vanaf het zoekpunt — een ander punt = andere top-N.
+    Dedup over alle tiles, retourneer unieke union."""
+    # 1° lat ≈ 111 320 m; 1° lng ≈ 111 320 × cos(lat) m
+    meters_per_lat = 111_320.0
+    meters_per_lng = 111_320.0 * math.cos(math.radians(center_lat))
+    offset_m = radius_m * 0.5
+    d_lat = offset_m / meters_per_lat
+    d_lng = offset_m / meters_per_lng
+
+    # Iets kleinere tile-radius dan origineel → minder overlap, snellere convergentie
+    tile_radius = int(radius_m * 0.75)
+
+    seen: set[str] = set()
+    union: list[dict] = []
+
+    for i, (kx, ky) in enumerate(TILE_OFFSETS):
+        tile_lat = center_lat + kx * d_lat
+        tile_lng = center_lng + ky * d_lng
+        try:
+            sub = api.search_nearby(
+                lat=tile_lat,
+                lng=tile_lng,
+                radius_m=tile_radius,
+                included_types=[category],
+                max_results=limit_per_tile,
+            )
+        except requests.HTTPError as e:
+            log.warning(f"     Tile {i+1}/{len(TILE_OFFSETS)} fout: {e}")
+            continue
+
+        new_in_tile = 0
+        for r in sub:
+            pid = r.get("id")
+            if pid and pid not in seen:
+                seen.add(pid)
+                union.append(r)
+                new_in_tile += 1
+        log.debug(f"     Tile {i+1}/{len(TILE_OFFSETS)} ({tile_lat:.4f},{tile_lng:.4f}): "
+                  f"{len(sub)} resultaten, {new_in_tile} nieuw")
+
+    return union
 
 
 def main():
