@@ -3,10 +3,11 @@ import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
 import { getSettings, isSmtpConfigured } from "./settings";
-import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenerated } from "./db";
+import { getUnmailedQualifiedLeads, getQualifiedLeadsWithoutSite, markSiteGenerated, countReadyLeads, getLeadsNeedingEmailScrape, setLeadContactEmail } from "./db";
 import { sendLeadEmail } from "./mailer";
 import { generateSiteForLead, siteExists } from "./site-generator";
 import { syncVercelDomains } from "./vercel-domains";
+import { findContactEmail } from "./email-scraper";
 
 const LOG_PATH = path.resolve(process.cwd(), "agent-log.json");
 const MAX_LOG_ENTRIES = 200;
@@ -158,43 +159,93 @@ export async function runAgentCycle(): Promise<void> {
   const settings = getSettings();
   const { agent } = settings;
 
-  appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Agent cyclus gestart" });
+  const ts = () => new Date().toISOString();
+  const target = Math.max(1, agent.targetReadyLeads || 5);
+  const minGbp = Math.max(1, agent.minGbpScore || 5);
+  const maxCycles = Math.max(1, agent.maxCyclesPerRun || 3);
+
+  appendLog({ timestamp: ts(), type: "info", message: `Agent cyclus gestart — doel: ${target} bruikbare leads (qualified, GBP ≥ ${minGbp}, met e-mail)` });
 
   const discoveryScript = path.resolve(process.cwd(), process.env.DISCOVERY_SCRIPT || "../discovery.py");
   const qualifyScript = path.resolve(process.cwd(), process.env.QUALIFY_SCRIPT || "../qualify.py");
   const dbPath = path.resolve(process.cwd(), process.env.DB_PATH || "../leads.db");
 
-  // Discovery per stad
-  for (const city of agent.cities) {
-    appendLog({ timestamp: new Date().toISOString(), type: "info", message: `Discovery: ${city}` });
-
-    const args = [
-      "--city", city,
-      "--categories", ...agent.categories,
-      "--radius", String(agent.radius),
-      "--limit", String(agent.limitPerCategory),
-      "--db", dbPath,
-    ];
-
-    const result = await runScript(discoveryScript, args);
-    if (result.code !== 0) {
-      appendLog({ timestamp: new Date().toISOString(), type: "error", message: `Discovery ${city} fout: ${result.stderr.slice(0, 200)}` });
-    } else {
-      const newMatch = result.stdout.match(/Nieuw in database\s*:\s*(\d+)/);
-      const newCount = newMatch ? newMatch[1] : "?";
-      appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Discovery ${city}: ${newCount} nieuwe leads` });
+  for (let round = 1; round <= maxCycles; round++) {
+    const readyBefore = countReadyLeads(minGbp);
+    if (readyBefore >= target) {
+      appendLog({ timestamp: ts(), type: "success", message: `Doel bereikt: ${readyBefore}/${target} bruikbare leads aanwezig — discovery overgeslagen` });
+      break;
     }
-  }
 
-  // Qualification
-  appendLog({ timestamp: new Date().toISOString(), type: "info", message: "Qualification starten…" });
-  const qualResult = await runScript(qualifyScript, ["--db", dbPath]);
-  if (qualResult.code !== 0) {
-    appendLog({ timestamp: new Date().toISOString(), type: "error", message: `Qualification fout: ${qualResult.stderr.slice(0, 200)}` });
-  } else {
-    const qualMatch = qualResult.stdout.match(/Qualified\s*:\s*(\d+)/);
-    const qualCount = qualMatch ? qualMatch[1] : "?";
-    appendLog({ timestamp: new Date().toISOString(), type: "success", message: `Qualification klaar: ${qualCount} qualified` });
+    appendLog({ timestamp: ts(), type: "info", message: `Ronde ${round}/${maxCycles} — nu ${readyBefore}/${target} bruikbare leads, op zoek naar meer` });
+
+    // Discovery per stad
+    for (const city of agent.cities) {
+      appendLog({ timestamp: ts(), type: "info", message: `Discovery: ${city}` });
+      const args = [
+        "--city", city,
+        "--categories", ...agent.categories,
+        "--radius", String(agent.radius),
+        "--limit", String(agent.limitPerCategory),
+        "--db", dbPath,
+      ];
+      const result = await runScript(discoveryScript, args);
+      if (result.code !== 0) {
+        appendLog({ timestamp: ts(), type: "error", message: `Discovery ${city} fout: ${result.stderr.slice(0, 200)}` });
+      } else {
+        const newMatch = result.stdout.match(/Nieuw in database\s*:\s*(\d+)/);
+        const newCount = newMatch ? newMatch[1] : "?";
+        appendLog({ timestamp: ts(), type: "success", message: `Discovery ${city}: ${newCount} nieuwe leads` });
+      }
+    }
+
+    // Qualification
+    appendLog({ timestamp: ts(), type: "info", message: "Qualification starten…" });
+    const qualResult = await runScript(qualifyScript, ["--db", dbPath]);
+    if (qualResult.code !== 0) {
+      appendLog({ timestamp: ts(), type: "error", message: `Qualification fout: ${qualResult.stderr.slice(0, 200)}` });
+    } else {
+      const qualMatch = qualResult.stdout.match(/Qualified\s*:\s*(\d+)/);
+      const qualCount = qualMatch ? qualMatch[1] : "?";
+      appendLog({ timestamp: ts(), type: "success", message: `Qualification klaar: ${qualCount} qualified` });
+    }
+
+    // E-mail scraping voor nieuw-gequalificeerde leads zonder e-mail
+    const needScrape = getLeadsNeedingEmailScrape();
+    if (needScrape.length > 0) {
+      appendLog({ timestamp: ts(), type: "info", message: `E-mail zoeken op ${needScrape.length} websites…` });
+      let scrapedFound = 0;
+      const concurrency = 3;
+      let cursor = 0;
+      async function scrapeWorker() {
+        while (cursor < needScrape.length) {
+          const lead = needScrape[cursor++];
+          if (!lead.website) continue;
+          const email = await findContactEmail(lead.website);
+          if (email) {
+            setLeadContactEmail(lead.place_id, email);
+            scrapedFound++;
+          }
+        }
+      }
+      await Promise.all(Array.from({ length: Math.min(concurrency, needScrape.length) }, scrapeWorker));
+      appendLog({ timestamp: ts(), type: "success", message: `E-mails gevonden: ${scrapedFound} van ${needScrape.length} sites` });
+    }
+
+    const readyAfter = countReadyLeads(minGbp);
+    appendLog({ timestamp: ts(), type: "info", message: `Na ronde ${round}: ${readyAfter}/${target} bruikbare leads` });
+
+    if (readyAfter >= target) {
+      appendLog({ timestamp: ts(), type: "success", message: `Doel bereikt na ${round} ${round === 1 ? "ronde" : "rondes"}` });
+      break;
+    }
+    if (readyAfter === readyBefore && round < maxCycles) {
+      appendLog({ timestamp: ts(), type: "info", message: "Geen nieuwe bruikbare leads in deze ronde — verdere rondes overgeslagen. Voeg steden of categorieën toe voor meer." });
+      break;
+    }
+    if (round === maxCycles && readyAfter < target) {
+      appendLog({ timestamp: ts(), type: "info", message: `Max. rondes bereikt. ${readyAfter}/${target} gehaald — voeg steden/categorieën toe of verhoog max. rondes.` });
+    }
   }
 
   // Enrichment (foto's + reviews ophalen)

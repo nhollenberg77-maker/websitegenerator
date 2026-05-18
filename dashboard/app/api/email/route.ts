@@ -1,7 +1,8 @@
-import { getLeadById, setLeadContactEmail } from "@/lib/db";
+import { getLeadById, setLeadContactEmail, getLeadsNeedingEmailScrape } from "@/lib/db";
 import { getSettings, isSmtpConfigured } from "@/lib/settings";
 import { sendEmailToAddress } from "@/lib/mailer";
 import { generateEmailHtml, generateEmailSubject } from "@/lib/email-template";
+import { findContactEmail } from "@/lib/email-scraper";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -17,6 +18,43 @@ export async function POST(request: Request) {
       subject: generateEmailSubject(lead),
       html: generateEmailHtml(lead),
     });
+  }
+
+  if (body.action === "find-email") {
+    if (!body.placeId) return Response.json({ error: "placeId required" }, { status: 400 });
+    const lead = getLeadById(body.placeId);
+    if (!lead) return Response.json({ error: "Lead not found" }, { status: 404 });
+    if (!lead.website) return Response.json({ ok: true, email: null, reason: "no_website" });
+    if (lead.contact_email) return Response.json({ ok: true, email: lead.contact_email, reason: "already_set" });
+
+    const found = await findContactEmail(lead.website);
+    if (found) {
+      setLeadContactEmail(body.placeId, found);
+    }
+    return Response.json({ ok: true, email: found });
+  }
+
+  if (body.action === "find-emails-bulk") {
+    const leads = getLeadsNeedingEmailScrape();
+    const concurrency = 3;
+    const results: { placeId: string; email: string | null }[] = [];
+    let cursor = 0;
+    async function worker() {
+      while (cursor < leads.length) {
+        const idx = cursor++;
+        const lead = leads[idx];
+        if (!lead.website) {
+          results.push({ placeId: lead.place_id, email: null });
+          continue;
+        }
+        const found = await findContactEmail(lead.website);
+        if (found) setLeadContactEmail(lead.place_id, found);
+        results.push({ placeId: lead.place_id, email: found });
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(concurrency, leads.length) }, worker));
+    const foundCount = results.filter((r) => r.email).length;
+    return Response.json({ ok: true, scanned: leads.length, found: foundCount, results });
   }
 
   if (body.action === "save-email") {

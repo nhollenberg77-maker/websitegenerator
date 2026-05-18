@@ -21,12 +21,14 @@ import {
 } from "@/components/ui/table";
 import { ScoreBadge } from "@/components/score-badge";
 import { LeadDetailSheet } from "@/components/lead-detail-sheet";
-import { Eye, ExternalLink, Star, ChevronLeft, ChevronRight, ArrowUpDown, Mail, Loader2, Check, AlertCircle } from "lucide-react";
+import { Eye, ExternalLink, Star, ChevronLeft, ChevronRight, ArrowUpDown, Mail, Loader2, Check, AlertCircle, SearchCheck, Search, ListChecks, MapPin, Tag, Award, Inbox, Sparkles, X } from "lucide-react";
 import type { Lead, LeadsResponse } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 
 const DEFAULT_STATUS = "qualified";
 const DEFAULT_MIN_GBP = "5";
+const DEFAULT_HAS_EMAIL = "yes";
+const DEFAULT_PER_PAGE = "5";
 
 export default function LeadsPage() {
   return (
@@ -46,6 +48,8 @@ function LeadsPageContent() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mailingId, setMailingId] = useState<string | null>(null);
   const [mailResult, setMailResult] = useState<Record<string, { ok: boolean; error?: string }>>({});
+  const [scrapingEmails, setScrapingEmails] = useState(false);
+  const [scrapeStatus, setScrapeStatus] = useState<string | null>(null);
 
   const page = parseInt(searchParams.get("page") || "1");
   const status = searchParams.get("status") ?? DEFAULT_STATUS;
@@ -53,14 +57,27 @@ function LeadsPageContent() {
   const category = searchParams.get("category") || "";
   const search = searchParams.get("search") || "";
   const minGbp = searchParams.get("minGbp") ?? DEFAULT_MIN_GBP;
+  const hasEmail = searchParams.get("hasEmail") ?? DEFAULT_HAS_EMAIL;
+  const perPage = searchParams.get("perPage") ?? DEFAULT_PER_PAGE;
   const sortBy = searchParams.get("sortBy") || "discovered_at";
   const sortDir = (searchParams.get("sortDir") || "desc") as "asc" | "desc";
+
+  const isDefaultFilter =
+    status === DEFAULT_STATUS &&
+    minGbp === DEFAULT_MIN_GBP &&
+    hasEmail === DEFAULT_HAS_EMAIL &&
+    perPage === DEFAULT_PER_PAGE &&
+    !city &&
+    !category &&
+    !search;
+
+  const requestedCount = parseInt(perPage) || 5;
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
     params.set("page", String(page));
-    params.set("perPage", "50");
+    params.set("perPage", String(Math.max(1, parseInt(perPage) || 5)));
     if (status !== "all") params.set("status", status);
     if (city) params.set("cities", city);
     if (category) params.set("categories", category);
@@ -69,12 +86,13 @@ function LeadsPageContent() {
     params.set("sortDir", sortDir);
 
     if (minGbp) params.set("minGbp", minGbp);
+    if (hasEmail && hasEmail !== "any") params.set("hasEmail", hasEmail);
 
     const res = await fetch(`/api/leads?${params}`);
     const json = await res.json();
     setData(json);
     setLoading(false);
-  }, [page, status, city, category, search, sortBy, sortDir, minGbp]);
+  }, [page, status, city, category, search, sortBy, sortDir, minGbp, hasEmail, perPage]);
 
   useEffect(() => {
     fetchLeads();
@@ -88,6 +106,31 @@ function LeadsPageContent() {
     }
     if (!updates.page) params.set("page", "1");
     router.push(`/leads?${params}`);
+  }
+
+  async function handleBulkFindEmails() {
+    if (scrapingEmails) return;
+    setScrapingEmails(true);
+    setScrapeStatus("Zoeken…");
+    try {
+      const res = await fetch("/api/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "find-emails-bulk" }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setScrapeStatus(`${json.found} van ${json.scanned} gevonden`);
+        fetchLeads();
+      } else {
+        setScrapeStatus(json.error || "Fout bij zoeken");
+      }
+    } catch (err) {
+      setScrapeStatus(err instanceof Error ? err.message : "Netwerkfout");
+    } finally {
+      setScrapingEmails(false);
+      setTimeout(() => setScrapeStatus(null), 6000);
+    }
   }
 
   async function handleQuickMail(lead: Lead, e: React.MouseEvent) {
@@ -127,6 +170,16 @@ function LeadsPageContent() {
     setSheetOpen(true);
   }
 
+  const FilterField = ({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) => (
+    <div className="flex flex-col gap-1.5">
+      <span className="flex items-center gap-1.5 text-xs text-ink-soft font-medium">
+        {icon}
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+
   const SortHeader = ({ col, children }: { col: string; children: React.ReactNode }) => (
     <TableHead
       className="cursor-pointer select-none hover:text-ink"
@@ -141,73 +194,176 @@ function LeadsPageContent() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px]">
-      <div className="mb-6">
+      <div className="mb-6 flex items-end justify-between gap-3 flex-wrap">
         <h2 className="font-display text-2xl font-semibold text-ink">
           Leads. <span className="italic font-normal text-ink-soft">Filter en beheer.</span>
         </h2>
+        <div className="flex items-center gap-2">
+          {scrapeStatus && (
+            <span className="text-xs text-ink-soft">{scrapeStatus}</span>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBulkFindEmails}
+            disabled={scrapingEmails}
+            title="Zoek e-mailadressen op de websites van alle qualified leads zonder e-mail"
+          >
+            {scrapingEmails ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <SearchCheck className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            Zoek ontbrekende e-mails
+          </Button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 sm:gap-3 mb-6">
-        <Input
-          placeholder="Zoek op naam…"
-          value={search}
-          onChange={(e) => updateParams({ search: e.target.value })}
-          className="w-full sm:w-56"
-        />
+      <div className="bg-card border border-line rounded-xl p-5 sm:p-6 mb-5 shadow-sm">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink-soft font-medium">
+            <Sparkles className="h-3.5 w-3.5" />
+            Filter leads
+          </div>
+          {!isDefaultFilter && (
+            <button
+              type="button"
+              onClick={() =>
+                router.push("/leads")
+              }
+              className="text-xs text-ink-soft hover:text-ink flex items-center gap-1 transition-colors"
+              title="Zet filter terug naar standaardwaarden"
+            >
+              <X className="h-3 w-3" />
+              Reset
+            </button>
+          )}
+        </div>
 
-        <Select value={status} onValueChange={(v) => updateParams({ status: v ?? "" })}>
-          <SelectTrigger className="flex-1 sm:flex-none sm:w-40 min-w-[120px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
-            <SelectItem value="qualified">Qualified</SelectItem>
-            <SelectItem value="rejected">Afgewezen</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <FilterField icon={<Inbox className="h-3.5 w-3.5" />} label="Aantal">
+            <Input
+              type="number"
+              min={1}
+              max={500}
+              value={perPage}
+              onChange={(e) => updateParams({ perPage: e.target.value || DEFAULT_PER_PAGE })}
+              className="w-full"
+            />
+          </FilterField>
 
-        <Select
-          value={minGbp || "any"}
-          onValueChange={(v) => updateParams({ minGbp: !v || v === "any" ? "" : v })}
-        >
-          <SelectTrigger className="flex-1 sm:flex-none sm:w-36 min-w-[120px]">
-            <SelectValue placeholder="Min GBP" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any">GBP: alle</SelectItem>
-            <SelectItem value="5">GBP ≥ 5</SelectItem>
-            <SelectItem value="6">GBP ≥ 6</SelectItem>
-            <SelectItem value="7">GBP = 7</SelectItem>
-          </SelectContent>
-        </Select>
+          <FilterField icon={<ListChecks className="h-3.5 w-3.5" />} label="Status">
+            <Select value={status} onValueChange={(v) => updateParams({ status: v ?? "" })}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle</SelectItem>
+                <SelectItem value="qualified">Qualified</SelectItem>
+                <SelectItem value="rejected">Afgewezen</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
+          </FilterField>
 
-        {data?.availableCities && (
-          <Select value={city || "all"} onValueChange={(v) => updateParams({ city: !v || v === "all" ? "" : v })}>
-            <SelectTrigger className="flex-1 sm:flex-none sm:w-40 min-w-[120px]">
-              <SelectValue placeholder="Stad" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alle steden</SelectItem>
-              {data.availableCities.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+          <FilterField icon={<Award className="h-3.5 w-3.5" />} label="GBP-score">
+            <Select
+              value={minGbp || "any"}
+              onValueChange={(v) => updateParams({ minGbp: !v || v === "any" ? "" : v })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Min GBP" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any">Alle scores</SelectItem>
+                <SelectItem value="5">≥ 5 / 7</SelectItem>
+                <SelectItem value="6">≥ 6 / 7</SelectItem>
+                <SelectItem value="7">= 7 / 7</SelectItem>
+              </SelectContent>
+            </Select>
+          </FilterField>
 
-        {data?.availableCategories && (
-          <Select value={category || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? "" : v })}>
-            <SelectTrigger className="flex-1 sm:flex-none sm:w-44 min-w-[140px]">
-              <SelectValue placeholder="Categorie" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alle categorieën</SelectItem>
-              {data.availableCategories.map((c) => (
-                <SelectItem key={c} value={c}>{CATEGORIES[c] || c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FilterField icon={<Mail className="h-3.5 w-3.5" />} label="E-mail">
+            <Select value={hasEmail} onValueChange={(v) => updateParams({ hasEmail: v ?? "" })}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="E-mail" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="yes">Met e-mail</SelectItem>
+                <SelectItem value="no">Zonder e-mail</SelectItem>
+                <SelectItem value="any">Maakt niet uit</SelectItem>
+              </SelectContent>
+            </Select>
+          </FilterField>
+
+          {data?.availableCities && (
+            <FilterField icon={<MapPin className="h-3.5 w-3.5" />} label="Stad">
+              <Select value={city || "all"} onValueChange={(v) => updateParams({ city: !v || v === "all" ? "" : v })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Stad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle steden</SelectItem>
+                  {data.availableCities.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterField>
+          )}
+
+          {data?.availableCategories && (
+            <FilterField icon={<Tag className="h-3.5 w-3.5" />} label="Categorie">
+              <Select value={category || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? "" : v })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Categorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle categorieën</SelectItem>
+                  {data.availableCategories.map((c) => (
+                    <SelectItem key={c} value={c}>{CATEGORIES[c] || c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FilterField>
+          )}
+        </div>
+
+        <div className="mt-4 relative">
+          <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
+          <Input
+            placeholder="Zoek op bedrijfsnaam…"
+            value={search}
+            onChange={(e) => updateParams({ search: e.target.value })}
+            className="pl-9"
+          />
+        </div>
+
+        {data && !loading && (
+          <div className="mt-4 pt-4 border-t border-line text-sm">
+            {data.total >= requestedCount ? (
+              <p className="text-ink-soft">
+                <span className="font-medium text-ink">{Math.min(data.total, requestedCount)}</span> leads
+                {hasEmail === "yes" ? " klaar om te mailen" : " gevonden"} — uit {data.total} matchende leads
+              </p>
+            ) : data.total > 0 ? (
+              <p className="text-warning flex items-start gap-1.5">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>
+                  Slechts <span className="font-medium">{data.total}</span> van je gevraagde {requestedCount} leads voldoen.
+                  Run <span className="font-medium">Start cyclus</span> in de cockpit om meer leads te vinden,
+                  of versoepel je filter.
+                </span>
+              </p>
+            ) : (
+              <p className="text-ink-soft flex items-start gap-1.5">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>
+                  Geen leads matchen dit filter. Versoepel de criteria of run <span className="font-medium">Start cyclus</span>.
+                </span>
+              </p>
+            )}
+          </div>
         )}
       </div>
 

@@ -121,6 +121,12 @@ export function getLeads(query: LeadsQuery): LeadsResponse {
     params.push(query.minGbp);
   }
 
+  if (query.hasEmail === true) {
+    conditions.push("contact_email IS NOT NULL AND contact_email != ''");
+  } else if (query.hasEmail === false) {
+    conditions.push("(contact_email IS NULL OR contact_email = '')");
+  }
+
   if (query.search) {
     conditions.push("name LIKE ?");
     params.push(`%${query.search}%`);
@@ -202,6 +208,36 @@ export function setLeadContactEmail(placeId: string, email: string | null): void
   const db = getDb(false);
   db.prepare("UPDATE leads SET contact_email = ? WHERE place_id = ?").run(email, placeId);
   db.close();
+}
+
+export function countReadyLeads(minGbp: number): number {
+  const db = getDb();
+  const row = db
+    .prepare(
+      `SELECT COUNT(*) as n FROM leads
+       WHERE qualified = 1
+         AND good_gbp_score >= ?
+         AND contact_email IS NOT NULL
+         AND contact_email != ''`
+    )
+    .get(minGbp) as { n: number };
+  db.close();
+  return row.n;
+}
+
+export function getLeadsNeedingEmailScrape(): Lead[] {
+  const db = getDb();
+  const leads = db
+    .prepare(
+      `SELECT * FROM leads
+       WHERE qualified = 1
+         AND website IS NOT NULL
+         AND (contact_email IS NULL OR contact_email = '')
+       ORDER BY qualified_at DESC`
+    )
+    .all() as Lead[];
+  db.close();
+  return leads;
 }
 
 export function markLeadEmailed(placeId: string): void {

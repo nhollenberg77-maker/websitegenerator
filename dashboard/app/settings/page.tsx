@@ -11,9 +11,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Save, TestTube, X, Loader2 } from "lucide-react";
+import { Save, TestTube, X, Loader2, Target, Clock, MapPin, Tag, Sliders, Mail, Bot } from "lucide-react";
+
+function SettingsSection({ icon, title, hint, children }: { icon: React.ReactNode; title: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between mb-3">
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink font-medium">
+          <span className="text-navy">{icon}</span>
+          {title}
+        </div>
+        {hint && <span className="text-xs text-ink-soft">{hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function FieldLabel({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-sm text-ink mb-1.5 block">
+        {label}
+        {hint && <span className="text-xs text-ink-soft font-normal ml-1.5">· {hint}</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
 import { CITIES, CATEGORIES } from "@/lib/types";
 
 interface SmtpSettings {
@@ -34,6 +59,9 @@ interface AgentSettings {
   radius: number;
   limitPerCategory: number;
   autoEmail: boolean;
+  targetReadyLeads: number;
+  minGbpScore: number;
+  maxCyclesPerRun: number;
 }
 
 export default function SettingsPage() {
@@ -42,6 +70,7 @@ export default function SettingsPage() {
   });
   const [agent, setAgent] = useState<AgentSettings>({
     enabled: false, cronSchedule: "0 9 * * *", cities: [], categories: [], radius: 30000, limitPerCategory: 20, autoEmail: true,
+    targetReadyLeads: 5, minGbpScore: 5, maxCyclesPerRun: 3,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -206,118 +235,190 @@ export default function SettingsPage() {
       </Card>
 
       {/* Agent */}
-      <Card className="border-line mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base font-semibold">Dagelijkse Agent</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Button
-              variant={agent.enabled ? "default" : "outline"}
-              size="sm"
-              className={agent.enabled ? "bg-success hover:bg-success/90" : ""}
+      <Card className="border-line mb-6 overflow-hidden">
+        <CardHeader className="pb-3 bg-background-alt/30 border-b border-line">
+          <div className="flex items-center justify-between">
+            <CardTitle className="font-display text-base font-semibold flex items-center gap-2">
+              <Bot className="h-4 w-4 text-navy" />
+              Dagelijkse Agent
+            </CardTitle>
+            <button
+              type="button"
               onClick={() => setAgent((a) => ({ ...a, enabled: !a.enabled }))}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                agent.enabled
+                  ? "bg-success/15 text-success border border-success/30 hover:bg-success/20"
+                  : "bg-ink-soft/10 text-ink-soft border border-ink-soft/20 hover:bg-ink-soft/15"
+              }`}
             >
+              <span className={`inline-block h-1.5 w-1.5 rounded-full mr-1.5 ${agent.enabled ? "bg-success" : "bg-ink-soft"}`} />
               {agent.enabled ? "Actief" : "Uitgeschakeld"}
-            </Button>
-            <span className="text-sm text-ink-soft">
-              {agent.enabled ? "Agent draait volgens schema" : "Agent is uit"}
-            </span>
+            </button>
           </div>
+          <p className="text-xs text-ink-soft mt-1">
+            {agent.enabled
+              ? `Draait volgens schema en zoekt elke run naar ${agent.targetReadyLeads} nieuwe leads klaar om te mailen.`
+              : "Agent draait nu niet. Klik 'Start cyclus' in de cockpit om handmatig te draaien."}
+          </p>
+        </CardHeader>
 
-          <div>
-            <label className="text-sm text-ink-soft mb-1.5 block">
-              Cron schema (standaard: elke dag om 09:00)
-            </label>
-            <Input
-              value={agent.cronSchedule}
-              onChange={(e) => setAgent((a) => ({ ...a, cronSchedule: e.target.value }))}
-              placeholder="0 9 * * *"
-              className="w-48 font-mono"
-            />
-          </div>
+        <CardContent className="space-y-6 pt-6">
 
-          <Separator />
+          {/* DOEL */}
+          <SettingsSection icon={<Target className="h-3.5 w-3.5" />} title="Doel" hint="Hoeveel bruikbare leads moet de agent per cyclus opleveren?">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FieldLabel label="Aantal leads">
+                <Input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={agent.targetReadyLeads}
+                  onChange={(e) => setAgent((a) => ({ ...a, targetReadyLeads: Math.max(1, parseInt(e.target.value) || 5) }))}
+                />
+              </FieldLabel>
+              <FieldLabel label="Minimale GBP-score">
+                <Select
+                  value={String(agent.minGbpScore)}
+                  onValueChange={(v) => setAgent((a) => ({ ...a, minGbpScore: parseInt(v ?? "5") || 5 }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">≥ 5 / 7</SelectItem>
+                    <SelectItem value="6">≥ 6 / 7</SelectItem>
+                    <SelectItem value="7">= 7 / 7</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FieldLabel>
+              <FieldLabel label="Max. zoek-rondes">
+                <Select
+                  value={String(agent.maxCyclesPerRun)}
+                  onValueChange={(v) => setAgent((a) => ({ ...a, maxCyclesPerRun: parseInt(v ?? "3") || 3 }))}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 ronde</SelectItem>
+                    <SelectItem value="2">2 rondes</SelectItem>
+                    <SelectItem value="3">3 rondes</SelectItem>
+                    <SelectItem value="5">5 rondes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FieldLabel>
+            </div>
+            <p className="text-xs text-ink-soft mt-2 leading-relaxed">
+              Een &quot;bruikbare lead&quot; = qualified <strong>én</strong> GBP-score haalt drempel <strong>én</strong> heeft een e-mailadres.
+              De agent blijft zoeken (max. {agent.maxCyclesPerRun} {agent.maxCyclesPerRun === 1 ? "ronde" : "rondes"}) totdat hij er {agent.targetReadyLeads} heeft.
+            </p>
+          </SettingsSection>
 
-          <div>
-            <label className="text-sm text-ink-soft mb-1.5 block">Steden</label>
+          {/* SCHEMA */}
+          <SettingsSection icon={<Clock className="h-3.5 w-3.5" />} title="Schema" hint="Wanneer draait de agent automatisch?">
+            <FieldLabel label="Cron-expressie" hint="Bijv. '0 9 * * *' = elke dag om 09:00">
+              <Input
+                value={agent.cronSchedule}
+                onChange={(e) => setAgent((a) => ({ ...a, cronSchedule: e.target.value }))}
+                placeholder="0 9 * * *"
+                className="font-mono w-48"
+              />
+            </FieldLabel>
+          </SettingsSection>
+
+          {/* STEDEN */}
+          <SettingsSection icon={<MapPin className="h-3.5 w-3.5" />} title="Steden" hint={`${agent.cities.length} geselecteerd`}>
             <div className="flex flex-wrap gap-2">
               {Object.entries(CITIES).map(([key, name]) => {
                 const active = agent.cities.includes(key);
                 return (
-                  <Badge
+                  <button
+                    type="button"
                     key={key}
-                    variant={active ? "default" : "secondary"}
-                    className={`cursor-pointer select-none ${
-                      active ? "bg-navy text-white hover:bg-navy/90" : "hover:bg-background-alt"
-                    }`}
                     onClick={() => toggleAgentCity(key)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      active
+                        ? "bg-navy text-white hover:bg-navy/90 shadow-sm"
+                        : "bg-background-alt text-ink-soft border border-line hover:border-ink-soft/40 hover:text-ink"
+                    }`}
                   >
                     {name}
-                    {active && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
+                    {active && <X className="h-3 w-3 ml-1.5 inline" />}
+                  </button>
                 );
               })}
             </div>
-          </div>
+          </SettingsSection>
 
-          <div>
-            <label className="text-sm text-ink-soft mb-1.5 block">Categorieën</label>
+          {/* CATEGORIEËN */}
+          <SettingsSection icon={<Tag className="h-3.5 w-3.5" />} title="Categorieën" hint={`${agent.categories.length} geselecteerd`}>
             <div className="flex flex-wrap gap-2">
               {Object.entries(CATEGORIES)
                 .filter(([key]) => key !== "general_contractor")
                 .map(([key, label]) => {
                   const active = agent.categories.includes(key);
                   return (
-                    <Badge
+                    <button
+                      type="button"
                       key={key}
-                      variant={active ? "default" : "secondary"}
-                      className={`cursor-pointer select-none ${
-                        active ? "bg-navy text-white hover:bg-navy/90" : "hover:bg-background-alt"
-                      }`}
                       onClick={() => toggleAgentCategory(key)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        active
+                          ? "bg-navy text-white hover:bg-navy/90 shadow-sm"
+                          : "bg-background-alt text-ink-soft border border-line hover:border-ink-soft/40 hover:text-ink"
+                      }`}
                     >
                       {label}
-                      {active && <X className="h-3 w-3 ml-1" />}
-                    </Badge>
+                      {active && <X className="h-3 w-3 ml-1.5 inline" />}
+                    </button>
                   );
                 })}
             </div>
-          </div>
+          </SettingsSection>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-ink-soft mb-1.5 block">Radius (m)</label>
-              <Input
-                type="number"
-                value={agent.radius}
-                onChange={(e) => setAgent((a) => ({ ...a, radius: parseInt(e.target.value) || 30000 }))}
-              />
+          {/* GEAVANCEERD */}
+          <SettingsSection icon={<Sliders className="h-3.5 w-3.5" />} title="Geavanceerd" hint="Zoekparameters voor Google Places">
+            <div className="grid grid-cols-2 gap-4">
+              <FieldLabel label="Radius" hint="meters rondom stad-centrum">
+                <Input
+                  type="number"
+                  value={agent.radius}
+                  onChange={(e) => setAgent((a) => ({ ...a, radius: parseInt(e.target.value) || 30000 }))}
+                />
+              </FieldLabel>
+              <FieldLabel label="Limiet per tile" hint="max 20 (Google API)">
+                <Input
+                  type="number"
+                  value={agent.limitPerCategory}
+                  onChange={(e) => setAgent((a) => ({ ...a, limitPerCategory: Math.min(20, parseInt(e.target.value) || 20) }))}
+                  max={20}
+                />
+              </FieldLabel>
             </div>
-            <div>
-              <label className="text-sm text-ink-soft mb-1.5 block">Limiet per categorie</label>
-              <Input
-                type="number"
-                value={agent.limitPerCategory}
-                onChange={(e) => setAgent((a) => ({ ...a, limitPerCategory: Math.min(20, parseInt(e.target.value) || 20) }))}
-                max={20}
-              />
-            </div>
-          </div>
+          </SettingsSection>
 
-          <div className="flex items-center gap-3">
-            <Button
-              variant={agent.autoEmail ? "default" : "outline"}
-              size="sm"
-              className={agent.autoEmail ? "bg-navy hover:bg-navy/90" : ""}
+          {/* AUTO-EMAIL */}
+          <SettingsSection icon={<Mail className="h-3.5 w-3.5" />} title="Auto-mail" hint="Wat gebeurt er met bruikbare leads na de cyclus?">
+            <button
+              type="button"
               onClick={() => setAgent((a) => ({ ...a, autoEmail: !a.autoEmail }))}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg border w-full text-left transition-colors ${
+                agent.autoEmail
+                  ? "bg-navy/5 border-navy/30 hover:bg-navy/10"
+                  : "bg-background-alt border-line hover:border-ink-soft/40"
+              }`}
             >
-              {agent.autoEmail ? "Auto-email aan" : "Auto-email uit"}
-            </Button>
-            <span className="text-sm text-ink-soft">
-              Automatisch mails sturen naar qualified leads
-            </span>
-          </div>
+              <div className={`h-5 w-9 rounded-full relative transition-colors ${agent.autoEmail ? "bg-navy" : "bg-ink-soft/30"}`}>
+                <span className={`absolute top-0.5 h-4 w-4 bg-white rounded-full shadow transition-all ${agent.autoEmail ? "left-4" : "left-0.5"}`} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-ink">
+                  {agent.autoEmail ? "Auto-mail staat aan" : "Auto-mail staat uit"}
+                </p>
+                <p className="text-xs text-ink-soft">
+                  {agent.autoEmail
+                    ? "Bruikbare leads krijgen automatisch de template-mail."
+                    : "Mails worden niet verzonden — gebruik de Mail-knop per lead om handmatig te sturen."}
+                </p>
+              </div>
+            </button>
+          </SettingsSection>
         </CardContent>
       </Card>
 

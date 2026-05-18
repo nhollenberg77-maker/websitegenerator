@@ -21,6 +21,9 @@ export interface AgentSettings {
   radius: number;
   limitPerCategory: number;
   autoEmail: boolean;
+  targetReadyLeads: number;
+  minGbpScore: number;
+  maxCyclesPerRun: number;
 }
 
 export interface AppSettings {
@@ -46,6 +49,9 @@ const DEFAULT_SETTINGS: AppSettings = {
     radius: 30000,
     limitPerCategory: 20,
     autoEmail: true,
+    targetReadyLeads: 5,
+    minGbpScore: 5,
+    maxCyclesPerRun: 3,
   },
 };
 

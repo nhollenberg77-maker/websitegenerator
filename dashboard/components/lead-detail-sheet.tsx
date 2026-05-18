@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -11,7 +11,7 @@ import { ScoreBadge } from "@/components/score-badge";
 import { Separator } from "@/components/ui/separator";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Phone, Globe, ExternalLink, Star, Mail, Eye, Send, Loader2, Check, Save } from "lucide-react";
+import { MapPin, Phone, Globe, ExternalLink, Star, Mail, Eye, Send, Loader2, Check, Save, SearchCheck } from "lucide-react";
 import type { Lead } from "@/lib/types";
 import { CATEGORIES } from "@/lib/types";
 
@@ -29,6 +29,40 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ ok: boolean; error?: string } | null>(null);
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const needsScrape = !!(lead && !lead.contact_email && lead.website);
+  const [findingEmail, setFindingEmail] = useState(needsScrape);
+  const [findResult, setFindResult] = useState<"found" | "not_found" | null>(null);
+
+  useEffect(() => {
+    if (!needsScrape || !lead) return;
+    const placeId = lead.place_id;
+    let cancelled = false;
+    fetch("/api/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "find-email", placeId }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data?.email) {
+          setEmailTo(data.email);
+          setSavedEmail(data.email);
+          setFindResult("found");
+        } else {
+          setFindResult("not_found");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setFindResult("not_found");
+      })
+      .finally(() => {
+        if (!cancelled) setFindingEmail(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [lead, needsScrape]);
 
   if (!lead) return null;
 
@@ -254,8 +288,20 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
                   )}
 
                   <div>
-                    <label className="text-xs text-ink-soft mb-1 block">
+                    <label className="text-xs text-ink-soft mb-1 flex items-center gap-1.5">
                       Contact e-mail (opgeslagen bij lead)
+                      {findingEmail && (
+                        <span className="flex items-center gap-1 text-ink-soft/70">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          zoeken op website…
+                        </span>
+                      )}
+                      {!findingEmail && findResult === "found" && !savedEmail && (
+                        <span className="flex items-center gap-1 text-success">
+                          <SearchCheck className="h-3 w-3" />
+                          gevonden op website
+                        </span>
+                      )}
                     </label>
                     <div className="flex gap-2">
                       <Input
@@ -295,6 +341,11 @@ export function LeadDetailSheet({ lead, open, onClose }: LeadDetailSheetProps) {
                     {savedEmail && (
                       <p className="text-xs text-ink-soft mt-1">
                         Opgeslagen: <span className="font-medium">{savedEmail}</span>
+                      </p>
+                    )}
+                    {!savedEmail && findResult === "not_found" && !findingEmail && (
+                      <p className="text-xs text-ink-soft mt-1">
+                        Geen e-mail gevonden op website — voer handmatig in.
                       </p>
                     )}
                     {saveResult && (

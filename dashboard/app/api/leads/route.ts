@@ -10,9 +10,12 @@ export async function GET(request: NextRequest) {
     const minGbpParsed = minGbpRaw === null || minGbpRaw === "" ? null : parseInt(minGbpRaw);
     const minGbp = minGbpParsed !== null && !Number.isNaN(minGbpParsed) ? minGbpParsed : null;
 
+    const hasEmailRaw = sp.get("hasEmail");
+    const hasEmail = hasEmailRaw === "yes" ? true : hasEmailRaw === "no" ? false : null;
+
     const query: LeadsQuery = {
       page: Math.max(1, parseInt(sp.get("page") || "1")),
-      perPage: Math.min(100, Math.max(1, parseInt(sp.get("perPage") || "50"))),
+      perPage: Math.min(500, Math.max(1, parseInt(sp.get("perPage") || "50"))),
       cities: sp.get("cities") ? sp.get("cities")!.split(",").filter(Boolean) : [],
       categories: sp.get("categories") ? sp.get("categories")!.split(",").filter(Boolean) : [],
       status: (sp.get("status") as LeadsQuery["status"]) || "all",
@@ -20,6 +23,7 @@ export async function GET(request: NextRequest) {
       sortBy: sp.get("sortBy") || "discovered_at",
       sortDir: (sp.get("sortDir") as "asc" | "desc") || "desc",
       minGbp,
+      hasEmail,
     };
 
     const result = getLeads(query);

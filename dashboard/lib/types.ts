@@ -65,6 +65,7 @@ export interface LeadsQuery {
   sortBy: string;
   sortDir: "asc" | "desc";
   minGbp: number | null;
+  hasEmail: boolean | null;
 }
 
 export interface LeadsResponse {
