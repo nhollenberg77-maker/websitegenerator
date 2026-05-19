@@ -56,9 +56,16 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
   );
 }
 
+// Routes die geen dashboard-sidebar mogen tonen (publieke pagina's voor prospects).
+const PUBLIC_ROUTES = ["/unsubscribe"];
+
 export function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  if (PUBLIC_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`))) {
+    return null;
+  }
 
   return (
     <>

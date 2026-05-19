@@ -30,6 +30,7 @@ export interface Lead {
   enriched_at: string | null;
   slug: string | null;
   contact_email: string | null;
+  unsubscribed_at: string | null;
   ai_polish: string | null;
   ai_email: string | null;
 }

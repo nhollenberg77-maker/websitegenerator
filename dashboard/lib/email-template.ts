@@ -380,11 +380,13 @@ export function generateEmailHtml(
  */
 export function buildEmailHeaders(lead: Lead, smtp?: Partial<SmtpSettings>): Record<string, string> {
   const base = (process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOARD_URL || `https://app.${FALLBACK_DOMAIN}`).replace(/\/$/, "");
-  const unsubHttp = `${base}/unsubscribe?pid=${encodeURIComponent(lead.place_id)}`;
+  // List-Unsubscribe wijst naar /api/unsubscribe — die accepteert RFC 8058 1-click POST.
+  // De link in de mail-body (zie unsubscribeUrl) gaat naar /unsubscribe (HTML-bevestiging).
+  const unsubApi = `${base}/api/unsubscribe?pid=${encodeURIComponent(lead.place_id)}`;
   const replyTo = smtp?.replyToEmail || smtp?.fromEmail || REPLY_TO;
   const unsubMailto = `mailto:${replyTo}?subject=${encodeURIComponent("STOP")}&body=${encodeURIComponent("STOP")}`;
   return {
-    "List-Unsubscribe": `<${unsubHttp}>, <${unsubMailto}>`,
+    "List-Unsubscribe": `<${unsubApi}>, <${unsubMailto}>`,
     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
   };
 }

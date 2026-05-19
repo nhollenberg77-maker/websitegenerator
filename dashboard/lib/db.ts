@@ -31,6 +31,9 @@ function ensureMigrated(): void {
     if (!columns.some((c) => c.name === "contact_email")) {
       db.exec("ALTER TABLE leads ADD COLUMN contact_email TEXT DEFAULT NULL");
     }
+    if (!columns.some((c) => c.name === "unsubscribed_at")) {
+      db.exec("ALTER TABLE leads ADD COLUMN unsubscribed_at TEXT DEFAULT NULL");
+    }
     db.close();
     migrated = true;
   } catch {
@@ -197,6 +200,7 @@ export function getUnmailedQualifiedLeads(): Lead[] {
     .prepare(
       `SELECT * FROM leads
        WHERE qualified = 1 AND emailed_at IS NULL AND website IS NOT NULL
+         AND unsubscribed_at IS NULL
        ORDER BY qualified_at DESC`
     )
     .all() as Lead[];
@@ -230,7 +234,8 @@ export function countReadyLeads(minGbp: number): number {
        WHERE qualified = 1
          AND good_gbp_score >= ?
          AND contact_email IS NOT NULL
-         AND contact_email != ''`
+         AND contact_email != ''
+         AND unsubscribed_at IS NULL`
     )
     .get(minGbp) as { n: number };
   db.close();
@@ -245,6 +250,7 @@ export function getLeadsNeedingEmailScrape(): Lead[] {
        WHERE qualified = 1
          AND website IS NOT NULL
          AND (contact_email IS NULL OR contact_email = '')
+         AND unsubscribed_at IS NULL
        ORDER BY qualified_at DESC`
     )
     .all() as Lead[];
@@ -259,6 +265,15 @@ export function markLeadEmailed(placeId: string): void {
     placeId
   );
   db.close();
+}
+
+export function markLeadUnsubscribed(placeId: string): boolean {
+  const db = getDb(false);
+  const info = db
+    .prepare("UPDATE leads SET unsubscribed_at = COALESCE(unsubscribed_at, ?) WHERE place_id = ?")
+    .run(new Date().toISOString(), placeId);
+  db.close();
+  return info.changes > 0;
 }
 
 export function markSiteGenerated(placeId: string): void {

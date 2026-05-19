@@ -99,6 +99,9 @@ export async function sendEmailToAddress(
   siteUrl?: string,
   screenshotUrl?: string | null
 ): Promise<{ ok: boolean; error?: string }> {
+  if (lead.unsubscribed_at) {
+    return { ok: false, error: "Lead heeft zich uitgeschreven" };
+  }
   try {
     const transport = getPooledTransport(smtp);
     const replyTo = smtp.replyToEmail || smtp.fromEmail;

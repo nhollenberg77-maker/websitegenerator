@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, TestTube, X, Loader2, Target, Clock, MapPin, Tag, Sliders, Mail, Bot } from "lucide-react";
+import { Save, TestTube, X, Loader2, Target, Clock, MapPin, Tag, Sliders, Mail, Bot, Building2 } from "lucide-react";
 
 function SettingsSection({ icon, title, hint, children }: { icon: React.ReactNode; title: string; hint?: string; children: React.ReactNode }) {
   return (
@@ -49,6 +49,12 @@ interface SmtpSettings {
   pass: string;
   fromName: string;
   fromEmail: string;
+  signatureName?: string;
+  replyToEmail?: string;
+  companyName?: string;
+  companyAddress?: string;
+  companyNip?: string;
+  companyRegon?: string;
 }
 
 interface AgentSettings {
@@ -68,6 +74,7 @@ interface AgentSettings {
 export default function SettingsPage() {
   const [smtp, setSmtp] = useState<SmtpSettings>({
     host: "", port: 587, secure: false, user: "", pass: "", fromName: "Werkflows", fromEmail: "",
+    signatureName: "", replyToEmail: "", companyName: "", companyAddress: "", companyNip: "", companyRegon: "",
   });
   const [agent, setAgent] = useState<AgentSettings>({
     enabled: false, cronSchedule: "0 9 * * *", cities: [], categories: [], radius: 30000, limitPerCategory: 20, autoEmail: true,
@@ -231,6 +238,70 @@ export default function SettingsPage() {
                 {testResult.ok ? "Verbinding geslaagd" : `Fout: ${testResult.error}`}
               </span>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Afzender + juridische voettekst (verplicht voor cold-outreach in PL) */}
+      <Card className="border-line mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="font-display text-base font-semibold flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-navy" />
+            Handtekening en juridische voettekst
+          </CardTitle>
+          <p className="text-xs text-ink-soft mt-1">
+            Verschijnen onderaan elke cold-email. NIP/REGON zijn in Polen verplicht voor commerciële outreach.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <FieldLabel label="Naam onder ondertekening" hint="leeg = gebruik afzendernaam">
+              <Input
+                value={smtp.signatureName ?? ""}
+                onChange={(e) => setSmtp((s) => ({ ...s, signatureName: e.target.value }))}
+                placeholder="Tomek Paszowski"
+              />
+            </FieldLabel>
+            <FieldLabel label="Reply-To e-mail" hint="leeg = gebruik afzender e-mail">
+              <Input
+                type="email"
+                value={smtp.replyToEmail ?? ""}
+                onChange={(e) => setSmtp((s) => ({ ...s, replyToEmail: e.target.value }))}
+                placeholder="tomek@stronadlatwojejfirmy.com.pl"
+              />
+            </FieldLabel>
+          </div>
+          <FieldLabel label="Bedrijfsnaam (juridisch)" hint="voor de mail-voettekst en /unsubscribe pagina">
+            <Input
+              value={smtp.companyName ?? ""}
+              onChange={(e) => setSmtp((s) => ({ ...s, companyName: e.target.value }))}
+              placeholder="Strony dla Twojej Firmy Sp. z o.o."
+            />
+          </FieldLabel>
+          <FieldLabel label="Bedrijfsadres">
+            <Input
+              value={smtp.companyAddress ?? ""}
+              onChange={(e) => setSmtp((s) => ({ ...s, companyAddress: e.target.value }))}
+              placeholder="ul. Floriańska 1, 31-019 Kraków"
+            />
+          </FieldLabel>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldLabel label="NIP" hint="10-cijferig">
+              <Input
+                value={smtp.companyNip ?? ""}
+                onChange={(e) => setSmtp((s) => ({ ...s, companyNip: e.target.value }))}
+                placeholder="1234567890"
+                className="font-mono"
+              />
+            </FieldLabel>
+            <FieldLabel label="REGON" hint="9 of 14 cijfers">
+              <Input
+                value={smtp.companyRegon ?? ""}
+                onChange={(e) => setSmtp((s) => ({ ...s, companyRegon: e.target.value }))}
+                placeholder="123456789"
+                className="font-mono"
+              />
+            </FieldLabel>
           </div>
         </CardContent>
       </Card>

@@ -114,6 +114,10 @@ export async function POST(request: Request) {
     let lead = getLeadById(body.placeId);
     if (!lead) return Response.json({ error: "Lead not found" }, { status: 404 });
 
+    if (lead.unsubscribed_at) {
+      return Response.json({ error: "Lead heeft zich uitgeschreven" }, { status: 400 });
+    }
+
     const recipient = body.action === "send-saved" ? lead.contact_email : body.toEmail;
     if (!recipient) {
       return Response.json({ error: "Geen e-mailadres bekend voor deze lead" }, { status: 400 });
