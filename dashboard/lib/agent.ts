@@ -102,7 +102,20 @@ export async function autoDeploy(): Promise<void> {
       appendLog({ timestamp: ts(), type: "error", message: `git commit faalde: ${(commit.stderr || commit.stdout).slice(0, 120)}` });
       return;
     }
-    const push = await runCmd("git", ["push", "origin", "main"], projectRoot);
+    // Rebase op origin/main zodat dit ook werkt vanuit een Claude-worktree
+    // (HEAD kan op een feature-branch staan; origin/main moet de gepublishde state houden).
+    const fetch = await runCmd("git", ["fetch", "origin", "main"], projectRoot);
+    if (fetch.code !== 0) {
+      appendLog({ timestamp: ts(), type: "error", message: `git fetch faalde: ${fetch.stderr.slice(0, 200)}` });
+      return;
+    }
+    const rebase = await runCmd("git", ["rebase", "origin/main"], projectRoot);
+    if (rebase.code !== 0) {
+      await runCmd("git", ["rebase", "--abort"], projectRoot);
+      appendLog({ timestamp: ts(), type: "error", message: `git rebase faalde: ${(rebase.stderr || rebase.stdout).slice(0, 200)}` });
+      return;
+    }
+    const push = await runCmd("git", ["push", "origin", "HEAD:main"], projectRoot);
     if (push.code !== 0) {
       appendLog({ timestamp: ts(), type: "error", message: `git push faalde: ${push.stderr.slice(0, 200)}` });
       return;
