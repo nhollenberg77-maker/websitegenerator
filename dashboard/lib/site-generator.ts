@@ -45,9 +45,37 @@ function getContent(lead: Lead): CategoryContent {
   return CATEGORY_CONTENT[lead.category_query || ""] || CATEGORY_CONTENT.general_contractor;
 }
 
+// Poolse rechtsvormen + prefixen die we niet in het logo willen tonen.
+// Wordt zowel als prefix als als suffix gestript (case-insensitive).
+const PL_COMPANY_NOISE = [
+  "sp. z o.o.", "sp.z o.o.", "spółka z o.o.",
+  "s.a.", "spółka akcyjna",
+  "s.c.", "spółka cywilna",
+  "p.p.u.h.", "ppuh",
+  "f.h.u.", "fhu",
+  "f.u.h.", "fuh",
+  "z.u.h.", "zuh",
+  "p.u.h.", "puh",
+  "z.p.h.u.", "zphu",
+  "p.h.u.", "phu",
+];
+
+function stripCompanyNoise(name: string): string {
+  let cleaned = name;
+  for (const noise of PL_COMPANY_NOISE) {
+    const re = new RegExp(`(^|\\s)${noise.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}(?=\\s|$|,)`, "gi");
+    cleaned = cleaned.replace(re, " ");
+  }
+  return cleaned.replace(/\s+/g, " ").trim();
+}
+
 function splitCompanyName(name: string): { main: string; sub: string } {
-  const firstPart = name.split(/[.,]/)[0].trim();
-  const words = firstPart.split(/\s+/);
+  // T6: strip Poolse rechtsvormen vóór de split zodat "P.P.U.H. Drewbud
+  // sp. z o.o." → "Drewbud" en niet "P.P.U.H." als hoofdwoord eindigt.
+  const cleaned = stripCompanyNoise(name);
+  const firstPart = cleaned.split(/[.,]/)[0].trim() || cleaned;
+  const words = firstPart.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return { main: name, sub: "" };
   if (words.length === 1) return { main: words[0], sub: "" };
   if (words.length === 2) return { main: words[0], sub: words[1] };
   return { main: words.slice(0, 2).join(" "), sub: "" };
@@ -350,9 +378,12 @@ export function generateSiteHtml(lead: Lead): string {
         </div>` : "";
 
   // --- About quote: only from real review ---
+  // T5: expliciet als klant-opinie labelen — anders leest het alsof het de
+  // eigenaar zelf is die in eerste persoon spreekt.
   const aboutQuoteReview = reviews.find((r) => r.text && r.text.length > 30);
   const aboutQuoteHtml = aboutQuoteReview ? `
           <div class="about-quote">
+            <div class="quote-label">Opinia klienta</div>
             <p>"${escapeHtml(smartTruncate(aboutQuoteReview.text, 160))}"</p>
             <div class="author">${escapeHtml(aboutQuoteReview.author)}</div>
           </div>` : "";
@@ -498,6 +529,7 @@ export function generateSiteHtml(lead: Lead): string {
     .about-text p { font-size: 17px; color: var(--ink-soft); margin-bottom: 20px; }
     .about-image { aspect-ratio: 4/5; border-radius: 6px; overflow: hidden; ${aboutImg ? `background: var(--bg) url('${escapeCssUrl(aboutImg)}') center/cover;` : ""} }
     .about-quote { margin-top: 36px; padding-left: 28px; border-left: 2px solid var(--accent); }
+    .about-quote .quote-label { font-family: var(--body); font-size: 11px; color: var(--ink-soft); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
     .about-quote p { font-family: var(--display); font-style: normal; font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 14px; line-height: 1.35; letter-spacing: -0.025em; }
     .about-quote .author { font-family: var(--body); font-size: 12px; color: var(--ink-soft); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
     .reviews-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
@@ -544,6 +576,7 @@ export function generateSiteHtml(lead: Lead): string {
     .contact-info .value:hover { color: var(--accent); }
     .contact-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
     .contact-form { background: var(--bg-alt); padding: 40px 32px; border-radius: 8px; }
+    .rodo-notice { font-size: 11px; color: var(--ink-soft); margin-top: 14px; line-height: 1.5; }
     .form-group { margin-bottom: 20px; }
     .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--ink); }
     .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 13px 16px; border: 1px solid var(--line); border-radius: 6px; background: white; font-family: var(--body); font-size: 15px; color: var(--ink); transition: border-color 0.2s ease; }
@@ -890,6 +923,10 @@ export function generateSiteHtml(lead: Lead): string {
             <textarea id="wiadomosc" name="wiadomosc" placeholder="Opowiedz nam krótko o swoich potrzebach..."></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">Wyślij zapytanie</button>
+          <p class="rodo-notice">
+            Wysłanie formularza oznacza zgodę na przetwarzanie podanych danych w celu odpowiedzi
+            na zapytanie zgodnie z RODO. Dane nie są przekazywane osobom trzecim.
+          </p>
         </form>
         <script>
           (function () {

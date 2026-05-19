@@ -16,6 +16,7 @@ import json
 import sqlite3
 import logging
 import argparse
+import random
 import time
 from pathlib import Path
 from typing import Optional
@@ -47,6 +48,12 @@ DETAIL_FIELD_MASK = ",".join([
 ])
 
 PHOTO_MAX_WIDTH = 1200
+MAX_REVIEWS = 5            # E7: Places API levert max 5 reviews per call
+MAX_RETRIES = 3            # E4: aantal pogingen voor transient errors
+RETRY_BACKOFF_BASE = 1.0   # E4: exp backoff start in seconden
+INTER_LEAD_SLEEP_MIN = 0.2 # E5: jitter ondergrens tussen leads
+INTER_LEAD_SLEEP_MAX = 0.5
+BATCH_COMMIT_EVERY = 25    # E8: commit per N leads ipv per lead
 
 
 def ensure_columns(conn):
@@ -73,13 +80,17 @@ def ensure_columns(conn):
 
 
 def get_unenriched_leads(conn, force=False, qualified_only=False):
-    """Get leads to enrich. force=True includes already-enriched leads."""
-    where_parts = []
+    """Get leads to enrich. force=True includes already-enriched leads.
+
+    E6: permanent-closed leads worden uitgesloten — detail-calls zouden alleen
+    credits kosten omdat qualify ze toch hard-rejecten zou.
+    """
+    where_parts = ["(business_status IS NULL OR business_status != 'CLOSED_PERMANENTLY')"]
     if not force:
         where_parts.append("enriched_at IS NULL")
     if qualified_only:
         where_parts.append("qualified = 1")
-    where = ("WHERE " + " AND ".join(where_parts)) if where_parts else ""
+    where = "WHERE " + " AND ".join(where_parts)
     return [dict(row) for row in conn.execute(
         f"SELECT * FROM leads {where} ORDER BY COALESCE(rating_count, 0) DESC"
     ).fetchall()]
@@ -87,21 +98,46 @@ def get_unenriched_leads(conn, force=False, qualified_only=False):
 
 def fetch_place_details(place_id: str) -> Optional[dict]:
     """Fetch reviews and editorial summary from Places API (Polish locale).
-    Returns None on failure so the caller can distinguish 'really empty' from 'request failed'."""
+    Returns None on failure so the caller can distinguish 'really empty' from 'request failed'.
+
+    E4/E5: retries op transient errors (network, 5xx, 429) met exp backoff
+    + jitter. 429 respecteert Retry-After header indien aanwezig.
+    """
     url = f"{PLACES_API_BASE}/places/{place_id}?languageCode=pl&regionCode=PL"
     headers = {
         "X-Goog-Api-Key": API_KEY,
         "X-Goog-FieldMask": DETAIL_FIELD_MASK,
     }
-    try:
-        r = requests.get(url, headers=headers, timeout=15)
-    except requests.exceptions.RequestException as e:
-        log.error(f"Netwerkfout voor {place_id}: {str(e)[:200]}")
-        return None
-    if r.status_code != 200:
+    for attempt in range(MAX_RETRIES):
+        last_attempt = attempt == MAX_RETRIES - 1
+        try:
+            r = requests.get(url, headers=headers, timeout=15)
+        except requests.exceptions.RequestException as e:
+            if last_attempt:
+                log.error(f"Netwerkfout voor {place_id} (na {MAX_RETRIES} pogingen): {str(e)[:200]}")
+                return None
+            time.sleep(RETRY_BACKOFF_BASE * (2 ** attempt) + random.random() * 0.5)
+            continue
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code in (429, 500, 502, 503, 504):
+            if last_attempt:
+                log.error(f"API fout {r.status_code} voor {place_id} (na {MAX_RETRIES} pogingen)")
+                return None
+            wait = RETRY_BACKOFF_BASE * (2 ** attempt) + random.random() * 0.5
+            if r.status_code == 429:
+                retry_after = r.headers.get("Retry-After")
+                if retry_after:
+                    try:
+                        wait = max(wait, float(retry_after))
+                    except ValueError:
+                        pass
+            time.sleep(wait)
+            continue
+        # Niet-retryable: 4xx (behalve 429) — direct stoppen
         log.error(f"API fout {r.status_code} voor {place_id}: {r.text[:200]}")
         return None
-    return r.json()
+    return None
 
 
 def build_photo_url(photo_ref: str, max_width: int = PHOTO_MAX_WIDTH) -> str:
@@ -119,31 +155,33 @@ def build_photo_url(photo_ref: str, max_width: int = PHOTO_MAX_WIDTH) -> str:
 def enrich_lead(conn, lead: dict):
     """Enrich a single lead with reviews, description, and photo URLs.
     Returns (n_reviews, n_photos). On API failure: marks the lead as failed
-    (without setting enriched_at) so it will be retried on a future run."""
+    (without setting enriched_at) so it will be retried on a future run.
+
+    NB: deze functie commit niet langer per lead (E8) — de caller doet dat
+    in batches (BATCH_COMMIT_EVERY).
+    """
     place_id = lead["place_id"]
     name = lead["name"][:50]
 
     details = fetch_place_details(place_id)
     if details is None:
-        # Track the failure for diagnostics, but leave enriched_at NULL so we retry.
         conn.execute("""
             UPDATE leads SET
                 enrich_failed_at = datetime('now'),
                 enrich_failed_count = COALESCE(enrich_failed_count, 0) + 1
             WHERE place_id = ?
         """, (place_id,))
-        conn.commit()
         log.warning(f"  ⏭ {name}: skip — API faalde, wordt later opnieuw geprobeerd")
         return 0, 0
 
     reviews_raw = details.get("reviews", [])
     reviews = []
-    for rev in reviews_raw[:8]:
+    for rev in reviews_raw[:MAX_REVIEWS]:
         text_obj = rev.get("text") if isinstance(rev.get("text"), dict) else {}
         original_obj = rev.get("originalText") if isinstance(rev.get("originalText"), dict) else {}
         reviews.append({
             "author": rev.get("authorAttribution", {}).get("displayName", "Klient"),
-            "rating": rev.get("rating", 5),
+            "rating": rev.get("rating"),  # E3: None ipv 5 als default — voorkomt misleidende defaults
             "text": text_obj.get("text", "") or (rev.get("text") or ""),
             "language": text_obj.get("languageCode", ""),
             "original_text": original_obj.get("text", ""),
@@ -178,7 +216,6 @@ def enrich_lead(conn, lead: dict):
         json.dumps(photo_urls) if photo_urls else None,
         place_id,
     ))
-    conn.commit()
 
     log.info(f"  ✓ {name}: {len(reviews)} reviews, {len(photo_urls)} foto's"
              + (f", beschrijving" if description else ""))
@@ -225,14 +262,21 @@ def main():
     for i, lead in enumerate(leads, 1):
         log.info(f"[{i}/{len(leads)}] {lead['name'][:50]}")
         try:
-            nr, np = enrich_lead(conn, lead)
-            total_reviews += nr
-            total_photos += np
+            n_reviews, n_photos = enrich_lead(conn, lead)
+            total_reviews += n_reviews
+            total_photos += n_photos
         except Exception as e:
             log.error(f"  ✗ Fout: {str(e)[:100]}")
 
+        # E8: batch commit ipv per lead
+        if i % BATCH_COMMIT_EVERY == 0:
+            conn.commit()
+
+        # E5: jitter ipv vaste sleep — verkleint piek-burst kans op 429
         if i < len(leads):
-            time.sleep(0.2)
+            time.sleep(random.uniform(INTER_LEAD_SLEEP_MIN, INTER_LEAD_SLEEP_MAX))
+
+    conn.commit()  # finale commit voor de laatste batch
 
     log.info("=" * 60)
     log.info(f"Klaar: {len(leads)} leads verrijkt")

@@ -76,8 +76,24 @@ function previewUrl(siteUrl: string | undefined, slug: string | null): string {
   return `https://${FALLBACK_DOMAIN}/`;
 }
 
+// M6: 3 deterministische subject-varianten op basis van place_id.
+// Doel: lager spam-risico (geen "bezpłatny" meer + variatie binnen batch).
+// Deterministisch zodat dezelfde lead bij re-sends dezelfde subject ziet.
+const SUBJECT_TEMPLATES: ((name: string) => string)[] = [
+  (name) => `Strona dla ${name} — szkic do oceny`,
+  (name) => `Szybki podgląd nowej strony dla ${name}`,
+  (name) => `${name} — przygotowaliśmy propozycję`,
+];
+
+function djb2Hash(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
 export function generateEmailSubject(lead: Lead): string {
-  return `Strona dla ${lead.name} — bezpłatny szkic`;
+  const idx = djb2Hash(lead.place_id) % SUBJECT_TEMPLATES.length;
+  return SUBJECT_TEMPLATES[idx](lead.name);
 }
 
 interface AiEmailData {
@@ -231,14 +247,14 @@ export function generateEmailHtml(
 
             <p style="margin:0 0 18px 0;">
               Trafiliśmy na <strong style="font-weight:600;">${firma}</strong> podczas przeglądania firm ${branzaEsc} w ${miasto}.
-              Zwróciła naszą uwagę Wasza specjalizacja w ${niszaEsc} — to obszar, w którym
+              Zwróciła naszą uwagę Państwa specjalizacja w ${niszaEsc} — to obszar, w którym
               liczy się precyzja i zaufanie klientów. Pomyśleliśmy, że dobrze zaprojektowana
               strona może to zaufanie pokazać już od pierwszej wizyty.
             </p>
 
             <p style="margin:0 0 18px 0;">
               Zamiast pisać ogólnie, przygotowaliśmy konkretny szkic — taki, jak mogłaby wyglądać
-              Wasza strona za kilka dni.
+              Państwa strona za kilka dni.
             </p>
 
             <!-- PREVIEW CARD -->
@@ -265,7 +281,7 @@ export function generateEmailHtml(
 
             <p style="margin:0 0 18px 0;">
               W cenie miesięcznego abonamentu otrzymują Państwo wszystko, co potrzebne, żeby strona
-              pracowała na firmę bez Waszej uwagi:
+              pracowała na firmę bez Państwa uwagi:
             </p>
 
             <!-- FEATURES -->
@@ -291,7 +307,7 @@ export function generateEmailHtml(
                   <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Aktualizacje treści bez dodatkowych opłat
                 </td>
                 <td width="50%" style="vertical-align:top;padding:7px 0 7px 14px;font-size:14px;line-height:1.45;color:#1c1d1a;">
-                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Gotowa w 5 dni roboczych
+                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Zwykle gotowa w ok. 5 dni roboczych
                 </td>
               </tr>
             </table>
@@ -326,7 +342,7 @@ export function generateEmailHtml(
                     <tr>
                       <td style="background:#2a2a2a;border-radius:8px;">
                         <a href="${replyMailto}" style="display:inline-block;color:#ffffff;font-weight:600;font-size:14.5px;text-decoration:none;padding:14px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-                          Tak, chcę zobaczyć szkic →
+                          Odpowiedz na tę wiadomość →
                         </a>
                       </td>
                     </tr>

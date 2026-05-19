@@ -15,8 +15,10 @@ Gebruik:
 """
 import os
 import re
+import random
 import sys
 import sqlite3
+import time
 import logging
 import argparse
 import warnings
@@ -33,7 +35,9 @@ from dotenv import load_dotenv
 # Setup
 load_dotenv()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-warnings.filterwarnings("ignore")
+# Q4: alleen de specifieke InsecureRequestWarning uitschakelen — `ignore` was
+# te breed en verborg legitieme DeprecationWarnings.
+warnings.filterwarnings("ignore", category=urllib3.exceptions.InsecureRequestWarning)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -68,16 +72,25 @@ SOCIAL_OR_LISTING_DOMAINS = {
     "youtube.com", "www.youtube.com",
     "tiktok.com", "www.tiktok.com",
     "pinterest.com", "www.pinterest.com",
+    # Poolse business-listing / marketplaces (Q11)
     "pkt.pl", "www.pkt.pl",
     "panoramafirm.pl", "www.panoramafirm.pl",
     "aleo.com", "www.aleo.com",
     "oferia.pl", "www.oferia.pl",
+    "allegro.pl", "www.allegro.pl", "allegrolokalnie.pl",
+    "olx.pl", "www.olx.pl",
+    "gowork.pl", "www.gowork.pl",
+    "fixly.pl", "www.fixly.pl",
 }
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
     "(KHTML, like Gecko) Version/16.6 Safari/605.1.15"
 )
+
+# Q12: commit progress per N leads — sneller dan per-lead commit, en bij
+# crash gaat hooguit een batch verloren.
+BATCH_COMMIT_EVERY = 25
 
 # Drempels
 GBP_PASS_THRESHOLD = 5     # uit 7 criteria
@@ -148,30 +161,41 @@ def score_gbp(lead: dict) -> tuple[int, list[str]]:
 
 # ===== Website Scoring =====
 
-def fetch_website(url: str, timeout: int = 15):
-    """Fetch site. Returns (response, error_message_or_None)."""
+def fetch_website(url: str, timeout: int = 15, max_retries: int = 2):
+    """Fetch site. Returns (response, error_message_or_None).
+
+    Q8: retry op transient errors (timeout, connection error) met korte
+    backoff voordat we 'dood' concluderen. SSL-fout krijgt nog steeds de
+    aparte verify=False fallback.
+    """
     headers = {
         "User-Agent": USER_AGENT,
         "Accept-Language": "pl,en;q=0.5",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
-    try:
-        r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
-        return r, None
-    except requests.exceptions.SSLError as e:
-        # Probeer alsnog zonder SSL-verificatie
+    last_err = None
+    for attempt in range(max_retries + 1):
         try:
-            r = requests.get(url, headers=headers, timeout=timeout,
-                             allow_redirects=True, verify=False)
-            return r, f"ssl-error (fetched anyway)"
-        except Exception as e2:
-            return None, f"ssl-error en fallback faalde: {str(e2)[:80]}"
-    except requests.exceptions.Timeout:
-        return None, "timeout"
-    except requests.exceptions.ConnectionError as e:
-        return None, f"connection error: {str(e)[:80]}"
-    except Exception as e:
-        return None, f"onbekende fout: {str(e)[:80]}"
+            r = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
+            return r, None
+        except requests.exceptions.SSLError:
+            try:
+                r = requests.get(url, headers=headers, timeout=timeout,
+                                 allow_redirects=True, verify=False)
+                return r, "ssl-error (fetched anyway)"
+            except Exception as e2:
+                return None, f"ssl-error en fallback faalde: {str(e2)[:80]}"
+        except requests.exceptions.Timeout:
+            last_err = "timeout"
+        except requests.exceptions.ConnectionError as e:
+            last_err = f"connection error: {str(e)[:80]}"
+        except Exception as e:
+            return None, f"onbekende fout: {str(e)[:80]}"
+
+        # Niet de laatste poging: korte backoff + jitter
+        if attempt < max_retries:
+            time.sleep(0.5 * (2 ** attempt) + random.random() * 0.3)
+    return None, last_err
 
 
 def score_website(url: str) -> tuple[int, list[str], dict]:
@@ -320,16 +344,16 @@ def get_unqualified(conn) -> list[dict]:
 
 
 def update_qualification(conn, place_id, qualified, gbp_score, bad_site_score):
+    # Q12: caller commit in batches; geen per-lead commit hier meer.
     conn.execute("""
         UPDATE leads
         SET qualified = ?, good_gbp_score = ?, bad_site_score = ?, qualified_at = ?
         WHERE place_id = ?
     """, (
         qualified, gbp_score, bad_site_score,
-        datetime.utcnow().isoformat() + "Z",
+        datetime.now(timezone.utc).isoformat(timespec="seconds"),
         place_id,
     ))
-    conn.commit()
 
 
 def show_qualified(db_path: Path):
@@ -446,6 +470,13 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
                 update_qualification(conn, lead["place_id"], 0, gbp_score, bad_score)
             rejected_site_modern += 1
 
+        # Q12: batch commit zodat een crash niet alle voortgang verliest
+        if not dry_run and i % BATCH_COMMIT_EVERY == 0:
+            conn.commit()
+
+    if not dry_run:
+        conn.commit()  # finale commit voor de laatste batch
+
     # Samenvatting
     total = len(leads)
     log.info("\n" + "=" * 70)
@@ -469,6 +500,7 @@ def main():
     parser.add_argument("--limit", type=int, help="Max N leads (voor testen)")
     parser.add_argument("--dry-run", action="store_true", help="Test zonder DB-updates")
     parser.add_argument("--reset", action="store_true", help="Reset alle qualification-velden")
+    parser.add_argument("--yes", action="store_true", help="Skip interactive confirms (bv. voor --reset in scripts)")
     parser.add_argument("--show", action="store_true", help="Toon huidige qualified leads")
     args = parser.parse_args()
 
@@ -478,6 +510,22 @@ def main():
         sys.exit(1)
 
     if args.reset:
+        # Q9: bevestig de destructieve reset tenzij --yes meegegeven is.
+        if not args.yes:
+            conn_peek = sqlite3.connect(db_path)
+            n_qualified = conn_peek.execute(
+                "SELECT COUNT(*) FROM leads WHERE qualified IS NOT NULL"
+            ).fetchone()[0]
+            conn_peek.close()
+            try:
+                answer = input(
+                    f"--reset wist qualified/scores voor {n_qualified} leads. Doorgaan? [y/N] "
+                ).strip().lower()
+            except EOFError:
+                answer = ""
+            if answer not in {"y", "yes", "j", "ja"}:
+                log.info("Reset geannuleerd.")
+                return
         conn = sqlite3.connect(db_path)
         n = conn.execute(
             "UPDATE leads SET qualified=NULL, good_gbp_score=NULL, "

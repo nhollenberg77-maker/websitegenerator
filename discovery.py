@@ -20,7 +20,7 @@ import sqlite3
 import logging
 import argparse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from dataclasses import dataclass, asdict, field
 from typing import Optional
 
@@ -188,7 +188,7 @@ def parse_place(raw: dict, city_key: str, category: str) -> RawLead:
         city_query=city_info.get("name", city_key),
         voivodeship=city_info.get("voivodeship", ""),
         category_query=category,
-        discovered_at=datetime.utcnow().isoformat() + "Z",
+        discovered_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
     )
 
 
@@ -236,48 +236,66 @@ def init_db(db_path: Path):
 
 
 def save_leads(leads: list[RawLead], db_path: Path) -> tuple[int, int]:
-    """Sla leads op. Retourneert (nieuw_toegevoegd, al_bestaand)."""
+    """Sla leads op. Retourneert (nieuw_toegevoegd, al_bestaand).
+
+    Volatiele velden (rating, photo_count, business_status, etc.) worden bij
+    bestaande leads ververst zodat herhaalde discovery-runs de dataset
+    actueel houden. Onveranderlijke velden blijven zoals ze waren.
+    """
     if not leads:
         return 0, 0
 
     conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    added = 0
-    existed = 0
-    for lead in leads:
-        # Check of we hem al hebben
-        cur.execute("SELECT place_id FROM leads WHERE place_id = ?", (lead.place_id,))
-        if cur.fetchone():
-            existed += 1
-            continue
+    # Welke place_ids bestaan al? Eén query ipv N.
+    placeholders = ",".join(["?"] * len(leads))
+    cur.execute(
+        f"SELECT place_id FROM leads WHERE place_id IN ({placeholders})",
+        [lead.place_id for lead in leads],
+    )
+    existing_ids = {row[0] for row in cur.fetchall()}
 
-        cur.execute(
-            """
-            INSERT INTO leads (
-                place_id, name, address, website,
-                phone_national, phone_intl,
-                rating, rating_count,
-                primary_type, types, business_status, photo_count, photo_refs,
-                latitude, longitude,
-                city_query, voivodeship, category_query, discovered_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                lead.place_id, lead.name, lead.address, lead.website,
-                lead.phone_national, lead.phone_intl,
-                lead.rating, lead.rating_count,
-                lead.primary_type, json.dumps(lead.types), lead.business_status, lead.photo_count,
-                json.dumps(lead.photo_refs) if lead.photo_refs else None,
-                lead.latitude, lead.longitude,
-                lead.city_query, lead.voivodeship, lead.category_query, lead.discovered_at,
-            ),
+    rows = [
+        (
+            lead.place_id, lead.name, lead.address, lead.website,
+            lead.phone_national, lead.phone_intl,
+            lead.rating, lead.rating_count,
+            lead.primary_type, json.dumps(lead.types), lead.business_status, lead.photo_count,
+            json.dumps(lead.photo_refs) if lead.photo_refs else None,
+            lead.latitude, lead.longitude,
+            lead.city_query, lead.voivodeship, lead.category_query, lead.discovered_at,
         )
-        added += 1
+        for lead in leads
+    ]
+
+    cur.executemany(
+        """
+        INSERT INTO leads (
+            place_id, name, address, website,
+            phone_national, phone_intl,
+            rating, rating_count,
+            primary_type, types, business_status, photo_count, photo_refs,
+            latitude, longitude,
+            city_query, voivodeship, category_query, discovered_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(place_id) DO UPDATE SET
+            rating          = excluded.rating,
+            rating_count    = excluded.rating_count,
+            photo_count     = excluded.photo_count,
+            photo_refs      = excluded.photo_refs,
+            business_status = excluded.business_status,
+            website         = COALESCE(excluded.website, website),
+            phone_national  = COALESCE(excluded.phone_national, phone_national),
+            phone_intl      = COALESCE(excluded.phone_intl, phone_intl)
+        """,
+        rows,
+    )
 
     conn.commit()
     conn.close()
+    added = sum(1 for lead in leads if lead.place_id not in existing_ids)
+    existed = len(leads) - added
     return added, existed
 
 
@@ -333,6 +351,13 @@ def discover_city(
             continue
 
         parsed = [parse_place(r, city_key, cat) for r in results]
+
+        # D9: filter permanent-closed leads vóór dedup/save — bespaart credits
+        # en houdt de DB schoon (qualify zou ze toch hard-rejecten).
+        before_closed = len(parsed)
+        parsed = [p for p in parsed if p.business_status != "CLOSED_PERMANENTLY"]
+        if before_closed != len(parsed):
+            log.info(f"     {before_closed - len(parsed)} permanent gesloten leads gefilterd")
 
         # Dedup binnen deze city-run
         new_in_run = [p for p in parsed if p.place_id not in seen_place_ids]
@@ -439,6 +464,10 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if not API_KEY:
+        log.error("GOOGLE_MAPS_API_KEY ontbreekt. Zet hem in .env (zie .env.example).")
+        sys.exit(1)
 
     db_path = Path(args.db)
     init_db(db_path)

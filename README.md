@@ -25,6 +25,19 @@ npm install   # of bun install
 npm run dev   # → http://localhost:3000
 ```
 
+## Environment variabelen
+
+| Variabele               | Waar           | Doel                                                                       |
+| ----------------------- | -------------- | -------------------------------------------------------------------------- |
+| `GOOGLE_MAPS_API_KEY`   | root `.env`    | Places API key voor discovery + enrich.                                    |
+| `DB_PATH`               | root `.env`    | Optioneel, default `leads.db` in de project-root.                          |
+| `DASHBOARD_URL`         | `dashboard/.env` of Vercel | Absolute URL van het dashboard. Gebruikt door de mailer voor:  |
+|                         |                | • `List-Unsubscribe` header → `/api/unsubscribe?pid=…`                     |
+|                         |                | • De zichtbare "Wypisz się"-link in de mail-footer (`/unsubscribe?pid=…`)  |
+|                         |                | Default: `https://app.stronadlatwojejfirmy.com.pl`. Op productie expliciet |
+|                         |                | zetten zodat dev-runs niet per ongeluk live links genereren.               |
+| `NEXT_PUBLIC_DASHBOARD_URL` | `dashboard/.env` | Alternatief voor `DASHBOARD_URL` — alleen als je 'em ook in client-code wilt. |
+
 ## Architectuur
 
 ```
