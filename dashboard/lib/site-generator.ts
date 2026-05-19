@@ -88,6 +88,85 @@ function smartTruncate(text: string, maxLen: number): string {
   return (lastSpace > maxLen * 0.6 ? slice.slice(0, lastSpace) : slice).replace(/[,.;:!?-]+$/, "") + "…";
 }
 
+const SITE_DOMAIN = "stronadlatwojejfirmy.com.pl";
+
+function siteOrigin(lead: Lead): string {
+  return lead.slug ? `https://${lead.slug}.${SITE_DOMAIN}` : "";
+}
+
+function getInitials(name: string): string {
+  const words = name.replace(/[^\p{L} ]/gu, "").split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function buildSeoHead(
+  lead: Lead,
+  opts: { title: string; description: string; city: string; accent: string }
+): string {
+  const origin = siteOrigin(lead);
+  const photos = proxyPhotos(parseJson<string[]>(lead.photo_urls, []));
+  const firstPhoto = photos[0] || "";
+  const ogImage = firstPhoto && origin && firstPhoto.startsWith("/") ? `${origin}${firstPhoto}` : firstPhoto;
+  const desc = opts.description.length > 200 ? opts.description.slice(0, 197) + "..." : opts.description;
+
+  const initials = escapeHtml(getInitials(lead.name));
+  const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="${opts.accent}"/><text x="32" y="44" text-anchor="middle" font-family="system-ui,sans-serif" font-size="30" font-weight="700" fill="white">${initials}</text></svg>`;
+  const faviconDataUri = `data:image/svg+xml,${encodeURIComponent(faviconSvg)}`;
+
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: lead.name,
+    description: desc,
+  };
+  if (origin) jsonLd.url = origin;
+  if (lead.phone_intl || lead.phone_national) jsonLd.telephone = lead.phone_intl || lead.phone_national;
+  if (lead.address) {
+    jsonLd.address = {
+      "@type": "PostalAddress",
+      streetAddress: lead.address,
+      addressLocality: opts.city,
+      addressCountry: "PL",
+    };
+  }
+  if (typeof lead.latitude === "number" && typeof lead.longitude === "number") {
+    jsonLd.geo = { "@type": "GeoCoordinates", latitude: lead.latitude, longitude: lead.longitude };
+  }
+  if (ogImage) jsonLd.image = ogImage;
+  if (lead.rating && lead.rating_count && lead.rating_count > 0) {
+    jsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: lead.rating,
+      reviewCount: lead.rating_count,
+    };
+  }
+  // </script> in JSON breekt het script-blok — escape de slash.
+  const jsonLdEscaped = JSON.stringify(jsonLd).replace(/<\/script/gi, "<\\/script");
+
+  const tags: string[] = [
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:locale" content="pl_PL">`,
+    `<meta property="og:title" content="${escapeHtml(opts.title)}">`,
+    `<meta property="og:description" content="${escapeHtml(desc)}">`,
+    `<meta property="og:site_name" content="${escapeHtml(lead.name)}">`,
+    `<meta name="twitter:card" content="${ogImage ? "summary_large_image" : "summary"}">`,
+    `<meta name="twitter:title" content="${escapeHtml(opts.title)}">`,
+    `<meta name="twitter:description" content="${escapeHtml(desc)}">`,
+  ];
+  if (origin) tags.push(`<meta property="og:url" content="${escapeHtml(origin)}">`);
+  if (ogImage) {
+    tags.push(`<meta property="og:image" content="${escapeHtml(ogImage)}">`);
+    tags.push(`<meta name="twitter:image" content="${escapeHtml(ogImage)}">`);
+  }
+  if (origin) tags.push(`<link rel="canonical" href="${escapeHtml(origin)}">`);
+  tags.push(`<link rel="icon" type="image/svg+xml" href="${faviconDataUri}">`);
+  tags.push(`<script type="application/ld+json">${jsonLdEscaped}</script>`);
+
+  return tags.join("\n  ");
+}
+
 function parseJson<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
   try { return JSON.parse(raw); } catch { return fallback; }
@@ -298,6 +377,12 @@ export function generateSiteHtml(lead: Lead): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${escapeHtml(city)}</title>
   <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} w ${escapeHtml(city)}. ${businessDesc ? escapeHtml(businessDesc.slice(0, 140)) : (hasPhone ? `Zadzwoń: ${escapeHtml(phone)}` : "Zapraszamy do kontaktu.")}">
+  ${buildSeoHead(lead, {
+    title: `${lead.name} — ${categoryPl} ${city}`,
+    description: businessDesc || (hasPhone ? `${lead.name} — ${categoryPl} w ${city}. Zadzwoń: ${phone}.` : `${lead.name} — ${categoryPl} w ${city}. Zapraszamy do kontaktu.`),
+    city,
+    accent: colors.accent,
+  })}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -1031,6 +1116,12 @@ function generateServiceSiteHtml(lead: Lead): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${escapeHtml(city)}${hasPhone ? ` · tel. ${escapeHtml(phone)}` : ""}</title>
   <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} w ${escapeHtml(city)}.${hasPhone ? ` Zadzwoń: ${escapeHtml(phone)}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}">
+  ${buildSeoHead(lead, {
+    title: `${lead.name} — ${categoryPl} ${city}`,
+    description: `${lead.name} — ${categoryPl} w ${city}.${hasPhone ? ` Zadzwoń: ${phone}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}`,
+    city,
+    accent: isEmergency ? "#0F3D8C" : "#1E3A8A",
+  })}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
