@@ -127,14 +127,13 @@ def score_gbp(lead: dict) -> tuple[int, list[str]]:
     else:
         reasons.append(f"  ✗ winkel/onbruikbaar type: {primary_type}")
 
+    # NB: een social/listing URL telt hier gewoon als "website aanwezig".
+    # De hard-reject op social/listing gebeurt verderop in qualify_all() —
+    # we doen die check op één plek om dubbele logica te voorkomen.
     website = lead.get("website")
     if website:
-        domain = urlparse(website).netloc.lower()
-        if domain and domain not in SOCIAL_OR_LISTING_DOMAINS:
-            score += 1
-            reasons.append(f"  ✓ eigen domein: {domain}")
-        else:
-            reasons.append(f"  ✗ social/listing URL: {domain}")
+        score += 1
+        reasons.append(f"  ✓ website: {website[:60]}")
     else:
         reasons.append("  ✗ geen website")
 
@@ -381,8 +380,8 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
     log.info("=" * 70)
 
     qualified = 0
+    qualified_dead_site = 0  # subset van qualified: sterke GBP + dode website = top kandidaat
     rejected_gbp = 0
-    rejected_site_unreachable = 0
     rejected_site_modern = 0
 
     for i, lead in enumerate(leads, 1):
@@ -426,10 +425,14 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
 
         # Beslissing
         if not info.get("reachable"):
-            log.info(f"  ❌ AFGEWEZEN — site onbereikbaar")
+            # Sterke GBP + dode website = ideale kandidaat voor een nieuwe site.
+            # We markeren hem als qualified met bad_site_score=99 (sentinel uit score_website)
+            # zodat het dashboard hem als "site dood" kan labellen.
+            log.info(f"  ✅ QUALIFIED (site dood) — GBP:{gbp_score}/7 — perfect target")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, bad_score)
-            rejected_site_unreachable += 1
+                update_qualification(conn, lead["place_id"], 1, gbp_score, bad_score)
+            qualified += 1
+            qualified_dead_site += 1
             continue
 
         if bad_score >= BAD_SITE_THRESHOLD:
@@ -448,8 +451,8 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
     log.info("\n" + "=" * 70)
     log.info(f"VERWERKT: {total} leads")
     log.info(f"  ✅ Qualified                  : {qualified} ({100*qualified/total:.0f}%)")
+    log.info(f"     ↳ waarvan site dood       : {qualified_dead_site}")
     log.info(f"  ❌ Afgewezen — GBP/winkel    : {rejected_gbp}")
-    log.info(f"  ❌ Afgewezen — site onbereik : {rejected_site_unreachable}")
     log.info(f"  ❌ Afgewezen — site te modern: {rejected_site_modern}")
     log.info("=" * 70)
 

@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import type { SmtpSettings } from "./settings";
 import type { Lead } from "./types";
-import { generateEmailHtml, generateEmailSubject } from "./email-template";
+import { generateEmailHtml, generateEmailSubject, buildEmailHeaders } from "./email-template";
 import { markLeadEmailed } from "./db";
 
 export async function testSmtpConnection(smtp: SmtpSettings): Promise<{ ok: boolean; error?: string }> {
@@ -33,11 +33,15 @@ export async function sendLeadEmail(lead: Lead, smtp: SmtpSettings, siteUrl?: st
       auth: { user: smtp.user, pass: smtp.pass },
     });
 
+    const replyTo = smtp.replyToEmail || smtp.fromEmail;
+
     await transport.sendMail({
       from: `"${smtp.fromName}" <${smtp.fromEmail}>`,
       to: recipientEmail,
+      replyTo,
       subject: generateEmailSubject(lead),
-      html: generateEmailHtml(lead, siteUrl, screenshotUrl),
+      html: generateEmailHtml(lead, siteUrl, screenshotUrl, smtp),
+      headers: buildEmailHeaders(lead, smtp),
     });
 
     markLeadEmailed(lead.place_id);
@@ -69,11 +73,15 @@ export async function sendEmailToAddress(
       auth: { user: smtp.user, pass: smtp.pass },
     });
 
+    const replyTo = smtp.replyToEmail || smtp.fromEmail;
+
     await transport.sendMail({
       from: `"${smtp.fromName}" <${smtp.fromEmail}>`,
       to: toEmail,
+      replyTo,
       subject: generateEmailSubject(lead),
-      html: generateEmailHtml(lead, siteUrl, screenshotUrl),
+      html: generateEmailHtml(lead, siteUrl, screenshotUrl, smtp),
+      headers: buildEmailHeaders(lead, smtp),
     });
 
     markLeadEmailed(lead.place_id);

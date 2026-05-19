@@ -11,6 +11,15 @@ export interface SmtpSettings {
   pass: string;
   fromName: string;
   fromEmail: string;
+  // Email-handtekening en juridische voettekst — gebruikt in cold-emails.
+  // Als deze leeg zijn vallen we terug op fromName / fromEmail of laten
+  // we de juridische footer weg (zacht degradatiegedrag).
+  signatureName?: string;       // bijv. "Tomek Paszowski" (default: fromName)
+  replyToEmail?: string;        // bijv. "tomek@..."         (default: fromEmail)
+  companyName?: string;         // bijv. "Strony dla Twojej Firmy Sp. z o.o."
+  companyAddress?: string;      // bijv. "ul. Floriańska 1, 31-019 Kraków"
+  companyNip?: string;          // bijv. "1234567890" (Polish tax ID)
+  companyRegon?: string;        // bijv. "123456789"  (Polish REGON)
 }
 
 export interface AgentSettings {
@@ -41,6 +50,12 @@ const DEFAULT_SETTINGS: AppSettings = {
     pass: "",
     fromName: "Werkflows",
     fromEmail: "",
+    signatureName: "",
+    replyToEmail: "",
+    companyName: "",
+    companyAddress: "",
+    companyNip: "",
+    companyRegon: "",
   },
   agent: {
     enabled: false,

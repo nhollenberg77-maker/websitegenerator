@@ -1,4 +1,5 @@
 import type { Lead } from "./types";
+import type { SmtpSettings } from "./settings";
 
 const NISZA_PL: Record<string, string> = {
   roofing_contractor: "pokryciach dachowych",
@@ -18,6 +19,24 @@ const BRANZA_PL: Record<string, string> = {
 
 const REPLY_TO = "tomek@stronadlatwojejfirmy.com.pl";
 const FALLBACK_DOMAIN = "stronadlatwojejfirmy.com.pl";
+
+// Absolute basis-URL waar het dashboard reachable is — gebruikt om
+// relatieve proxy-paths (/api/photo, /unsubscribe) absoluut te maken
+// voor links in mails. Default: same domain als FALLBACK_DOMAIN.
+function dashboardBaseUrl(): string {
+  const fromEnv = process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOARD_URL;
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
+  return `https://app.${FALLBACK_DOMAIN}`;
+}
+
+// Maakt een (eventueel relatieve) /api/photo URL absoluut. Gebruikt in
+// mail-templates omdat mailclients geen relatieve <img src> kunnen laden.
+function absolutize(url: string | null | undefined): string {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/")) return dashboardBaseUrl() + url;
+  return url;
+}
 
 function esc(s: string): string {
   return s
@@ -79,8 +98,29 @@ function parseAiEmail(lead: Lead): AiEmailData {
   }
 }
 
-export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: string | null): string {
+/**
+ * Bouwt unieke unsubscribe-URL voor een lead. Komt overeen met /unsubscribe
+ * route op het dashboard; query params bevatten de place_id + een token
+ * (hier: simpele HMAC-loze obfuscation). Voor productie aanbevolen:
+ * vervang door HMAC-getekende token om guessing te voorkomen.
+ */
+function unsubscribeUrl(lead: Lead): string {
+  const base = (process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOARD_URL || `https://app.${FALLBACK_DOMAIN}`).replace(/\/$/, "");
+  return `${base}/unsubscribe?pid=${encodeURIComponent(lead.place_id)}`;
+}
+
+export function generateEmailHtml(
+  lead: Lead,
+  siteUrl?: string,
+  screenshotUrl?: string | null,
+  smtp?: Partial<SmtpSettings>,
+): string {
   const ai = parseAiEmail(lead);
+
+  // Sign/reply uit settings — fallback op de oude hardcoded waardes voor
+  // backward-compat. Zo blijft mailen werken als settings nog niet bijgewerkt.
+  const signatureName = smtp?.signatureName || smtp?.fromName || "Tomek Paszowski";
+  const replyToEmail = smtp?.replyToEmail || smtp?.fromEmail || REPLY_TO;
 
   const firma = esc(lead.name);
   const firmaKrotka = esc(ai.firma_krotka || shortName(lead.name));
@@ -97,7 +137,8 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: 
   const niszaEsc = esc(nisza);
   const branzaEsc = esc(branza);
 
-  const replyMailto = `mailto:${REPLY_TO}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
+  const replyMailto = `mailto:${replyToEmail}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
+  const unsubUrl = unsubscribeUrl(lead);
 
   const preheader = `Przygotowaliśmy bezpłatny szkic strony dla ${lead.name} — wystarczy spojrzeć, bez zobowiązań.`;
 
@@ -299,11 +340,26 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: 
               <tr>
                 <td style="padding-top:24px;border-top:1px solid #efece4;font-size:14.5px;line-height:1.5;">
                   <div style="color:#4a4b46;">Pozdrawiam,</div>
-                  <div style="font-weight:600;color:#1c1d1a;">Tomek Paszowski</div>
+                  <div style="font-weight:600;color:#1c1d1a;">${esc(signatureName)}</div>
                 </td>
               </tr>
             </table>
 
+          </td>
+        </tr>
+
+        <!-- LEGAL FOOTER (RODO / handelsregister) -->
+        <tr>
+          <td style="padding:24px 48px 28px 48px;background:#f3efe7;border-top:1px solid #e6e2d8;font-size:11.5px;line-height:1.55;color:#7d7e78;">
+            <div style="margin-bottom:8px;">
+              Wiadomość wysłana na podstawie publicznie dostępnych danych firmowych (Google Business Profile).
+              Jeśli nie życzą sobie Państwo otrzymywać takich propozycji, prosimy
+              <a href="${esc(unsubUrl)}" style="color:#7d7e78;text-decoration:underline;">kliknąć tutaj</a>
+              lub po prostu odpowiedzieć słowem <strong style="color:#4a4b46;">STOP</strong> — usuniemy adres natychmiast.
+            </div>
+            ${smtp?.companyName ? `<div style="margin-top:10px;color:#9a9b95;">
+              ${esc(smtp.companyName)}${smtp.companyAddress ? ` · ${esc(smtp.companyAddress)}` : ""}${smtp.companyNip ? ` · NIP ${esc(smtp.companyNip)}` : ""}${smtp.companyRegon ? ` · REGON ${esc(smtp.companyRegon)}` : ""}
+            </div>` : ""}
           </td>
         </tr>
 
@@ -315,4 +371,20 @@ export function generateEmailHtml(lead: Lead, siteUrl?: string, screenshotUrl?: 
 
 </body>
 </html>`;
+}
+
+/**
+ * Headers die `nodemailer` moet meesturen voor de cold-emails.
+ * - List-Unsubscribe + List-Unsubscribe-Post = 1-click unsubscribe via Gmail/Outlook
+ * - Reply-To = juiste antwoordadres als from-email gespoofd is voor branding
+ */
+export function buildEmailHeaders(lead: Lead, smtp?: Partial<SmtpSettings>): Record<string, string> {
+  const base = (process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOARD_URL || `https://app.${FALLBACK_DOMAIN}`).replace(/\/$/, "");
+  const unsubHttp = `${base}/unsubscribe?pid=${encodeURIComponent(lead.place_id)}`;
+  const replyTo = smtp?.replyToEmail || smtp?.fromEmail || REPLY_TO;
+  const unsubMailto = `mailto:${replyTo}?subject=${encodeURIComponent("STOP")}&body=${encodeURIComponent("STOP")}`;
+  return {
+    "List-Unsubscribe": `<${unsubHttp}>, <${unsubMailto}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  };
 }

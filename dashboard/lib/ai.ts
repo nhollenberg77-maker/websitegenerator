@@ -25,12 +25,40 @@ export function isAiConfigured(): boolean {
 export const AI_MODEL_VISION = "claude-haiku-4-5";
 export const AI_MODEL_TEXT = "claude-haiku-4-5";
 
-// Google Places photo URL helper: voegt ?maxWidthPx=...&key=... toe
-export function photoUrlWithKey(baseUrl: string, maxWidth = 1200): string {
+// Google Places photo URL helper voor SERVER-SIDE gebruik (vision AI-calls).
+//
+// Accepteert twee input-vormen:
+//   1) Proxy-pad: "/api/photo?ref=places/.../photos/...&w=1200"  (nieuwe stijl,
+//      sinds we de key niet meer in de DB opslaan om lekkage te voorkomen)
+//   2) Bare Places URL: "https://places.googleapis.com/v1/places/.../photos/.../media"
+//      (legacy/eerdere data)
+//
+// In beide gevallen produceren we de volledige upstream URL inclusief
+// `&key=...` — die mag alleen server-side gebruikt worden (Anthropic vision).
+// Voor end-user rendering (sites, mails) → gebruik de proxy URL direct.
+export function photoUrlWithKey(input: string, maxWidth = 1200): string {
   const key = process.env.GOOGLE_MAPS_API_KEY;
-  if (!key) return baseUrl;
-  const sep = baseUrl.includes("?") ? "&" : "?";
-  return `${baseUrl}${sep}maxWidthPx=${maxWidth}&key=${key}`;
+  if (!key) return input;
+
+  // Vorm 1: proxy-pad. Pak `ref=` uit en bouw upstream URL.
+  if (input.startsWith("/api/photo")) {
+    const idx = input.indexOf("?");
+    if (idx >= 0) {
+      const params = new URLSearchParams(input.slice(idx + 1));
+      const ref = params.get("ref");
+      const w = params.get("w");
+      if (ref) {
+        const width = w && /^\d+$/.test(w) ? w : String(maxWidth);
+        return `https://places.googleapis.com/v1/${ref}/media?maxWidthPx=${width}&key=${key}`;
+      }
+    }
+    return input; // malformed — laat AI dit ontdekken
+  }
+
+  // Vorm 2: bare Places URL — voeg maxWidthPx + key toe als ze ontbreken.
+  const sep = input.includes("?") ? "&" : "?";
+  if (input.includes("key=")) return input;
+  return `${input}${sep}maxWidthPx=${maxWidth}&key=${key}`;
 }
 
 // Wrapper voor calls met JSON-output via structured outputs.

@@ -93,6 +93,29 @@ function parseJson<T>(raw: string | null, fallback: T): T {
   try { return JSON.parse(raw); } catch { return fallback; }
 }
 
+// Saneert een photo-URL voor gebruik in <img src=...>. Modern (sinds enrich.py
+// de proxy gebruikt) zijn dit al "/api/photo?ref=..." paden — die gaan
+// ongewijzigd door. Voor eventuele legacy DB-rijen waar nog
+// "https://places.googleapis.com/.../media?...&key=ABC" in staat: pak de
+// photo-ref eruit en gebruik alsnog de proxy zodat de key niet lekt.
+function proxyPhotoUrl(input: string): string {
+  if (!input) return "";
+  if (input.startsWith("/api/photo")) return input;
+  // Legacy: bare Places URL met key. Pak ref + width eruit.
+  const m = input.match(/places\.googleapis\.com\/v1\/(places\/[^/]+\/photos\/[^/?]+)\/media(?:\?([^#]*))?/);
+  if (m) {
+    const ref = m[1];
+    const params = new URLSearchParams(m[2] || "");
+    const w = params.get("maxWidthPx") || "1200";
+    return `/api/photo?ref=${encodeURIComponent(ref)}&w=${w}`;
+  }
+  return input;
+}
+
+function proxyPhotos(urls: string[]): string[] {
+  return urls.map(proxyPhotoUrl).filter(Boolean);
+}
+
 const CATEGORY_PL: Record<string, string> = {
   roofing_contractor: "dekarstwo i pokrycia dachowe",
   electrician: "instalacje elektryczne",
@@ -120,7 +143,7 @@ export function generateSiteHtml(lead: Lead): string {
   const ratingCount = lead.rating_count ?? 0;
   const categoryPl = CATEGORY_PL[lead.category_query || ""] || "usługi budowlane";
 
-  const photoUrls: string[] = applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish);
+  const photoUrls: string[] = proxyPhotos(applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish));
   const reviews: LeadReview[] = parseJson<LeadReview[]>(lead.reviews_json, [])
     .filter((r) => r.rating >= 4 && r.text && r.text.trim().length >= 20)
     .map((r) => {
@@ -142,6 +165,12 @@ export function generateSiteHtml(lead: Lead): string {
   const heroImg = photoUrls[0] || "";
   const galleryPhotos = photoUrls.slice(1);
   const aboutImg = photoUrls.length > 3 ? photoUrls[Math.min(photoUrls.length - 1, 6)] : "";
+
+  // Wie ontvangt het ingevulde formulier? Bij voorkeur de aannemer zelf —
+  // anders blijft het veld leeg en moet de bezoeker het invullen voordat hij
+  // verzendt. Het formulier opent de mailclient van de bezoeker via mailto:
+  // met alle velden voorgevuld als body.
+  const formRecipient = (lead.contact_email || "").trim();
 
   const servicesHtml = content.services
     .map(
@@ -744,14 +773,22 @@ export function generateSiteHtml(lead: Lead): string {
             <a href="https://wa.me/${waPhone}" class="btn btn-whatsapp">WhatsApp</a>
           </div>` : ""}
         </div>
-        <form class="contact-form" onsubmit="return showFormThanks(this)">
+        <!--
+          Formulier opent de mailclient van de bezoeker met de ingevulde
+          gegevens. Voor productie aanbevolen: vervangen door een server-side
+          POST (Vercel form-handler, Resend Contact API, of een eigen
+          /api/contact route). Dan ook spam-protect (honeypot of hCaptcha)
+          aanzetten — een blootgesteld mailto stuurt geen spam, een open
+          POST-endpoint wel.
+        -->
+        <form class="contact-form" onsubmit="return submitContact(this)">
           <div class="form-group">
             <label for="imie">Imię i nazwisko</label>
-            <input type="text" id="imie" name="imie" placeholder="Jan Kowalski">
+            <input type="text" id="imie" name="imie" placeholder="Jan Kowalski" required>
           </div>
           <div class="form-group">
             <label for="tel">Telefon</label>
-            <input type="tel" id="tel" name="tel" placeholder="+48 600 000 000">
+            <input type="tel" id="tel" name="tel" placeholder="+48 600 000 000" required>
           </div>
           <div class="form-group">
             <label for="email">E-mail</label>
@@ -770,10 +807,28 @@ export function generateSiteHtml(lead: Lead): string {
           <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">Wyślij zapytanie</button>
         </form>
         <script>
-          function showFormThanks(form) {
-            form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="font-family:var(--display); font-size:28px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">Dziękujemy za wiadomość!</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:320px; margin:0 auto;">Skontaktujemy się z Państwem w ciągu 24 godzin roboczych.</p></div>';
-            return false;
-          }
+          (function () {
+            var recipient = ${JSON.stringify(formRecipient)};
+            var firma = ${JSON.stringify(lead.name)};
+            window.submitContact = function (form) {
+              var fd = new FormData(form);
+              var lines = [
+                'Imię: ' + (fd.get('imie') || ''),
+                'Telefon: ' + (fd.get('tel') || ''),
+                'E-mail: ' + (fd.get('email') || ''),
+                'Zakres: ' + (fd.get('zakres') || ''),
+                '',
+                (fd.get('wiadomosc') || ''),
+              ];
+              var subject = 'Zapytanie ze strony — ' + (fd.get('imie') || '');
+              var href = 'mailto:' + recipient
+                + '?subject=' + encodeURIComponent(subject)
+                + '&body=' + encodeURIComponent(lines.join('\\n'));
+              window.location.href = href;
+              form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:26px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">Wiadomość gotowa do wysłania</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:340px; margin:0 auto;">Otworzyliśmy Państwa program pocztowy z gotową wiadomością do firmy ' + firma + '. Wystarczy nacisnąć „Wyślij".</p></div>';
+              return false;
+            };
+          })();
         </script>
       </div>
     </div>
@@ -861,7 +916,7 @@ function generateServiceSiteHtml(lead: Lead): string {
       return true;
     });
 
-  const photoUrls: string[] = applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish);
+  const photoUrls: string[] = proxyPhotos(applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish));
   const showGallery = photoUrls.length >= 3;
   const heroImg = photoUrls[0] || "";
 
@@ -869,6 +924,10 @@ function generateServiceSiteHtml(lead: Lead): string {
   const hasRating = ratingCount > 0 && rating > 0;
   const strongRating = hasRating && rating >= 4.0;
   const nearbyAreas = getNearbyAreas(city, voivodeship);
+
+  // Zelfde formulier-aanpak als in het editorial-template: bij submit
+  // openen we de mailclient van de bezoeker. Recipient = de aannemer.
+  const formRecipient = (lead.contact_email || "").trim();
 
   // --- Detect project-installer vs emergency-service ---
   // Installers: solar, heat pumps, smart home, metering, ventilation — planned project work
@@ -1374,7 +1433,9 @@ function generateServiceSiteHtml(lead: Lead): string {
           <h3>Godziny pracy</h3>
           <span class="value" style="font-size:17px">pn-pt 7:00–18:00 · sb 8:00–14:00${isEmergency ? "<br><span style=\"color:var(--urgent);font-size:14px\">+ dyżur 24/7 dla awarii</span>" : ""}</span>
         </div>
-        <form class="svc-form" onsubmit="return svcShowThanks(this)">
+        <!-- Formulier opent de mailclient met de ingevulde data. Voor productie:
+             vervang door server-side POST + spam-protection. -->
+        <form class="svc-form" onsubmit="return svcSubmit(this)">
           <div class="svc-form-group">
             <label for="imie">Imię i nazwisko</label>
             <input type="text" id="imie" name="imie" placeholder="Jan Kowalski" required>
@@ -1396,10 +1457,27 @@ function generateServiceSiteHtml(lead: Lead): string {
           <button type="submit" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;">Oddzwońcie do mnie</button>
         </form>
         <script>
-          function svcShowThanks(form) {
-            form.innerHTML = '<div style="text-align:center; padding:40px 20px;"><div style="width:56px; height:56px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="font-family:var(--display); font-size:24px; font-weight:700; margin-bottom:10px; letter-spacing:-0.025em;">Dziękujemy!</h3><p style="color:var(--ink-soft); font-size:14px;">Oddzwonimy w ciągu 30 minut w godzinach pracy.</p></div>';
-            return false;
-          }
+          (function () {
+            var recipient = ${JSON.stringify(formRecipient)};
+            var firma = ${JSON.stringify(lead.name)};
+            window.svcSubmit = function (form) {
+              var fd = new FormData(form);
+              var lines = [
+                'Imię: ' + (fd.get('imie') || ''),
+                'Telefon: ' + (fd.get('tel') || ''),
+                'Zakres: ' + (fd.get('zakres') || ''),
+                '',
+                (fd.get('wiadomosc') || ''),
+              ];
+              var subject = 'Prośba o oddzwonienie — ' + (fd.get('imie') || '');
+              var href = 'mailto:' + recipient
+                + '?subject=' + encodeURIComponent(subject)
+                + '&body=' + encodeURIComponent(lines.join('\\n'));
+              window.location.href = href;
+              form.innerHTML = '<div style="text-align:center; padding:40px 20px;"><div style="width:56px; height:56px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:22px; font-weight:700; margin-bottom:10px; letter-spacing:-0.025em;">Wiadomość gotowa</h3><p style="color:var(--ink-soft); font-size:14px;">Otworzyliśmy Państwa program pocztowy z gotową wiadomością do firmy ' + firma + '. Wystarczy nacisnąć „Wyślij".</p></div>';
+              return false;
+            };
+          })();
         </script>
       </div>
     </div>
