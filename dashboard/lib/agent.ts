@@ -199,8 +199,12 @@ export async function runAgentCycle(): Promise<void> {
 
   for (let round = 1; round <= maxCycles; round++) {
     const readyBefore = countReadyLeads(minGbp);
-    if (readyBefore >= target) {
-      appendLog({ timestamp: ts(), type: "success", message: `Doel bereikt: ${readyBefore}/${target} bruikbare leads aanwezig — discovery overgeslagen` });
+    // Round 1 doet altijd discovery — een nieuwe cycle moet nieuwe leads
+    // proberen te vinden, ongeacht hoeveel bestaande qualified leads er al
+    // staan. Vanaf round 2+ wel skippen als target al gehaald is (geen zin
+    // om verder te zoeken als de cycle z'n doel al heeft).
+    if (round > 1 && readyBefore >= target) {
+      appendLog({ timestamp: ts(), type: "success", message: `Doel bereikt: ${readyBefore}/${target} bruikbare leads aanwezig — verdere rondes overgeslagen` });
       break;
     }
 
