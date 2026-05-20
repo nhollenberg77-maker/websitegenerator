@@ -291,7 +291,7 @@ export function generateEmailHtml(
                   <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Nowoczesny, responsywny design
                 </td>
                 <td width="50%" style="vertical-align:top;padding:7px 0 7px 14px;font-size:14px;line-height:1.45;color:#1c1d1a;">
-                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Optymalizacja SEO dla ${miasto}
+                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Optymalizacja techniczna pod Google
                 </td>
               </tr>
               <tr>
@@ -304,7 +304,7 @@ export function generateEmailHtml(
               </tr>
               <tr>
                 <td width="50%" style="vertical-align:top;padding:7px 14px 7px 0;font-size:14px;line-height:1.45;color:#1c1d1a;">
-                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Aktualizacje treści bez dodatkowych opłat
+                  <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Wsparcie e-mail przy pytaniach
                 </td>
                 <td width="50%" style="vertical-align:top;padding:7px 0 7px 14px;font-size:14px;line-height:1.45;color:#1c1d1a;">
                   <span style="color:#2a2a2a;font-weight:700;">✓</span>&nbsp;&nbsp;Zwykle gotowa w ok. 5 dni roboczych
@@ -323,7 +323,7 @@ export function generateEmailHtml(
                     <span style="font-size:14px;color:#7d7e78;font-weight:500;">od&nbsp;</span><span style="font-size:44px;font-weight:600;letter-spacing:-0.025em;line-height:1;">149&nbsp;zł</span><span style="font-size:14px;color:#7d7e78;">&nbsp;/miesiąc</span>
                   </div>
                   <div style="margin-top:10px;font-size:13px;line-height:1.5;color:#4a4b46;">
-                    jednorazowa opłata startowa <strong style="color:#1c1d1a;font-weight:600;">499 zł</strong> · umowa miesięczna, bez ukrytych kosztów
+                    jednorazowa opłata startowa <strong style="color:#1c1d1a;font-weight:600;">500 zł</strong> · umowa miesięczna, bez ukrytych kosztów
                   </div>
                 </td>
               </tr>
