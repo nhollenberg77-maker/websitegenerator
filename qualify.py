@@ -95,6 +95,13 @@ BATCH_COMMIT_EVERY = 25
 # Drempels
 GBP_PASS_THRESHOLD = 5     # uit 7 criteria
 BAD_SITE_THRESHOLD = 3     # minimaal 3 "slecht" signalen
+STRUCTURAL_MIN = 1         # naast totaal-score: ≥1 echt structureel issue vereist
+# Reden: zonder gate triggert "geen Open Graph + geen Schema.org + oude copyright"
+# (3 cosmetische signalen) qualification — terwijl een verder moderne site
+# helemaal geen vervanging nodig heeft. Een lead moet minstens 1 structureel
+# probleem hebben (HTTPS, viewport, deprecated tags, oude tech, etc.) om
+# vervanging te rechtvaardigen.
+COPYRIGHT_STALE_YEARS = 5  # was 3 — 2021 in 2026 is geen ramp meer
 
 CURRENT_YEAR = datetime.now().year
 
@@ -202,94 +209,100 @@ def score_website(url: str) -> tuple[int, list[str], dict]:
     """
     Scoor hoe 'slecht' een website is. Hogere score = slechter = meer behoefte aan nieuwe site.
     Returns (bad_score, reasons, info_dict).
+
+    Elk signaal is gemarkeerd als 'structural' (echt probleem dat een nieuwe
+    site rechtvaardigt) of 'cosmetic' (jammer maar geen reden). info["structural_hits"]
+    telt de structurele issues — qualify_all gebruikt dat als gate zodat een
+    site met alleen cosmetische tekortkomingen (geen OG/Schema/oude copyright)
+    niet ten onrechte als "te vervangen" gemarkeerd wordt.
     """
     bad_score = 0
+    structural_hits = 0
     reasons = []
     info = {}
+
+    def hit(weight: int, structural: bool, reason: str) -> None:
+        nonlocal bad_score, structural_hits
+        bad_score += weight
+        if structural:
+            structural_hits += 1
+        reasons.append(reason)
 
     response, error = fetch_website(url)
     if not response:
         # Site onbereikbaar — sterk signaal, maar we kunnen er ook niet doorop scrapen
-        return 99, [f"  ⚠ onbereikbaar: {error}"], {"reachable": False}
+        return 99, [f"  ⚠ onbereikbaar: {error}"], {"reachable": False, "structural_hits": 99}
 
     info["reachable"] = True
     info["final_url"] = response.url
     info["status_code"] = response.status_code
 
-    # 1. HTTPS
+    # 1. HTTPS — structural (browserwaarschuwingen, mobile blocking)
     if not response.url.startswith("https://"):
-        bad_score += 1
-        reasons.append("  ✗ geen HTTPS")
+        hit(1, True, "  ✗ geen HTTPS")
     else:
         reasons.append("  ✓ HTTPS")
 
-    # 2. SSL probleem
+    # 2. SSL probleem — structural
     if error and "ssl" in error.lower():
-        bad_score += 1
-        reasons.append("  ✗ SSL-certificaat-probleem")
+        hit(1, True, "  ✗ SSL-certificaat-probleem")
 
-    # 3. Status code
+    # 3. Status code — structural
     if response.status_code != 200:
-        bad_score += 1
-        reasons.append(f"  ✗ HTTP status {response.status_code}")
+        hit(1, True, f"  ✗ HTTP status {response.status_code}")
 
-    # 4. Pagina-grootte
+    # 4. Pagina-grootte — structural (placeholder of onbruikbaar groot)
     size_bytes = len(response.content)
     info["page_size_kb"] = size_bytes // 1024
     if size_bytes > 5 * 1024 * 1024:
-        bad_score += 1
-        reasons.append(f"  ✗ erg groot ({size_bytes//1024}KB)")
+        hit(1, True, f"  ✗ erg groot ({size_bytes//1024}KB)")
     elif size_bytes < 3 * 1024:
-        bad_score += 1
-        reasons.append(f"  ✗ verdacht klein ({size_bytes//1024}KB) — placeholder?")
+        hit(1, True, f"  ✗ verdacht klein ({size_bytes//1024}KB) — placeholder?")
 
     # Parse HTML
     try:
         soup = BeautifulSoup(response.text, "html.parser")
-    except Exception as e:
-        return bad_score + 2, reasons + [f"  ✗ HTML niet parsebaar"], info
+    except Exception:
+        hit(2, True, "  ✗ HTML niet parsebaar")
+        info["structural_hits"] = structural_hits
+        return bad_score, reasons, info
 
-    # 5. Viewport meta (mobiel-responsief signaal) — zwaarder gewogen
+    # 5. Viewport meta — structural (zonder = niet bruikbaar op mobiel)
     viewport = soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.I)})
     if not viewport:
-        bad_score += 2
-        reasons.append("  ✗ geen viewport meta tag (niet mobiel)")
+        hit(2, True, "  ✗ geen viewport meta tag (niet mobiel)")
     else:
         reasons.append("  ✓ viewport meta")
 
-    # 6. Doctype
+    # 6. Doctype — cosmetic (sites zonder werken vaak prima)
     raw_start = response.text[:200].lower().strip()
     if not raw_start.startswith("<!doctype html>"):
-        bad_score += 1
-        reasons.append("  ✗ geen modern <!doctype html>")
+        hit(1, False, "  ✗ geen modern <!doctype html>")
 
-    # 7. Open Graph tags
+    # 7. Open Graph tags — cosmetic (alleen social preview)
     og_tags = soup.find_all("meta", attrs={"property": re.compile(r"^og:", re.I)})
     if not og_tags:
-        bad_score += 1
-        reasons.append("  ✗ geen Open Graph tags")
+        hit(1, False, "  ✗ geen Open Graph tags")
 
-    # 8. Schema.org
+    # 8. Schema.org — cosmetic (alleen rich snippets)
     has_jsonld = bool(soup.find("script", attrs={"type": "application/ld+json"}))
     has_microdata = bool(soup.find(attrs={"itemtype": re.compile(r"schema\.org", re.I)}))
     if not (has_jsonld or has_microdata):
-        bad_score += 1
-        reasons.append("  ✗ geen Schema.org markup")
+        hit(1, False, "  ✗ geen Schema.org markup")
 
-    # 9. Copyright-jaartal
+    # 9. Copyright-jaartal — cosmetic (mensen vergeten vaak de footer)
     page_text = soup.get_text(" ", strip=True)
     cr_matches = re.findall(r"(?:©|&copy;|copyright)\s*\.?\s*(\d{4})", page_text, re.I)
     valid_years = [int(y) for y in cr_matches if 2000 <= int(y) <= CURRENT_YEAR + 1]
     if valid_years:
         latest = max(valid_years)
         info["copyright_year"] = latest
-        if latest <= CURRENT_YEAR - 3:
-            bad_score += 1
-            reasons.append(f"  ✗ copyright {latest} (≥3 jr oud)")
+        if latest <= CURRENT_YEAR - COPYRIGHT_STALE_YEARS:
+            hit(1, False, f"  ✗ copyright {latest} (≥{COPYRIGHT_STALE_YEARS} jr oud)")
         else:
             reasons.append(f"  • copyright {latest}")
 
-    # 10. Last-Modified header
+    # 10. Last-Modified header — structural (>2yr = onderhoud gestopt)
     lm = response.headers.get("Last-Modified")
     if lm:
         try:
@@ -297,37 +310,33 @@ def score_website(url: str) -> tuple[int, list[str], dict]:
             age_days = (datetime.now(timezone.utc) - lm_dt).days
             info["last_modified_days"] = age_days
             if age_days > 365 * 2:
-                bad_score += 1
-                reasons.append(f"  ✗ Last-Modified {age_days}d oud")
+                hit(1, True, f"  ✗ Last-Modified {age_days}d oud")
         except Exception:
             pass
 
-    # 11. Deprecated tags (sterk signaal van oude site)
+    # 11. Deprecated tags — structural (90s site)
     if soup.find("table", attrs={"border": True}) or soup.find("font"):
-        bad_score += 2
-        reasons.append("  ✗ deprecated tags (table layout / <font>)")
+        hit(2, True, "  ✗ deprecated tags (table layout / <font>)")
 
-    # 12. Generator meta
+    # 12. Generator meta — structural (oude WP = security risk)
     gen = soup.find("meta", attrs={"name": re.compile(r"^generator$", re.I)})
     if gen:
         gen_content = gen.get("content", "")
         info["generator"] = gen_content[:60]
-        # Oude WordPress versies
         wp = re.match(r"WordPress\s+(\d+)\.(\d+)", gen_content)
         if wp and int(wp.group(1)) < 6:
-            bad_score += 1
-            reasons.append(f"  ✗ oude {gen_content[:40]}")
+            hit(1, True, f"  ✗ oude {gen_content[:40]}")
 
-    # 13. jQuery versie
+    # 13. jQuery versie — structural (oude jQuery = security + bugs)
     for s in soup.find_all("script", src=True):
         src = s.get("src", "")
         jq = re.search(r"jquery[/-](\d+)\.(\d+)", src, re.I)
         if jq:
             if int(jq.group(1)) < 3:
-                bad_score += 1
-                reasons.append(f"  ✗ oude jQuery {jq.group(1)}.{jq.group(2)}")
+                hit(1, True, f"  ✗ oude jQuery {jq.group(1)}.{jq.group(2)}")
             break
 
+    info["structural_hits"] = structural_hits
     return bad_score, reasons, info
 
 
@@ -434,8 +443,15 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
             continue
 
         domain = urlparse(lead["website"]).netloc.lower()
-        if domain in SOCIAL_OR_LISTING_DOMAINS:
-            log.info(f"  ❌ AFGEWEZEN — social/listing URL")
+        # Strip "www." voor consistente vergelijking; match ook subdomeinen
+        # (bv. business.allegro.pl moet onder allegro.pl vallen).
+        domain_root = domain[4:] if domain.startswith("www.") else domain
+        is_listing = any(
+            domain_root == d or domain_root.endswith("." + d)
+            for d in SOCIAL_OR_LISTING_DOMAINS
+        )
+        if is_listing:
+            log.info(f"  ❌ AFGEWEZEN — social/listing URL ({domain_root})")
             if not dry_run:
                 update_qualification(conn, lead["place_id"], 0, gbp_score, None)
             rejected_gbp += 1
@@ -459,11 +475,18 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
             qualified_dead_site += 1
             continue
 
-        if bad_score >= BAD_SITE_THRESHOLD:
-            log.info(f"  ✅ QUALIFIED — GBP:{gbp_score}/7  Slecht:{bad_score}")
+        structural = info.get("structural_hits", 0)
+        if bad_score >= BAD_SITE_THRESHOLD and structural >= STRUCTURAL_MIN:
+            log.info(f"  ✅ QUALIFIED — GBP:{gbp_score}/7  Slecht:{bad_score} (structureel:{structural})")
             if not dry_run:
                 update_qualification(conn, lead["place_id"], 1, gbp_score, bad_score)
             qualified += 1
+        elif bad_score >= BAD_SITE_THRESHOLD:
+            # Score haalt threshold, maar alleen cosmetische issues — geen vervanging nodig
+            log.info(f"  ❌ AFGEWEZEN — score {bad_score} maar alleen cosmetisch (0 structureel)")
+            if not dry_run:
+                update_qualification(conn, lead["place_id"], 0, gbp_score, bad_score)
+            rejected_site_modern += 1
         else:
             log.info(f"  ❌ AFGEWEZEN — site te modern ({bad_score}/{BAD_SITE_THRESHOLD})")
             if not dry_run:
