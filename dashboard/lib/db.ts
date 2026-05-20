@@ -49,18 +49,29 @@ function getDb(readonly = true): Database.Database {
 export function getStats(): LeadStats {
   const db = getDb();
 
+  // Rejected leads zijn verplaatst naar rejected_leads-tabel (qualify.py
+   // doet die move). Count rejected uit die tabel ipv leads.qualified=0.
   const totals = db
     .prepare(
       `SELECT
         COUNT(*) as total,
         SUM(CASE WHEN qualified = 1 THEN 1 ELSE 0 END) as qualified,
-        SUM(CASE WHEN qualified = 0 THEN 1 ELSE 0 END) as rejected,
+        0 as rejected,
         SUM(CASE WHEN qualified IS NULL THEN 1 ELSE 0 END) as pending,
         SUM(CASE WHEN emailed_at IS NOT NULL THEN 1 ELSE 0 END) as emailed,
         SUM(CASE WHEN site_generated_at IS NOT NULL THEN 1 ELSE 0 END) as sites
       FROM leads`
     )
     .get() as { total: number; qualified: number; rejected: number; pending: number; emailed: number; sites: number };
+
+  try {
+    const rejectedRow = db
+      .prepare(`SELECT COUNT(*) as n FROM rejected_leads`)
+      .get() as { n: number };
+    totals.rejected = rejectedRow.n;
+  } catch {
+    // Oude DB zonder rejected_leads-tabel — laat 0 staan
+  }
 
   const byCity = db
     .prepare(

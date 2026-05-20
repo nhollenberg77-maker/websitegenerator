@@ -365,6 +365,28 @@ def update_qualification(conn, place_id, qualified, gbp_score, bad_site_score):
     ))
 
 
+def reject_lead(conn, lead: dict, reason: str) -> None:
+    """
+    Verplaats lead naar rejected_leads en verwijder uit leads-tabel.
+    Houdt place_id + context bij zodat discovery 'm niet opnieuw oppakt.
+
+    Caller commit in batches (zie qualify_all).
+    """
+    conn.execute("""
+        INSERT OR REPLACE INTO rejected_leads
+            (place_id, rejected_at, reason, name, city_query, category_query)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        lead["place_id"],
+        datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        reason,
+        lead.get("name"),
+        lead.get("city_query"),
+        lead.get("category_query"),
+    ))
+    conn.execute("DELETE FROM leads WHERE place_id = ?", (lead["place_id"],))
+
+
 def show_qualified(db_path: Path):
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -430,7 +452,7 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
         if gbp_score < GBP_PASS_THRESHOLD:
             log.info(f"  ❌ AFGEWEZEN — GBP te zwak ({gbp_score}/{GBP_PASS_THRESHOLD})")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, None)
+                reject_lead(conn, lead, f"gbp-zwak ({gbp_score}/{GBP_PASS_THRESHOLD})")
             rejected_gbp += 1
             continue
 
@@ -438,7 +460,7 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
         if not lead.get("website"):
             log.info(f"  ❌ AFGEWEZEN — geen website")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, None)
+                reject_lead(conn, lead, "geen-website")
             rejected_gbp += 1
             continue
 
@@ -453,7 +475,7 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
         if is_listing:
             log.info(f"  ❌ AFGEWEZEN — social/listing URL ({domain_root})")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, None)
+                reject_lead(conn, lead, f"listing-url ({domain_root})")
             rejected_gbp += 1
             continue
 
@@ -485,12 +507,12 @@ def qualify_all(db_path: Path, limit: int = None, dry_run: bool = False):
             # Score haalt threshold, maar alleen cosmetische issues — geen vervanging nodig
             log.info(f"  ❌ AFGEWEZEN — score {bad_score} maar alleen cosmetisch (0 structureel)")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, bad_score)
+                reject_lead(conn, lead, f"cosmetisch-only (score {bad_score})")
             rejected_site_modern += 1
         else:
             log.info(f"  ❌ AFGEWEZEN — site te modern ({bad_score}/{BAD_SITE_THRESHOLD})")
             if not dry_run:
-                update_qualification(conn, lead["place_id"], 0, gbp_score, bad_score)
+                reject_lead(conn, lead, f"site-modern (score {bad_score})")
             rejected_site_modern += 1
 
         # Q12: batch commit zodat een crash niet alle voortgang verliest

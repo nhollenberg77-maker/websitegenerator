@@ -224,6 +224,19 @@ CREATE TABLE IF NOT EXISTS leads (
 
 CREATE INDEX IF NOT EXISTS idx_qualified ON leads(qualified);
 CREATE INDEX IF NOT EXISTS idx_city ON leads(city_query);
+
+-- Permanente "weet niet meer interesseren"-lijst. qualify.py verplaatst
+-- afgewezen leads hierheen + verwijdert ze uit `leads`. discovery.py filtert
+-- bij elke nieuwe run place_ids die hier staan, zodat dezelfde slechte
+-- leads niet steeds terugkomen.
+CREATE TABLE IF NOT EXISTS rejected_leads (
+    place_id        TEXT PRIMARY KEY,
+    rejected_at     TEXT,
+    reason          TEXT,
+    name            TEXT,
+    city_query      TEXT,
+    category_query  TEXT
+);
 """
 
 
@@ -235,20 +248,40 @@ def init_db(db_path: Path):
     conn.close()
 
 
-def save_leads(leads: list[RawLead], db_path: Path) -> tuple[int, int]:
-    """Sla leads op. Retourneert (nieuw_toegevoegd, al_bestaand).
+def save_leads(leads: list[RawLead], db_path: Path) -> tuple[int, int, int]:
+    """Sla leads op. Retourneert (nieuw_toegevoegd, al_bestaand, geskipt_omdat_rejected).
 
-    Volatiele velden (rating, photo_count, business_status, etc.) worden bij
-    bestaande leads ververst zodat herhaalde discovery-runs de dataset
-    actueel houden. Onveranderlijke velden blijven zoals ze waren.
+    - Leads waarvan place_id in rejected_leads staat worden overgeslagen
+      (qualify heeft ze eerder afgewezen — ze niet weer toevoegen).
+    - Volatiele velden (rating, photo_count, business_status) worden bij
+      bestaande leads ververst zodat herhaalde discovery-runs de dataset
+      actueel houden. Onveranderlijke velden blijven zoals ze waren.
     """
     if not leads:
-        return 0, 0
+        return 0, 0, 0
 
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
-    # Welke place_ids bestaan al? Eén query ipv N.
+    placeholders = ",".join(["?"] * len(leads))
+    all_place_ids = [lead.place_id for lead in leads]
+
+    # Welke zitten in de rejected_leads-tabel? Die overslaan.
+    try:
+        cur.execute(
+            f"SELECT place_id FROM rejected_leads WHERE place_id IN ({placeholders})",
+            all_place_ids,
+        )
+        rejected_ids = {row[0] for row in cur.fetchall()}
+    except sqlite3.OperationalError:
+        rejected_ids = set()  # tabel bestaat nog niet (oude DB)
+
+    leads = [lead for lead in leads if lead.place_id not in rejected_ids]
+    skipped = len(rejected_ids)
+    if not leads:
+        conn.close()
+        return 0, 0, skipped
+
     placeholders = ",".join(["?"] * len(leads))
     cur.execute(
         f"SELECT place_id FROM leads WHERE place_id IN ({placeholders})",
@@ -296,7 +329,7 @@ def save_leads(leads: list[RawLead], db_path: Path) -> tuple[int, int]:
     conn.close()
     added = sum(1 for lead in leads if lead.place_id not in existing_ids)
     existed = len(leads) - added
-    return added, existed
+    return added, existed, skipped
 
 
 # ===== CSV export =====
@@ -484,7 +517,7 @@ def main():
         sys.exit(0)
 
     # Database
-    added, existed = save_leads(leads, db_path)
+    added, existed, rejected_skipped = save_leads(leads, db_path)
 
     # CSV export
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -496,6 +529,7 @@ def main():
     log.info(f"Totaal gevonden       : {len(leads)} leads")
     log.info(f"Nieuw in database     : {added}")
     log.info(f"Al aanwezig (skipped) : {existed}")
+    log.info(f"Eerder afgewezen      : {rejected_skipped}")
     log.info(f"Met website           : {sum(1 for l in leads if l.website)}")
     log.info(f"Met telefoonnummer    : {sum(1 for l in leads if l.phone_national)}")
     log.info(f"Met ≥10 reviews       : {sum(1 for l in leads if (l.rating_count or 0) >= 10)}")

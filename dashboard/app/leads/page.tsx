@@ -260,7 +260,6 @@ function LeadsPageContent() {
               <SelectContent>
                 <SelectItem value="all">Alle</SelectItem>
                 <SelectItem value="qualified">Qualified</SelectItem>
-                <SelectItem value="rejected">Afgewezen</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
               </SelectContent>
             </Select>
