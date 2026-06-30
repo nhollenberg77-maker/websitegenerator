@@ -119,8 +119,24 @@ export interface SiteContentSpec {
   pricelist?: { name: string; price?: string; note?: string }[];
 }
 
+// Maakt modeltekst schoon: letterlijke "\n"-escapes en echte newlines die het
+// model in de velden zette renderen anders zichtbaar als "\n\n" op de pagina.
+function cleanProseDeep<T>(v: T): T {
+  if (typeof v === "string") {
+    return v.replace(/\\r|\\n|[\r\n]+/g, " ").replace(/\\t|\t/g, " ").replace(/ {2,}/g, " ").trim() as unknown as T;
+  }
+  if (Array.isArray(v)) return v.map((x) => cleanProseDeep(x)) as unknown as T;
+  if (v && typeof v === "object") {
+    const o: Record<string, unknown> = {};
+    for (const k of Object.keys(v as Record<string, unknown>)) o[k] = cleanProseDeep((v as Record<string, unknown>)[k]);
+    return o as unknown as T;
+  }
+  return v;
+}
+
 function parseSiteContent(lead: Lead): SiteContentSpec | null {
-  return parseJson<SiteContentSpec | null>(lead.site_content ?? null, null);
+  const sc = parseJson<SiteContentSpec | null>(lead.site_content ?? null, null);
+  return sc ? cleanProseDeep(sc) : sc;
 }
 
 // Smelt agent-copy in de basis-template. Lege/ontbrekende velden vallen terug.
@@ -224,16 +240,30 @@ const TRUST_ICONS = [
 ];
 
 function formatPhone(phone: string | null): string {
-  return phone || "+48 000 000 000";
+  return phone || ""; // geen nep "+48 000 000 000" meer — templates tonen alleen bij hasPhone
 }
 
 function phoneDigits(phone: string | null): string {
-  return (phone || "48000000000").replace(/[^0-9+]/g, "").replace("+", "");
+  if (!phone) return ""; // leeg → WhatsApp-knop wordt niet gerenderd (geen wa.me/48000000000)
+  return phone.replace(/[^0-9+]/g, "").replace("+", "");
 }
 
+// Klikbare tel:-link. Leeg bij ontbrekend nummer (caller gate't op hasPhone).
 function phoneLink(phone: string | null): string {
   const digits = phoneDigits(phone);
-  return digits.startsWith("48") ? `+${digits}` : `+48${digits}`;
+  if (!digits) return "#kontakt";
+  return digits.startsWith("48") ? `tel:+${digits}` : `tel:+48${digits}`;
+}
+
+// Echte plaats uit het adres (na de postcode) — voorkomt dat de site "Kraków"
+// toont terwijl het bedrijf in een randgemeente (Gdynia/Skawina/Wieliczka) zit.
+function localityFromAddress(address: string | null): string | null {
+  if (!address) return null;
+  const m = address.match(/\d{2}-\d{3}\s+([^,]+?)\s*$/);
+  return m ? m[1].trim() : null;
+}
+function displayCity(lead: Lead): string {
+  return localityFromAddress(lead.address) || lead.city_query || "Twoje miasto";
 }
 
 function escapeHtml(s: string): string {
@@ -379,7 +409,7 @@ export function generateSiteHtml(lead: Lead): string {
   const content = mergeSiteContent(getContent(lead), sc);
   const colors = VARIANT_COLORS[variant];
   const { main: namePart1, sub: namePart2 } = displayName(lead, sc);
-  const city = lead.city_query || "Twojego miasta";
+  const city = displayCity(lead);
   const voivodeship = lead.voivodeship || city;
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
   const hasAddress = !!lead.address;
@@ -948,8 +978,8 @@ export function generateSiteHtml(lead: Lead): string {
           <div class="eyebrow">O firmie</div>
           <h2>${escapeHtml(aboutTitle)}</h2>
           ${businessDesc ? `<p>${escapeHtml(businessDesc)}</p>` : `<p style="font-weight: 500; color: var(--ink);">${escapeHtml(lead.name)}</p>`}
-          <p>${escapeHtml(content.aboutP1)}</p>
-          <p>${escapeHtml(content.aboutP2)}</p>${aboutQuoteHtml}
+          ${content.aboutP1 ? `<p>${escapeHtml(content.aboutP1)}</p>` : ""}
+          ${content.aboutP2 && content.aboutP2 !== content.aboutP1 ? `<p>${escapeHtml(content.aboutP2)}</p>` : ""}${aboutQuoteHtml}
         </div>
         ${aboutImg ? `<div class="about-image"></div>` : ""}
       </div>
@@ -1166,7 +1196,7 @@ function generateFoodSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const fullName = escapeHtml(lead.name);
   const brand = brandLine(lead, sc);
-  const city = lead.city_query || "Twoje miasto";
+  const city = displayCity(lead);
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
   const phone = formatPhone(lead.phone_national);
   const phoneLnk = phoneLink(lead.phone_intl || lead.phone_national);
@@ -1350,7 +1380,7 @@ function generateAppointmentSiteHtml(lead: Lead, archetype: ApptArchetype): stri
   const sc = parseSiteContent(lead);
   const fullName = escapeHtml(lead.name);
   const brand = brandLine(lead, sc);
-  const city = lead.city_query || "Twoje miasto";
+  const city = displayCity(lead);
   const label = escapeHtml(categoryLabel(lead, sc));
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
   const phone = formatPhone(lead.phone_national);
@@ -1508,7 +1538,7 @@ function generateServiceSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const content = mergeSiteContent(getContent(lead), sc);
   const { main: namePart1, sub: namePart2 } = displayName(lead, sc);
-  const city = lead.city_query || "Twojego miasta";
+  const city = displayCity(lead);
   const voivodeship = lead.voivodeship || city;
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
   const hasAddress = !!lead.address;

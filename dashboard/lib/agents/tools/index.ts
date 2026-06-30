@@ -263,6 +263,10 @@ const setSiteContent: AgentTool = {
   handler: async (input, ctx) => {
     const id = leadId(input, ctx);
     const { place_id, ...content } = input; void place_id;
+    // Vangrail: geen niet-Poolse tekens (CJK/Cyrillisch) in de site-content.
+    if (hasForeignScript(J(content))) {
+      return { content: "site-content bevat niet-Poolse tekens (modelrommel) — herschrijf alles in correct, natuurlijk Pools en roep set_site_content opnieuw aan.", isError: true };
+    }
     store.setSiteContent(id, J(content));
     return "site-content opgeslagen";
   },
