@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia — piekarnia rzemieślnicza, desery, śniadania Wrocław</title>
+  <meta name="description" content="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia — piekarnia rzemieślnicza, desery, śniadania w Wrocławiu. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3lFqw8cYlBIEXAHwMk4UcXa7mctLAlMBvHkSeLtpFGgucOiDtVv_i8EjcKFAyPbeOXFIN3TXWsxvX1F_7jEPI7zZLbI7-aAJ7k-Gsuj5h375gNOvI6j_27zdIucSvJjDtRIA7VZKbwfk5EtUb-xI5traNLveM3f2QOomsdvcg_W5vuyMbHVgdIDorcwtKh7MP9zxvXbFzg47TY8Ips--y2m2y3ZJVvDP7b2d_0Vo1-Ty-VNwGFoYM2NQox_GXj-RKlhYu6FxJyoQR7GUuGkyz1p-hCmX8qOv7HA-nE8zH_srASS_zeG1FVjGP9HfT6YL3rKY6qruFJ5EQ_4lKvbKWqpKsmYjvOLmtlfd7PyqlhcqI0KXC5sUeOn-qh2iSRzYQmqd1FYEqsvCpvKFcjg4kxBdJx39ck5bpuHbFlMEQbTFwB-ZROaY3Zdjf_qWPe0&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Kwiaty Kawy i Słodki Chłopak</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48508115055">Zamów teraz</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">piekarnia rzemieślnicza, desery, śniadania · Wrocław</div>
+    <h1>Kawa i słodkości</h1>
+    <p>Ciekawe wnętrze, pyszne wypieki i wspaniała atmosfera. Zapraszamy na śniadania, desery i wyśmienite espresso w sercu Wrocławia.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48508115055">Zamów teraz</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols">
+        <div class="menu-sec">
+          <h3>Śniadania</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Toast z awokado i jajkiem sadzonką</span><span class="mi-dots"></span><span class="mi-price">28 zł</span></div>
+              <div class="mi-desc">Chleb razowy, świeże awokado, jajko, limonka, oliwka</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Tosty z Benedyktem</span><span class="mi-dots"></span><span class="mi-price">32 zł</span></div>
+              <div class="mi-desc">Chleb, jajka poszerowane, sos holenderski, parmezan</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Mieszanka śniadaniowa</span><span class="mi-dots"></span><span class="mi-price">35 zł</span></div>
+              <div class="mi-desc">Jajka, bekonia, śliwki, ser, frytki, piekarniczy chleb</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Owoce z granolą i jogurtem</span><span class="mi-dots"></span><span class="mi-price">24 zł</span></div>
+              <div class="mi-desc">Świeże sezonowe owoce, granola ręcznie robiona, żywy jogurt</div>
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Desery i ciasta</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Tarta limonkowa</span><span class="mi-dots"></span><span class="mi-price">16 zł</span></div>
+              <div class="mi-desc">Subtelne ciasto, lemoniada i beska</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Sernik baskijski</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              <div class="mi-desc">Klasyczny sernik z charakterystyczną górą, podawany lekko ciepły</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Tort czekoladowy</span><span class="mi-dots"></span><span class="mi-price">20 zł</span></div>
+              <div class="mi-desc">Wiele warstw czekolady, lekki jak chmura</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Ciasto marchewkowe</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              <div class="mi-desc">Marchewka, orzechy, mleczna glazura</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Brownie z orzeszkami</span><span class="mi-dots"></span><span class="mi-price">12 zł</span></div>
+              <div class="mi-desc">Intensywna czekolada, chrupiące orzeszki</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Macaronki sezonowe</span><span class="mi-dots"></span><span class="mi-price">10 zł</span></div>
+              <div class="mi-desc">Różne smaki w zależności od pory roku</div>
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Kawa i napoje</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Espresso</span><span class="mi-dots"></span><span class="mi-price">9 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Cappuccino</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Latte z mlekiem roślinnym</span><span class="mi-dots"></span><span class="mi-price">16 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Flat white</span><span class="mi-dots"></span><span class="mi-price">15 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Świeżo wyciskany sok pomarańczowy</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              <div class="mi-desc">Pomarańcze, trochę cytryny</div>
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Lemoniada domowa</span><span class="mi-dots"></span><span class="mi-price">12 zł</span></div>
+              <div class="mi-desc">Czysta, orzeźwiająca, bez konserwantów</div>
+            </li>
+          </ul>
+        </div></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Kwiaty Kawy i Słodki Chłopak to miejsce, które łączy miłość do dobrej kawy z artystyczną pasją do wypieku. Położona na placu Kościuszki, nasza kawiarnia przyciąga gości swoją niepowtarzalną atmosferą — pełną zieleni, kwiatów i pięknych detali. Każda wizyta to doświadczenie zmysłowe: od aromatu świeżej kawy po smak domowych tart i serników.\n\nNasi goście doceniają nie tylko różnorodność deserów i śniadań, ale przede wszystkim otoczenie, które zachęca do spokojnego czasu ze sobą i z bliskimi. To miejsce, które ma duszę.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3njyGa1nDxzrVcZEp3V5d4itn-Qlbxv4A_vc4a1BWPV0NHPK9EPJwaLFjrigfeOmkpmTTJw78Z9iL2ZOGU2-rJHiKhzcRDgp0xxV4nhFQO6NRJnWHNZ1fOitNm2CLg5d4SZmArcpJu_kzdbTxL1VpaRv9gnWeNae4blwRxC8hjhwFkXlIVFK9cpSwPsBs5ZSOVjSSUsbX-iko0tFIZE56cWgTlscIXWHJhtcJRknXib1K2PIC-B2WuG0GuLjXHZynm74KSa7i2j2R_DXb4-6zbCafVpggcyEPyZuPvYeQJdG2oXmA5TjnYdcNUxgF7CQE8t-fPUSJIG3_0ZR2EmwoLngkkI6kt_vxe2nwefYwKQrilLEKxVyfhw276FByxB75gq2GaBV7XFzl3_4QDOZoO7G5Mf6x642mkjOcY5w9Ht7vPYHbacO30FR6ljat_5&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3lfX7hScWi8I1MbuWL2gDj1tMMxzRYsl8jkII_FuOYzzB0OI1yXKud1hUk7EnRG5rFMaA_ejMKjm_xRYibqaUxpinCm-D4Ex2_FrwCzB4hhXyVBa1MUPPjw-ynYMVfzTTO0_v6wG-ltMnF-hWj_sRtSBjGJ9O1Y65fD6AB3NBykHigmizCT84TBba-yhUs8ouMTWbKJavM4sD6yZ89Z0NhzMq7XaXV12JruyKoO6OmGG-gFrSKnl_Q6V15AW0-90m4m0aGXyxlLpMIAl-qemZMdLkHXcQzjaWZuZKT8Tlj5KzCWO4ErJLT8R4whSprZ9ZqEbvam61jaKcCtKSauFi2bTjabUSgCqu5Rz-jy7YjwKNmpW4jfSudj3BF5niCMFMl_r4thfDLu2evAWvYT67XOBUfQp5UJ0xhuoQh4PKrVBeoscfpypiEKVj9NYhVd&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3nCX3ZdOlYVEISD9OqnmtUVvPIBctV9UT0fd5NQ87H9Z3qbidfPzAcgukLPz24dMN56RnX_gb6GgwTilQpx83GU3Or8Tz4I0UxuwDwgRmC1MBz2Z5V7eoTOP4hQgEv9ZgDmtuNg6MkYVr7K5N_AYte33zPhVACfQ9Ni-Bpr0r4qhcG89T3VKG5jpx8tcgRINeIJ8bQdF8JaIIQLkyNPQPFxrL-klLdlCMWLavKNF-H7nsZ5Z21O8PXHy_t-8Te62KjbH8XsVJy0dJUFMCTh0aPtf1znrdpcrcsBzueTYpKUF_tn0ITe5LY57cIYQ99Rm-Qg-nyEB3Y7f3mSc8UYGJlNzfK-u8SIC6wQ4YuVBAlD1SzFfJJS-lua0nnQcUvxvKB26Noetvqi-KR_BesXmH61W6ufU3BoS8Vx-J78l_WU6_BkKoPjAeIMAaAtMw&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3kioKZle1gX3FnIRxMmp97W5bqNgtSa4q3l08cNmpgRQNkGnW3FudFtJI2HJsLqVqXax6ODT02QWvdTJGknSA6cvLMzeQaawnmNxvxtBXK4tJCD2vzANk2vvgDFgIw03xfp9ywvA5UlH3ZD4Bw6mt6XeaeKZMV45zlkaqX_vAr1p4R0QKqdWj8zl1-rZOSwFMBEnnYgOX-Io5bTH0zLxWZTWlOdcq9dH9jyxrFvBiG6docXU1P5e0LmZgDWk0sbYYQK2PU6ER644zaN6O3XNHfRPA5NnfSY6sAFTLUJHPNHFbrT5_CuDpdhrnzX_TOFY2FcpfaM1OfXD0G3BUKMwJ5BPKbFOeUWV7oq_gAOqp4AUgkyoMytEpe1qou_m8YdVlneoeQ14xgkeQibsmWrlP4eVd0N_oxeYzLzKhGAEfO577RkL39we4ujDthbEjVW&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3k4fpNyhHOd2xNJOlJCbPvEDRL4aZZXg6iu81PDmmXEsHFAXW1tFoqnqeeubi3abXkKAnPHmW_m6JCCRyQcbiF26CoD1z31-Rv-nZ2TaEEm9sRcbxHJLJ5D-gcl77k-P20rVPyecehBkp87tgX7y7CkL3aH-6B_YYXRFtKYoDRFwRulNUy_LCOBaLU3ir0tYWLw4uKDby8gB2gd_3PWN5OJ-EB3tJ0K0At5kJen43urGFeAaHLyi1UkVbntCMU1XJpSED3EV9KnUvq-SgSz15SZLxtlNDNb2FCwwUor4wsK-3yre9HN_3eRqH5Hf33gUfVP51JCYhVBYzBzaF-P0FsmB8Wl2tnduDDWEwvGR_6g7shjDojMTRNGx2dudgLgRJ7OKJJUjtUr77kIPvP60s4zEM5xrWlnFhmwpqrO7bEtkFreWNZsUiijTUyBtkon&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"><img src="/api/photo?ref=places%2FChIJ6QPwWGTDD0cRdHzY0iBEkr4%2Fphotos%2FAaVGc3ljuvDYBrKnbWMWvlQlVtMfpyzhU1J1IQSLdApNQDnDczycSrUUlNl5pDYdExeNsy5G-DXV-N1RCx1JPBk3oNzI2os8_6D562DTbivhKEDp-oAnkCDG4clGeBsEG1NERrPtGzgNjRx6ZfqQoLqnLjcKexLg0_Dzcsi6ndEXYuRUaB_x74Z6cBU6F67zB8FUxsLuypYAu4OjlX8tYhyo1XmZkARYKT_u7r-LeTuN-rIB6qhdeNKZVH9c2H28j_Jt4LGtB0IKhzXiFOn1W9Qd_QLqQrnJmD22Q_FRrGwWFFLAKXJIl3C-cIG3-eGb69voEXAz2z1T2tN_6khPGiz18svisVXi87cfdOOV21LdxauIgDmzUrh2pdkTJt0xZf2ZkytmeR2H-22NYQGYMwAZJBxFMFIU6QiYbFrocKGkN4US18f_SwylXZnznhYsk1Im&amp;w=1200" alt="Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.5 ★ (746)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Miejsce godne polecenia ! Przede wszystko to spokojne i ciche lokum z nietuzinkowym wystrojem. Dużo zieleni, wazonów i ozdób. Sporo miejsc, tak na dole jak i na antresoli. W ofercie desery oraz śniadania. Nasze słodkości były przepyszne a i</blockquote><figcaption>— Agnieszka</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Cudowne miejsce, które napełniło mnie świetną energią! Wnętrze jest bardzo ciekawe i przytulne, chce się oglądać każdy detal. Duży wybór deserów, miałyśmy okazję spróbować kilku rodzajów i każdy był przepyszny. Moim faworytem jest tarta lim</blockquote><figcaption>— Alina Daisy</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Jeśli szukacie wyjątkowego miejsca we Wrocławiu, to koniecznie odwiedźcie Kwiaty Kawy i Słodki Chłopak na Placu Kościuszki 🌸☕
+To nie jest zwykła kawiarnia - to miejsce z duszą, pięknym klimatem i fantastyczną atmosferą. Pyszna kawa, świetn</blockquote><figcaption>— Anna Markowska</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>pl. Tadeusza Kościuszki 12, 50-028 Wrocław</span></div>
+      <div class="row"><b>Godziny</b><span>Pn-Pt 7:30-19:00, So-Nd 8:00-19:00</span></div>
+      <div class="row"><b>Telefon</b><a href="+48508115055">508 115 055</a></div>
+    </div>
+    <div>
+      <h2>Zamów teraz</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48508115055">Zadzwoń: 508 115 055</a>
+        <a class="btn-ghost" href="https://wa.me/48508115055">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Kwiaty Kawy i Słodki Chłopak - śniadania | cukiernia | kawiarnia. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

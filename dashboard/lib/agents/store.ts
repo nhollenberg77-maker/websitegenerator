@@ -201,8 +201,10 @@ export function createTask(input: {
 export function hasTaskForLead(type: TaskType, leadPlaceId: string, includeDone = true): boolean {
   const d = db(true);
   try {
+    // 'failed' telt mee zodat een lead die de agent niet áf krijgt niet
+    // eindeloos opnieuw in de wachtrij wordt gezet (parkeren i.p.v. retry-lus).
     const statuses = includeDone
-      ? "('pending','running','done')"
+      ? "('pending','running','done','failed')"
       : "('pending','running')";
     const row = d
       .prepare(
@@ -290,6 +292,17 @@ export function listTasks(opts: { status?: TaskStatus; limit?: number } = {}): T
     return d
       .prepare(`SELECT * FROM tasks ${where} ORDER BY id DESC LIMIT ?`)
       .all(...params, opts.limit ?? 100) as Task[];
+  } finally {
+    d.close();
+  }
+}
+
+// Verweesde 'running'-taken (van een afgebroken worker) terugzetten — die
+// worden anders nooit meer opgepakt of opnieuw geprobeerd.
+export function resetStaleRunningTasks(): number {
+  const d = db();
+  try {
+    return d.prepare("UPDATE tasks SET status='failed', error='orphaned (worker herstart)' WHERE status='running'").run().changes;
   } finally {
     d.close();
   }

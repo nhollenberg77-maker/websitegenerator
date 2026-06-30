@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dolce far niente — piekarnia i kawiarnia włoska Kraków</title>
+  <meta name="description" content="Dolce far niente — piekarnia i kawiarnia włoska w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3k1Sr7N6l2q1dsMJw_kxMa77pjdAU1cSR49UooUtY1dMxG3Hjzcc614ZI5WMhcbuoQpB8heHDT6qC7HD_ea0QCPsHVE2FDjPTGUxEiKoteop8qLnNgpfJtVHm3gd5IOhg52lRA3tVOuWxoBHhgYwPxiSEZWHNu09KAbX03yg5yCu-ObVMo6LC4nWjTW8HHmQpD9RQj8KKgerzIQwaJuVAsTGa9W0g7m_5z_QR3BmZPxrEtpv9KAIGyTHiBuHdVyGx1ddigam8Q7idQ9x5eSVo3rp7jDWW7lrVhLlYl-EuhOvuSqUJYcasD9mjZ-Ausx7q2ywIlPkKty3TlduCJD8C_5TJeWh2ei-BB3Q9TgMlu_0szT0Va_1vTKqPJFQuy8jsl7EuDIPyB0zCOMn_BHCO5DhaalNVJOx3ZkCszqdhcbiw&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Dolce far niente — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Dolce far niente</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48728618015">Zarezerwuj stolik</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">piekarnia i kawiarnia włoska · Kraków</div>
+    <h1>Włoska piekarnia</h1>
+    <p>Свежo wypiekane focaccia, maślane croissanty i najlepsze tiramisu w Krakowie. Każdy produkt przygotowywany ze świeżych, najwyższej jakości składników włoskich i polskich.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48728618015">Zarezerwuj stolik</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Dolce far niente to wyjątkowe miejsce, gdzie tradycyjna włoska piekarnia spotyka się z przytulną kawiarniąną atmosferą. Od wejścia wyczuwasz dbałość o każdy detal — od aromatów piekarni po spokojne, ciepłe wnętrze. Wszystkie wypieki, od focaccii do brioszy, są robione ze świeżych, naturalnych składników i pełne miłości do rzemiosła.\n\nNaszą specjalność są włoskie słodkości: tiramisu absolutnie kremowe i delikatne, brioszki z białą czekoladą i pistacją, oraz focaccia — puzysta, maślana, wypchana najlepszymi dodatkami. To miejsce, do którego wracają goście szukający autentyczności, jakości i warmości.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3lfCH--X-9CqwU701IU5UXonX0_lGEDlKL0BVxpt44QEYngtrmYiyxJ1n58aekxtuIaNa8D5HjXfn_lCIhdQYAe_PO6kycCQGBGuXY11QckygH7XNJq8pZYBF_7bP0Wky05A_9ONwPsbq3--Ix_JvTd6PJbvuNFu2iaxzo3FvAFM4aiWJmpEPMj73aNbc5jdbFglxXlj77U9wSvDNnMjwDsthVdlyPxlLRDfpSFCdJdPokUgstTsN1KH4vjWToSBUJDA_Ec-x9rL-V8lb5IYySZS-aFAqdomgtsVwUI5nhmZ0cnSRT2cUWCypUd56YjBZBMEHEY4tcHlCaYEwVrD06fz6FPI_MPslkRGvSpNv2qXPWGKt2tIqk5t1tXH1Y5--WtpCd_2CdLR-mpXqYkqcuAmER5PmfWFrBriKSLYJ7Lqv0pjIcdgrNJtTHc0CG9&amp;w=1200" alt="Dolce far niente" loading="lazy"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3kOky8PY2F7jLWyrTfxcJ02xGng2KGMAzxaTWNfptzT003_mzSxlf6BEskesr0XEHGdakfyPqG3PVrZf7xchIIeKwSL8ErxtUYfvNkfVQiYMn0_xaoHg_OyMkvR4cdCzWWAhZdE59Yo4UW_MDt6_aFgi52vbme1_TL0flRns5oQFpt5PItoq3hrcG8q2U0bipo9bOtv7gBxN_tII1CArkiuDqI-kvsevL0itEbC1q8o_gQIlhY-Uh0eFwM00a6Q41vXVizqUd8D42Lh-Ij0Spky0SzVGyRf3W7iWun43V9SfnDxyhjBU5KsRBWi_1CiQTHcM1IgSBNsxmwMi_ajJe2VKACCRkuNO45QPifKa5TMZP0R13ypj2lFPDNXCqMTd41VFvukgLXivf5w6ezFNIkKsSeuRa3gsq4LSUOavBHnlOs&amp;w=1200" alt="Dolce far niente" loading="lazy"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3kLwl4ikFUPzHQ2WgiT26wI-DhNyGjLniyJy4EbLPF_MOjVkg111Q89v0ufjeltXuck_Ak9Gq9flN_0Pl1mxLEALXlbTP39X8EhzNwh4OCPT_zXciwwkLcZ12xRtFIZrj_DOJdNNPxsafKgfu4vxi1zz9WgfydZ3c050VSl2kjxCVCYFh0hXLxc45OTBZ6k3EPCpSFgskFM20E1FDdEvl7O5moxag2hscJQzfpJA_8w-yq4jQW3g2YirZ-HVxIHHNn1vcTav3_EGpFi2oHwUV8lwCK3W_sxgC49KRJnHQ4SkDBiNNXjTmtG-8geeW3zDOoK8BOxZje1eT1ETILUjHWFUdA0IWCpxiLBl_Qo4PaxC7kfNDWObeaw3wpFUk_jR2Tjr7kT3AgyUUuKSydZmhCcuRrRK2cXPccUnfQwXP48ZXqUltWJhN9u3k5sa_pI&amp;w=1200" alt="Dolce far niente" loading="lazy"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3nEtPKalEkftVAWlFsaHag68klRdOGkC86ogsKKzUOJ9ZhAbli-OIXmyPYh00svgbWqFnXI9b4yPtL1YUdzV0dnwkdr328SUXA7ibtNff4HagkB3bjl81cD0v4aJyRnwiSkGWHE9LEK7TGYIorIa3VMoqlUWugh75g_t7OQBXdlIPv8_GNTvjBm8dWcdk68kwINKJg_FZML2GcDg5wlWU7ErQd68lClXMh3rk4_9RMh17WVepIny4DxR7K7j3MsUy6EuQQf_CtS5_KAzLFTQvDOx0cDlUOqmhGa7e3sux6jsywqZh2c4u6QFHUBENh-DvSgGTSzuijzU1hr9m9-GSr-8mgWUMUCElQEiqK6D0rcr16aCR_14l-7bnVysB9R0RfJD9OnA70rFISTW06wCCkc_mdSdLbM4_Ln7IAQUBgrOUPTfvmtjgUxXoEy8fxO&amp;w=1200" alt="Dolce far niente" loading="lazy"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3l7N-MvpuYtzmUL8lik3TTf4Od3LmYGWkHr7HtSA7QOpRLfurXuIapOr0wK8YhKuhAQ9M72RGghYUVx51lhtAUehaK0olJ4HPuKevgjgAE3X_8u9lJZ6TGtMwPGslQ8B5cwcg9C-wOiKq-hwaOChUxzDViEWaqszcGLyGO2y3xsWnzbnO5WUZhIBLwufwbGpc8oz-meDJFwksBzGbIXem4DQOzEx4ZF8GKInoAZEXYcilP158DITRGjyw1c66rlh81vUyfuoDFdTuu_9Dioz1ZXQDfsb3xDmf1yNh13VHxxBQIir2JS4MH23ti5DiSojH58-bSA58POd9-lkRBxgYED22B7VLM7ggchLv0czFcMb0EBPPDSLyJxvUgRJz4_GAnq-VWapifsUesKi5iLary-7bnMleYMLF2h1_ZdveHCEyI&amp;w=1200" alt="Dolce far niente" loading="lazy"><img src="/api/photo?ref=places%2FChIJ-SAEjRdbFkcRE_Be5gMYckQ%2Fphotos%2FAaVGc3nBMhN6ppIZGPNCPeyZPtEcF6KuWlCAEevuWKh2uGMJzL_bwH-2hfVkVOeYABtroK3gcP11e76IwHUlru3geEE0ckwx6BHBxMHVcM84ott_q_2m53k2RyIJ6pn2gBz8Pmt4I4XnD2gzLJfl_YxELSsH34XIlYNflT8KZGPqMWk1luwqcX7BRZdrW-1wbR_CimmKuuP8sWZ6xn3MEUYUFBriaB4644NPriC3dubWH_50o-VAmordaNQsbER01J5-Sh8IEVKq6YEDXXW-bKCfRmIpsu4ZO9uP5XhFX3eNRgrb-17617k9_1Rv_CM9bQd2B2XFQNffhU0UPrlVShHWtQ5CBG7NcpTRsE1qPPDfJX7eehVKPJbE27foW3n_Xm8iCloqv-UhhSpAPLDu3t7aBrFBWy_VfhpuBbpZc6tXO7AgWlmwaD45N5sRYW6JiPq6&amp;w=1200" alt="Dolce far niente" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.8 ★ (892)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>To miejsce to prawdziwa perełka! 🇮🇹 Od wejścia czuć niesamowity klimat i dbałość o każdy detal. Dania przygotowywane są ze świeżych, wysokiej jakości produktów, a porcje są naprawdę ogromne…
+Na szczególną uwagę zasługują desery – tiramisu</blockquote><figcaption>— Oliwia Konieczna</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Pyszne tiramisu i brioszka z białą z czekoladą i pistacją. Robione z miłością, na bazie naturalnych składników. Przyjemne miejsce, w którym człowiek czuje się dobrze 😊
+
+Kolejnego dnia wpadłam na focaccię i wybrałam pierwszą - Verona. Była </blockquote><figcaption>— Beata Mertyn</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Rewelacja to mało powiedziane! Jedna z nielicznych kawiarni w Krakowie gdzie Negroni to prawdziwe Negroni, focaccia lepsza niż we Włoszech, klimat obłędny.
+Obsługa świetna❤️
+Na pewno wrócimy, nie można ominąć tego miejsca odwiedzając miasto</blockquote><figcaption>— Daria</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Czysta 8/LU1, 31-121 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48728618015">728 618 015</a></div>
+    </div>
+    <div>
+      <h2>Zarezerwuj stolik</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48728618015">Zadzwoń: 728 618 015</a>
+        <a class="btn-ghost" href="https://wa.me/48728618015">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Dolce far niente. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

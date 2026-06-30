@@ -6,7 +6,7 @@
 //
 // Bedoeld om continu te draaien vanuit worker.ts (cloud 24/7).
 
-import { ensureAgentTables, claimNextTasks, completeTask, failTask, createTask, hasTaskForLead, getActiveGoals, getApprovedUnsent, markApprovedSent, addFeedback, postMessage, listTasks, countLeads, listPendingApprovals, setApproval } from "./store";
+import { ensureAgentTables, claimNextTasks, completeTask, failTask, createTask, hasTaskForLead, getActiveGoals, getApprovedUnsent, markApprovedSent, addFeedback, postMessage, listTasks, countLeads, listPendingApprovals, setApproval, resetStaleRunningTasks } from "./store";
 import { seedAgentConfigs, seedInitialGoal } from "./seed";
 import { runScout } from "./scout";
 import { runBuilder } from "./builder";
@@ -46,6 +46,7 @@ function ensureInit(): void {
   ensureAgentTables();
   seedAgentConfigs();
   seedInitialGoal();
+  resetStaleRunningTasks(); // verweesde taken van een vorige worker opruimen
   initialized = true;
 }
 

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HEVRE — kuchnia nowoczesna, koktajle, piwo rzemieślnicze Kraków</title>
+  <meta name="description" content="HEVRE — kuchnia nowoczesna, koktajle, piwo rzemieślnicze w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3nvcfzE9aacuf506F1xDszV1c4pDfF9aWqeMrUyTQGv8Gtq2AX1O-yndVJMmgLTupEwIcOVYWmrrLWl9M5hRyoVL7Fvwuc5KPIrDvYKznmn3QXsVU5iJxFQoRvJR2kLdjmQHQLkCn3g3eQRE8GEI34AhvASpGF02R5Q_69OmX3fw5KdRx9ZH8RgvaGFobY-qvTlxAsINRJeIl6D3gs53-UBpj8oqkI7EZc5y6X6Yp0iV81sVy6n5-heqNmaEvcJIvW8HUfiVcv8FbQwhtrB7ANvCmyGVzbuCgHJQV5uoiwoalBjzCTzDVG96V1kjGZlCYF2sk1n2CMCIeIDH_-CeSGXT2ll6a8Iah4YiOLtgjgxNv04-8Ps_iDHCO-VqyHI82nv_OJDTONxLkNq3ehf9tS47_UwSjHHoAtYq2NXjVGf0GRk&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla HEVRE — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">HEVRE</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="#kontakt">Zarezerwuj stolik</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">kuchnia nowoczesna, koktajle, piwo rzemieślnicze · Kraków</div>
+    <h1>Niepowtarzalna atmosfera</h1>
+    <p>HEVRE to bar z kuchnią rozmieszczony w dawnej synagodze. Eleganckie, starodawne wnętrze, autorskie dania i selekcjonowane piwa czekają na Ciebie.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#kontakt">Zarezerwuj stolik</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols">
+        <div class="menu-sec">
+          <h3>Przystawki</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Ostra focaccia z olejem truflowym</span><span class="mi-dots"></span><span class="mi-price">19 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Burrata, pomidory, basilicum</span><span class="mi-dots"></span><span class="mi-price">22 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Carpaccio z polędwicy wołowej</span><span class="mi-dots"></span><span class="mi-price">28 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Carpaccio z łososia ze śliwkami</span><span class="mi-dots"></span><span class="mi-price">26 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Zupy i sałatki</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Żurek żytni ze śmietaną</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Sałatka z pieczoną buraką i kozim serem</span><span class="mi-dots"></span><span class="mi-price">20 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Sałatka Kazimierz — mieszane liście, owoce, orzechy</span><span class="mi-dots"></span><span class="mi-price">19 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Dania główne</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Pierś kacza z sosem pomarańczowym</span><span class="mi-dots"></span><span class="mi-price">54 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Rumsztyk wołowy ze śmietaną</span><span class="mi-dots"></span><span class="mi-price">56 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Łosoś wędzony ze szparagami</span><span class="mi-dots"></span><span class="mi-price">52 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Risotto z borowików i truflą</span><span class="mi-dots"></span><span class="mi-price">48 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Piekarsko-makaronowe tagliatelle bolognese</span><span class="mi-dots"></span><span class="mi-price">42 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Desery</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Tiramisu domowe</span><span class="mi-dots"></span><span class="mi-price">16 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Sernik nowojorski na cieście miodowym</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Czekolada, malinki, mentha</span><span class="mi-dots"></span><span class="mi-price">17 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Piwa rzemieślnicze</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Piwo blond — 0,5 l</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Porter — 0,5 l</span><span class="mi-dots"></span><span class="mi-price">16 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Rozdzielnica na drażku — 0,5 l</span><span class="mi-dots"></span><span class="mi-price">15 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Koktajle autorskie</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Kazimierz Dream — wódka, malinki, mięta, limonka</span><span class="mi-dots"></span><span class="mi-price">32 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Pałac Potentata — whisky, agrest, ziele angielskie</span><span class="mi-dots"></span><span class="mi-price">36 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Noc Krakowa — rum, granat, limona, złoto</span><span class="mi-dots"></span><span class="mi-price">38 zł</span></div>
+              
+            </li>
+          </ul>
+        </div></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>HEVRE łączy bogatą historię krakowskiego Kazimierza z nowoczesną kuchnią i przytulną atmosferą. Naszą wizytówką są autorskie koktajle, starannie dobrane piwa rzemieślnicze oraz dania kuchni europejskiej przygotowywane z najlepszych składników. Wnętrze z dawnej synagogi tworzy wyjątkowe tło do każdej wizyty — idealne na spotkania przyjaciół, biznesowe rozmowy czy romantyczną kolację.\n\nOd lat gościnnie przyjmujemy zarówno turystów, jak i lokalnych mieszkańców, którzy doceniają jakość jedzenia, selekcję napojów i profesjonalną obsługę. Każdy detal — od wystroju po smaki — świadczy o naszej pasji do doskonałości.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3npn4JCqQC5qQO8ksRHfHwNjpIT88GBwReObKaNIfauL_8AQoBUNNTFg25UT7L45zsjC9gm6e66UuIhsiM7P0Cv3gkj7UnHMxRv4poL5m0wH_DydwiKWChVs8Qot0dRbodvqtjMWYOM1OWvKnxhLZ3BCVO1pOcOqd-YcX2A65corRqPQSu_ZH49faK_RddZsKkRu728mNipNpnYzLsKUIs50ZKORCT3ApPY2G5nrYMa_CEHL7idgTlMzEFs0zPuMb850Cwit0F8poRKEZi6BsxVlNoU2BcUf3HhvQl4rde5WVme_ZB8KmZCPIRH6GGfW8lFnRCR0MxkS9SmTYFCiMfzAA2PDEJ2UzzitD8iHrtkv58nZ8JC-rTJ7whyJE1DYUvWK6Qrws2AxPjZgO2yxoEMQcQXSezPX4EhN8Mg10a5IlQiOQRBPNd181kwyw&amp;w=1200" alt="HEVRE" loading="lazy"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3mfnpumHeFUwOZhe4Yve4VI19Jttzsunf1c3yFfTBSxPtdqRffVxfgfjuGgNLhc6vJFA9E3w7JLFOtMCmxedm-os8fjda-o2axGc1amIeTlR5zBmowkpm4X-xaFMkZc7wP_dtOz8sxWCgOL6IeGWEdvvUcB0MLOKYp0oh-99G8ihrsphQ2-JuEjzbZ00VNtsK6aDmxBcCS0-B_mnnTeBC_xUUoEn0Ffas7WPD26IkFJNqVzwDEQ3fperllLlj6Xt4Ps6ZsvUmCDf24BtLne9kzQI9EMMdyyBOWWv51cnFhsMuATXju2GHtJJcztszRvMSZZxt6YS1WbxJAIm2oWIXCSWj9X2nZPBtGR-ZarkHkZ9q8yd6eEEgj5UXCoX99hL6CZO1YiRzwLUNgULGG_ywj8p31zNGIvRVDBba8tS163VE0wDZFTggfvWqXGDW9P&amp;w=1200" alt="HEVRE" loading="lazy"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3nocUOp4VSjFULrmvpaoXHyHDvqLOugsp60sgYR1n7mhPgtI3RzSoMaQSVD_P-y5kZgh6aWcbr0684f9eCdf3prB926HsqP6A2DnJ4J6PiKLKpQ_fbGat90kpWXVtpAHoAKQ_XQ9UDH4mWI5Qi6vBEtnNDY9E_5Npn4r9nKRjcgUS6NeOz-lb50GjfFvGbUZWS7OX53FVJg2Pfo1ktphEPBI3z6s5tPU5699enyYJW3zX6n21wCnRxrraJaRQBQjT-bvjGYDXsoLhKFutK2Y2wLsWy6aWaXTaACIKI2-e8-lHah2tocY-Kpj3OYwulsxxPcG0fm-RD0aCj93njKVwOR4jf3dJsmSleTNTc1hmZZiOSarFMzb217ifYYFOOfDviMBz9KRbWXNI-cvXoVgrqovFVMxsKtjqKozmqVxD32zsUSlmgbxNInrQolTA&amp;w=1200" alt="HEVRE" loading="lazy"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3l3Izap2a1sGsmBQBKCSlssG3PoZwYaocFws8Uyz8MCoEW_rZDCF_1sK2PPdQECurofas9vh88PgLdn61dfwedu-C-wTQcTdTZuBWYH02VL5I7doWmexSHBK7_FxHKQo1QjMpjnT5LmjZYf9ERD2iN7q7UTEWW8_SjEEWYt-hlw74h2AEcCjz2hV12-2n8H9jZusBPbcI5v8M41Wk2EBZu7W3wl2vnZvzUzLEXPfRpzWSW6IBdpDTA7fpSqnKw56vHTXCxLtAelh8R3yjzG0X6nmeYGmri6_ZzE7LTPtBIY0go27ZbO__YO75Oxa10PybB4OXcosGHy-X3U-YDjIr8hfKaoTaCvqmxfr0yWcLTPeHNd80p2WodHrqTSPNop_k3mA37qLtOiLbMNz7pf6T6u0BtOs94OoJ9SLWtIBMygEgC0z82G-9lr-6E9Ozam&amp;w=1200" alt="HEVRE" loading="lazy"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3n2APXYw-N31ODkGpxjijO4ISreRANtIcVPg5yjb1xCZVAN8nmk9ZOEfU3Iiz0RWJ_5Whua-jCdpzh2l07W5geYtwZq7ai2k_aM9ZQiLRVr16T3KnPgzg_0pxwbvsFchQ0HUmP5cbDYuUsvyOaUE97Fa3n4m76RGJCSh-tCTkhoKAUaiIlICKWQJO15LsBJL-9hnXNZXyvDukHvTrxmJ7CFBc2HiLUmB9VG0rhQduVBdh0rdhn4pz5b77GDUX_pRIo7KJlqvnTkgf1U_760lrfsZQTjgXZUWll8se6ZGQ6-GLr2xaWYG92liaeVd-LrfylN3Y2seoxsimy6Gcab-ogPu-UWHhsmv4v6lx79P1yacwthMM4CFastAqkZ1XZdEp8LQZzt4GFVzQNJQsnZstbnOujbtJSqumHmzG4qU89lunac_buNy0-rEPPz0TR9&amp;w=1200" alt="HEVRE" loading="lazy"><img src="/api/photo?ref=places%2FChIJz3vbN2pbFkcR8ATOA0llY-I%2Fphotos%2FAaVGc3lajn5-WW45gOy72OyBw3wVT-ywwJgJ9gaOu0LPwglP_nkS-qmZ-HjXSDxU7o8Lbyk3PK4TI04TbTx9P4Lt0If_TcEvqxQhmIqVTnZLrxOwTDBdPQ2C5lAJx3Du6TRQ838FRie0cd6tRwigcLkmz36sZeQFUYIzozSMCxZ2qmPTRUefakybVl3afI6JhtCwkPAiNduDO--2TCQ_E5CIwI9UYr67oiynxVROHwPrNTXSwxmKg5QNvJslxBtGQIIze3l0nGchg3S-KicHZCYIKJl8xDgyhpe4yEVvo6FURFtE8UkSw4MlV5kTgYV_Xqch0WlxKMZx3TVftxz1zkJ5zABeqBbc4m-rPPY0R2nuHeHFY188v_JFeU7aRZ2Nf3aO4srVF8dYeqCdsXX0TnotcCRBStJ0YT4X0ghKnJlUnGqEVaJ0wGR4euyJFM_KSeRU&amp;w=1200" alt="HEVRE" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.5 ★ (6628)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Byłem z kolegą na porannej kawie i jestem bardzo zadowolony. Kawa oraz cappuccino były pyszne i świetnie smakowały. Restauracja ma swój wyjątkowy styl, dzięki czemu miejsce ma bardzo przyjemny i ciekawy klimat. Dużym plusem jest także sporo</blockquote><figcaption>— Роман Сокрута</figcaption></figure><figure><div class="stars">★★★★</div><blockquote>Bardzo ciekała kawiarnia, mieszcząca się w zabytkowym budynku — samo miejsce tworzy wyjątkowy klimat. Wnętrze jest nietypowe, z pięknymi detalami i oryginalnym wystrojem. Widać, że lokal ma swój styl i charakter. Desery są smaczne, a kawa r</blockquote><figcaption>— HaHa</figcaption></figure><figure><div class="stars">★★★★</div><blockquote>Hevre na krakowskim Kazimierzu to miejsce, do którego chętnie się wraca – zachwyca nie tylko klimatem, ale też swoją historią. Wnętrze jest absolutnie wyjątkowe – przestrzeń mieści się w dawnej synagodze, a później siedzibie Zespołu Pieśni </blockquote><figcaption>— Emilia L</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Beera Meiselsa 18, 31-058 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Pn-So 12:00-24:00, Nd 12:00-23:00</span></div>
+      
+    </div>
+    <div>
+      <h2>Zarezerwuj stolik</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        
+        <a class="btn-ghost" href="https://wa.me/48000000000">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 HEVRE. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>
