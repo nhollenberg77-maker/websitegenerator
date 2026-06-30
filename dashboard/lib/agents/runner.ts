@@ -118,8 +118,11 @@ export async function runAgentLoop(args: {
             messages.length = 0;
             messages.push({ role: "user", content: `${args.userPrompt}\n\nBELANGRIJK: geef GEEN inleidende tekst. Je EERSTE antwoord moet meteen een tool-aanroep zijn. Beschrijf niet wat je gaat doen — doe het.` });
           } else {
-            // wel werk gedaan maar gestopt zonder af te maken → duw door, context behouden
-            messages.push({ role: "assistant", content: resp.content.length ? resp.content : [{ type: "text", text: "…" }] });
+            // wel werk gedaan maar gestopt zonder af te maken → duw door, context
+            // behouden. Push ALLEEN tekstblokken: een afgekapt tool_use-block
+            // (stop_reason "max_tokens") zonder tool_result geeft anders een 400.
+            const textOnly = resp.content.filter((b) => b.type === "text");
+            messages.push({ role: "assistant", content: textOnly.length ? textOnly : [{ type: "text", text: "…" }] });
             messages.push({ role: "user", content: "Je hebt de taak nog niet afgemaakt — je beschreef alleen wat je gaat doen. Roep NU de volgende vereiste tool aan (bv. set_site_content / set_email_copy / qualify_lead). Niet beschrijven, dóen." });
           }
           continue;
