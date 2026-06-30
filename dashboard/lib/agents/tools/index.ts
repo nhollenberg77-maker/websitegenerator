@@ -242,7 +242,12 @@ const setSiteContent: AgentTool = {
       select_options: { type: "array", maxItems: 6, items: { type: "string" }, description: "opties voor het contactformulier-dropdown" },
       cta_label: { type: "string" },
       cuisine: { type: "string", description: "ALLEEN horeca: keuken/type, bv. 'kuchnia polska', 'ramen', 'piekarnia rzemieślnicza'" },
-      hours: { type: "string", description: "ALLEEN horeca: openingstijden, bv. 'Pn-Pt 8-20, So-Nd 9-18' (laat leeg als onbekend)" },
+      hours: { type: "string", description: "Openingstijden (horeca, kapper/beauty, zorg, winkel), bv. 'Pn-Pt 8-20, So-Nd 9-18' (laat leeg als onbekend)" },
+      pricelist: {
+        type: "array", maxItems: 14,
+        description: "Voor kapper/beauty/nagels/tattoo/spa, zorg (tandarts/fysio) en winkels: prijslijst van diensten/behandelingen of aanbod. Verzin plausibele, passende posten + prijzen in zł op basis van type/naam/reviews.",
+        items: { type: "object", additionalProperties: false, required: ["name"], properties: { name: { type: "string", description: "bv. 'Strzyżenie męskie', 'Konsultacja stomatologiczna', 'Bukiet okolicznościowy'" }, price: { type: "string", description: "bv. '60 zł', 'od 120 zł'" }, note: { type: "string", description: "korte toelichting (optioneel)" } } },
+      },
       menu: {
         type: "array", maxItems: 6, description: "ALLEEN horeca: de menukaart — secties met gerechten. Verzin een plausibel, passend menu voor dit type zaak (op basis van naam/keuken/reviews).",
         items: {

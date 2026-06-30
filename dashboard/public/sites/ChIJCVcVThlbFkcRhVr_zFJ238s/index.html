@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blossom Coffee &amp; Food — Kuchnia polska i międzynarodowa, specjalizacja na śniadaniach i brunchach Kraków</title>
+  <meta name="description" content="Blossom Coffee &amp; Food — Kuchnia polska i międzynarodowa, specjalizacja na śniadaniach i brunchach w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3k65SWMu2J3qt4_GTVwV15sFse8MJVpeBsEvsvxZmZLaGyOsZOteoL9_1sFZgockST5uNjU8-QLPNvOaheiZxCbDJVd9b1AVFN9rEntSPdZ6D8E4rPQJN17zHVWQ5wUpnUSllDSdVY-fY5vHiWoNSHaSDrl3ViuOtb6xbC3pCWRoO9eb6yNW8v3gf24ClVUaroxe35EAKZtFdK1ExpsvvWK5NgE0nfegzs2_86qXgv54oPqJaafdkk1_Ua9Lhg0JXMNbLtz24X83aIGxT2hEMi8FC5myq80q8JzAI17q8OTGdVXlUIVBzN3QvmxfDZzA7yy6bMTHK7RmIjlk1XqJ7nhQaKO9bAzUyR1z5OUXrOvRYfJzgB0boYE8vGzt_VH51XpypvCkf-JLLwNQrt7sDWRlDcWofms2iVRj2qerXGEoZCT&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Blossom Coffee &amp; Food — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Blossom Coffee &amp; Food</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48720877027">Odwiedź nas na śniadanie</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">Kuchnia polska i międzynarodowa, specjalizacja na śniadaniach i brunchach · Kraków</div>
+    <h1>Pyszne śniadania i kawa</h1>
+    <p>Blossom to idealne miejsce na wspólne śniadanie. Bogaty wybór menu, najwyższej jakości składniki i kawa, która smakuje jak trzeba — wszystko w klimatycznym wnętrzu z tarasem.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48720877027">Odwiedź nas na śniadanie</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols">
+        <div class="menu-sec">
+          <h3>Bagele śniadaniowe</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Bagel z kurczakiem i avocado</span><span class="mi-dots"></span><span class="mi-price">28 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Bagel z jajkiem, bekonem i serem</span><span class="mi-dots"></span><span class="mi-price">26 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Bagel z tuńczykiem i majonezem</span><span class="mi-dots"></span><span class="mi-price">24 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Bagel wegetariański — hummus, pomidor, sałata</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Bagel z łososiem i śmietaną</span><span class="mi-dots"></span><span class="mi-price">32 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Nalesniki i pancakes</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Pancakes z rabarbarem i kruszonką</span><span class="mi-dots"></span><span class="mi-price">29 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Nalesniki z nutellą i truskawkami</span><span class="mi-dots"></span><span class="mi-price">25 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Nalesniki z owocami leśnymi</span><span class="mi-dots"></span><span class="mi-price">26 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Pancakes miód i orzeszki</span><span class="mi-dots"></span><span class="mi-price">27 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Nalesniki jajecznica, ser i boczek</span><span class="mi-dots"></span><span class="mi-price">28 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Śniadania królewskie</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Royal Breakfast — bagel, jajecznica, bekkon, ser, warzywa</span><span class="mi-dots"></span><span class="mi-price">42 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Morning Glory — toast, awokado, jajko, pomidor</span><span class="mi-dots"></span><span class="mi-price">38 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Farmer's Plate — omleta z warzywami, chleb, ser, dżem</span><span class="mi-dots"></span><span class="mi-price">36 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Kawy i napoje</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Espresso</span><span class="mi-dots"></span><span class="mi-price">8 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Cappuccino</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Flat white</span><span class="mi-dots"></span><span class="mi-price">15 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Matcha latte</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Świeży sok pomarańczowy</span><span class="mi-dots"></span><span class="mi-price">12 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Kakao</span><span class="mi-dots"></span><span class="mi-price">12 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Desery i piekarnia</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Cheesecake</span><span class="mi-dots"></span><span class="mi-price">16 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Tarty owocowe sezonowe</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Biorki karmelowe</span><span class="mi-dots"></span><span class="mi-price">10 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Chleb żytni</span><span class="mi-dots"></span><span class="mi-price">6 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Bułka maślana</span><span class="mi-dots"></span><span class="mi-price">5 zł</span></div>
+              
+            </li>
+          </ul>
+        </div></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Blossom Coffee &amp; Food to ulubione miejsce krakowian na śniadanie i brunch. Od ponad roku serwujemy domowe wypieki, bajgle, nalesniki i pancakes przygotowywane z najlepszych skladników. Każde danie przygotowujemy z dbałością o szczegóły — od wyboru piekarni po wyselekcjonowanie kawy od zaufanych dostawców.\n\nNasz taras jest idealnym miejscem na spotkanie ze znajomymi czy pracę z laptopem. Przyjazna obsługa i szybka serwis to nasza codzienność, a duże porcje gwarantują zadowolenie nawet przy największym apetycie.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3kgdUXkGNSGXlHVngBnSmxac59SZFToTdSmiPY6gUsq_BLU7x7F_zTmWLaHIx83hoTy--Zo4ovvaGFXCEDcSH_YJxub6AtS17OoE2xNQuXU3o-LlTpP0PObg2AVjZioLbcUMwIecGd0Ii6WNBIffuF6yr1HLj9y8avmzrq630jbBMOPaPcYWLuJsCcBsrvDwc-uh4LkqHEAZl0ix8EmDtjjAHNa7GHrVRP_nJVd8c52NQXK2ECGQlOK-f84zwMvzgWGyfeIygKCygzx9Q0DqG7d11kPwIJYUw24Gg_01xoTmx8PaxXAn9y-kh56jjAtE2jnl3h4z9OgB_FblRJL9IvffBJUWsFG5RzsaAax6b4_wsKxDUuIv_Egjeg7iNuIWNff4H561TjlKFNKZj4bPnML5vjEvZkA_8xt5cLUCMYUc-iV-0DPfXhBCfyXgN50&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3m1gkTnNdo7a0acF4RHgn9dySqor148Cv3IOadApsE5Ji7vZNWJfUR_wYzuZTDSofyU8oLk2ik_si-xSHj2SuQmJRiquy4QBQQ6HLbipKgnsge5bP2QlVDvc4ZqbV4vwioFsjTKpJb4CVEUMflHiFxXpo-5nk9te2I5em3mEH5Z-7tHaEz85hutB0jWbWau_ES3JC_zMSLvmHUNMvFTWG1S49uj_E5WkxXYeDKUxyHqjjtlrxi8fCsFGcdhRHa03y8JdsL75JgYG2zznRUnN9L9jN5ApjZ5K069pvI3JD0AHYR0EyOLtRqeWv-d6lkiMjKw8qBEOfYuG8PjzxSL0uj84_MwXcg37qImS1ktJI88fXdS5USnh8kxaWSgTvoA_Q1N1-I9DcW49fwFdW2YmWb91fW1oAIjT-yppAgd4po2oC1mHMM7iqTDKj_1cJFE&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3nHCHfd7e29rl9Gb9zaFmRHHvPOaIjMog55oL17RZH_VoEzGXoFQF954aFu1gX0_Pjn0poxCeaciwp8M4FWDhRUrSiwIMOgHXoHOcp3adh2xT6OQfCYfMvspWQ1t9eUqA8Mu4uF_dspBZwvoKvdu1RxB88FzSyab0YFwZKgGRLiKCRvr1_jzOaNLs77M40-PkvaZQareakfPo5G2qERuh0G85lKSVsZp5LpdoJeEVdIxpqs1N6W3it-indza8f6Mh65r2xytBEZcQhrO7Fit-l_BJpyLqM4hw3ghuX_pY0ySYHzElAvtewpiYsdSG2JpXi2L3oVAKueyTBZjKhNm4mHdpGGta51-S__JvUrN11kKy5EVqIYdzeAia2FJ9jt1MPDiE3bH037WxjB0Ipl4mpVz3QxQ3pNj2F8cRCrGnIHp9Yl-ZipVQarF3p4BALd&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3mxptgRWhJm22y-MoY5oj4GORU_bU0qAIwy1opx9fU8qfI7cri6W3jxZADRoopFeFQvstl9AZ9wAJu-Dtrewwk6IvzZUud6duFnHo7uBJzCMIBzacXzD9cWu4ex28Ji8pYAgpm8R6PfjOaVTqYfU9MdhnrIsvn6yA1RaJPqEZYXojZdio9OgtoKnrXggzjrJvm32Less__A-oRHK7QpCFghbCes_uIUwae75SdDX2aZRxtnPIWKnyKmMPaupKjZKgGp2VZoJwDmO40WrEZyWUznuzPo7elZTwWU77HD6Lg37gG1E1HJxWmtFeoH9IpyFsE_flnJUOwW-ehRX2ds2Eggj7iKM_jf_k338ph-ykFd-_oJ5ZDBuivTJTkZGcbgCRI9hOk3a-mMmGc6D9i5Sh1s9nFgYbl1hL-viOUZYe3f7hkkwrWWGyFm77Ew5w&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3mkFniAjmaYRjU-Q2ibWPn_h8Jk9FztGbHNlHAO0GVK-Okf9SXPb0uAnm_ZaVkRA-saCUYZ4wwh7K3EkQmJMvjbluBBjir8hgR1kdyZ3axqXf_OGxZkdTSlu88QC4fRh7SOQok1w89uZCpXRWURuGbD-PdxrYdfYAW63OxmratTM1Zj9BoGAIb6syZIfFcO3vCAzlykYLHv5dS5I8j-tO-_hTvZ5mUuGTb2qPO3tXhIo5nmndKkwm4eFAxzywuQ5MUYo7jkecUg2T2pPe2Gs5qMFvTL7Gl8qgnwajId9oJKSVBW8pd1mAZePllXS21qVaxdI0Rr8XyRx371uyR4Fkzo4JQCgHDkZOk-d15n2IXJWxAqSD_CG8AP52QGpsLKOEmkVLybnERGDKmUnmcqXYCpg1yShXmu1IV0lOi-KwCNOkw2C4vLr87zHDlugfvH&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"><img src="/api/photo?ref=places%2FChIJCVcVThlbFkcRhVr_zFJ238s%2Fphotos%2FAaVGc3nLEOS3dUpvjhGmlBBNx3rcVenpn8kNNyyVWatyiGKn3fQox0cd2_E-Qek-Bo3bOTex6AwNkvThuzTUpRqb95eIc5upL7k2nbFR4CD7Fvb1IIpWX7DTGO04aClPxTGKk2FmVUsfi0uOxFIKuwDR5l4pOqg4Epte9CTLHMrLscj9vnTteJlNGdYPT_siO3ijcPq39CO0UE90kcrSoswvT0xFW_NE7PX9DBi3_ZTjDVROScGAzl-7vJ95BEyXPg2LHGapCaAOjw7r-DYs2N5hXIj4J2NEoEnFtc0J4h9IoclyE5RVLK4SLYrPA-VUfQ50oCBAyvMgWJ-iioj6ifKKfwAbi7647fg84MYFpvF0ofTY54DqRAfhhs2TmTzVM2SfHv1AF8pYYe1Nn7wUoqaAI-psZmGgEsIvjkUfVUiT2BtIP31JMEnJDcAgsS_zljcl&amp;w=1200" alt="Blossom Coffee &amp; Food" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.6 ★ (2620)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>🇵🇱
+Świetne miejsce na śniadanie! Bajgle śniadaniowe były przepyszne — my spróbowaliśmy jednego z kurczakiem oraz drugiego z jajkiem i bekonem i
+oba były fantastyczne, a porcje bardzo duże. Do tego kawa i matcha na najwyższym poziomie. Zde</blockquote><figcaption>— Aleksandra Chmiel</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Bardzo dobra restauracja śniadaniowa.
+Smaczne jedzenie z dobrej jakości składników. Napoje też w porządku.
+
+Ceny dań chyba troszkę wyższe niż w porównywalnych miejscach, ale z drugiej strony porcje według mnie są większe. Przykładowo śniada</blockquote><figcaption>— Kris</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Niesamowite śniadania serwowane na tarasie – klimat jest po prostu cudowny. Do tego niezwykle bogaty wybór menu i pyszna kawa. Choć miejsce jest nieco ukryte i nie rzuca się od razu w oczy, to zdecydowanie jest warte odwiedzenia. Bardzo pol</blockquote><figcaption>— Jana Korycka</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Rakowicka 20, 31-510 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Pn-Pt 7:30-19:00, So-Nd 8:30-19:00</span></div>
+      <div class="row"><b>Telefon</b><a href="+48720877027">720 877 027</a></div>
+    </div>
+    <div>
+      <h2>Odwiedź nas na śniadanie</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48720877027">Zadzwoń: 720 877 027</a>
+        <a class="btn-ghost" href="https://wa.me/48720877027">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Blossom Coffee &amp; Food. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

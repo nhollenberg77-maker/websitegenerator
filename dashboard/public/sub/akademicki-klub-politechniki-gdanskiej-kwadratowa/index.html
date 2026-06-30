@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Akademicki Klub Politechniki Gdańskiej „Kwadratowa” — klub muzyczny, koncerty i imprezy Gdańsk</title>
+  <meta name="description" content="Akademicki Klub Politechniki Gdańskiej „Kwadratowa” — klub muzyczny, koncerty i imprezy w Gdańsku. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3n3ng22WEakNQnpBA52Zv9zw_m6BGrL3sYFPsP3nOqzt0dBAeehIYyUE8wqLC_CPp3L1Yy-8FLtgWxTHbOT06aq_5kBFburrvq5kjWoi0rZBnDy-RqFwyYSGzwTqKD6DO8VDloPhFmg8leA2oxAzxUa8QsLNEAvTuPg3U3vC9BP15RO3L3gy9tMaXYRfym_UCsrL2feRhWQzq8AetCNp1otx2ZWbf5GZNiDelu5Ve5dbgjiH96By_GZ6DYlJVX6Trq8vercIKhWS1ZS8zn6XpmRUwGRVaFQhYyFX4BXbehC53PUfvCnqSH06jfJbdQCZlgAGoV9okgJp9ysCKjL5bZ8U7z1-VVcKVGtdHtG2bXUeH2tUtWNWxihBBZfiagVr8VCBfiao-D-oAgJZ8NIypZRBq606clfyM6_i_u7WsLg1UH2lFxJHqsw4XASrA&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Akademicki Klub Politechniki Gdańskiej „Kwadratowa” — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Kwadratowa</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48513303592">Sprawdź program</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">klub muzyczny, koncerty i imprezy · Gdańsk</div>
+    <h1>Uniwersytet bawi się w</h1>
+    <p>Akademicki klub Politechniki Gdańskiej z tradycją sięgającą lat 50-tych. Muzyka na żywo, DJ-e, kabarety i imprezy dla studentów i przyjaciół z całego Trójmiasta.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48513303592">Sprawdź program</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Kwadratowa to legend akademicki Gdańska — miejsce, gdzie od ponad siedemdziesięciu lat spotykają się studenci, muzycy i miłośnicy dobrej zabawy. W naszym klubie każdy wieczór to okazja do niezapomnianych wspomnień: od koncertów live po energetyczne DJ-setów, od kabaretów po spontaniczne party ze znajomymi.\n\nArtmosfera jest naszą mocą. Goście wracają do nas, bo czują się tu bezpiecznie, komfortowo i wyciskowani energią, którą tworzymy razem. Miła obsługa, świetna muzyka i pełny parkiet — to gwarancja udanej nocy w Gdańsku.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3kjtzDXNDeV3MxxXrivHSn5Wd3j1yHn4ERxnHV-h9kynpfUQrN7nQ53cZOtu-KfoslAtxkGAqptCfRkC7m7LsXP1wk3iPGjAXj6VLuw0nITJ4btyR9v8U_YcujWT0P7F2Mm4KLlJroFm8yTbIhAhEHuPbfH-W4aNWLqPcoCIchsg1za8MyZ2fAc0nAVGCiwDK1NtNKBUka7ElnHz1eDcgcVAlDag_K-6vOBKmK1Mmd-ugcdsrnoyQqkIkWob16jzDuer9qibRgCDEpSL87sndyNl-1o6KfDfdBUak-D2GgLwXE6kXRbIWFUsg7Xhhv8K-bQFOc9jKqi_p-D5FdFLdoLh36B_gbqtQcAXDPFoqmlbMdjXrUZE0BYvZRF1PwHEtPuqbn4JhAayvsKE80VGZM8aQ4v4gBLBlhiNZdylUmqNQ&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3nQ4hwLR10FoJDBuTLslUlzbXIhE5O8cJnPmLJj5i_udiG9DQJ3Cp9Ld3lRK53Wfllzx_YxfYkUD7RhLl3NwpsJ24fLGX-JeHC4T0_-tS-QXqMlQd8orRt-FUozDiY8wGqqpKgtai0sVvqP1h5ER6hd00avU9gXzAr7YQkcF0ZKpWpngSFzcDNQb5xmzwCDvHDTR0DI3eD5-WzX9Iw4Lt1ahqGxSekfBMOA-sl68CUuwHk-_XEhyMcL2_uL6ex0QRbOfO842Yaoy2krTx_Pc496-JMvoR1W0XWd8vIpod85gs-46DmKfKK8jPL2ax7r_MK4nYQpGaeccuYSfn8BISMKTK-MQQxJRVxShr7CdL0AlUOPBYxLcSriRw3CYPOLVF1iKHJiL_HJVCic5N9KhNl4WGY9f_U2J1hw646kQhXNf8yZ&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3nPKiT2pYqn-lNJEZ5wyejeHTj-bc037MhopIsAGS9rMORa_feo-ewcXB4G4datOlOKPNcX_4auC5mFCYLH-bPA-M2D-Cq8CJjIIV9yNLZpDNHWQzoQhDwt2yw7HOH2Y8yhtNuN6wLuJcHPcEft56k09oPIhwdCh0P_JVn05uoFKFIevfnwB-S0eWq5z3M3ZuLD553msbLPUM_8A_NEvPyfiYOvvOjH4hH_2Lnaxadoe6D3Cg66vvPwZoCd9dyVyj0n3ioBnpTaYPkUie5JUCgnksSGL20Os96oDHojIylWwJ9TJftZLBgxR74ty933Fmt5GRYLftO8fgHraA2idu2AoANICkVasNQvx_dmmtOrg7nckt3wpJsmEmupMs1g1HYQ00MocbpNfAYmDo4EaQLI3x69FB36c9SRLgHBmQu_NjlQ&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3nq1cfVNaDPVALMfocDhvVrQ_-8lOSDA9xPOsVycmIqCvcIxTKsvmrQ5s3NDFM3tKKixGhwcTzAyDOwDfREDjUVPzpz30ECUwdGX_1WegHsEPQkrhoRKlwJyLcfROUh5CFGoQpuJBcfRen1lJshchvxX8GazWNoR9j_NYBR5F0Syf8hw5MxoMkQozf4QDv9zEXu_9z8v_k43hRxX0jFgSEUqyK0GSvCIWlHzScz_MSML4J4lS6nT_NimXnX0HtBJk1D1_5kQx74ixkkOnWkB7lf0c8F_NoMT5AQAYl_ffp40NosyddwQVlo_CPWnUOf39aKg0d41InanvF7m3bPOopv5AE-d9rmgzDSHCe8tQZWyfk8QLbvAhiQs70C6_ogULATjoiANQN51jxPTag5rUasRktOs7qWS5ciZ8Hq78kn45_G&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3miIbh5ryr9igGviptXPY2PK6eLNU6XuopEDXf2luehoeo8XD3gj_Z-iadUwfOXdifvM8GvcxzkW-tvtXXiBSTju1go3EyJZEuC6Z1z9_TAa08N9wmF4RbQf7pI2ivR7g572C-yJhCH2698rEwR8QE8m0vxsYNJ_TQNKa_F31QD-LQe6wivVvqxGzYfQMIm1eigORj4V0Ag1BGShgcsa8NPlD-06uYQcE5Uz4Ea_084X2fFXWNR3-HvGu_1PMVLt9D7MlD6xrAJHRR8X3Gu1ktfsW7-8yDOUylONqtVLureEJpyeSv7ew3KN15_rctnVZp6nSmDShn0eZoq-NnvnjmiAk0TzAw23M3Mf9wrNCMN4CCSOUCKBxJf427vBvD8V9963bvsW9niOVUwy6SloOCVjmO2u1kzzRfjpaLn3971Vie1&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"><img src="/api/photo?ref=places%2FChIJObGTnJp0_UYR3-ig3WrLimg%2Fphotos%2FAaVGc3mPob3-VP0NiOFofwvajOtIwnKkJ61vjuV-R_Y8z5Z_RBMBOut9L_GmwznKYxfTKH78s0wNXe5c68kowiAzH_eyrPwIpUtrlTMMo7mL51_pyh40Bfp7VVXwaMDtmEVTFai5nAGxvcl2HD8pygP8TCVDTiksxom3N0epAPozD5DRlht8U-JSPhvbBz0Fjc6o9xbYcOFmAUxjRkR6uRMmd-Nh401cEWZuzxEvN9YVIuyzBBFL71a3Qo_RtZFEmJYTsivqpMfS23bA71DJHe2rc9wvZK_jONP5PRGPwonMPuxirag6_pe0PvhHZMK0vz3FtdQskrNYW6EDZWlIpG8Z8AsZlz3eFUcq1Af6UcOMZDjaV3505UmU0nNKBZIZtl0zU5GOCQf6wReWfWeWt6OtTbFycSuEt36Qow2PF-kkJ7w&amp;w=1200" alt="Akademicki Klub Politechniki Gdańskiej „Kwadratowa”" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.1 ★ (1698)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Miałam tu w piątek swój wieczór panieński.
+Nigdy wcześniej się tak dobrze nie bawiłam. Muzyka była tak dobra że żal było schodzić z parkietu ale pyszne shoty by się same przecież nie wypiły 😼
+Mega polecam tą miejscówkę</blockquote><figcaption>— Marian 13</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>świetna atmosfera, pozytywni ludzie, muzyka idealna do tańca oraz obsługa - miła i pomocna. Przez cały wieczór wraz z przyjaciółkami czułyśmy się bezpiecznie i komfortowo, co było dla nas bardzo ważne. miejsce stworzyło świetne warunki do ś</blockquote><figcaption>— Dominika Wojtas</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Zdecydowanie jeden z najlepszych klubów w trójmieście. Świetne miejsce z niesamowitym vibem. Muzyka zdecydowanie na plus, dzięki czemu parkiet cały czas jest pełny. Bez wątpienia miejsce do którego chce się wracać!!</blockquote><figcaption>— Kornelia Sobczyńska</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Siedlicka 4, 80-222 Gdańsk</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48513303592">513 303 592</a></div>
+    </div>
+    <div>
+      <h2>Sprawdź program</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48513303592">Zadzwoń: 513 303 592</a>
+        <a class="btn-ghost" href="https://wa.me/48513303592">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Akademicki Klub Politechniki Gdańskiej „Kwadratowa”. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

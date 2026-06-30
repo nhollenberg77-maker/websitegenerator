@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Klub Żak — centrum kulturalne, kino artystyczne Gdańsk</title>
+  <meta name="description" content="Klub Żak — centrum kulturalne, kino artystyczne w Gdańsku. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3ngMGIYaH4JVVR_h8EG2PSKzXqa_YEfH5xlgQ2KToFOcodh5NYvZ0VbemzjAqGtzLroWH0bjbTyn4jfNq6p8K78b0QazYQUGLbyQSRA4tmfqUoVPcIxFjT3aXnUVODqYl2gK4Pp3QB57W5hI83pDpGOUeaNBXkVrVGNRe6LhO4OFjCxX_jCsY6GxvskIvN3gAEKNM-kiHQKW7qq6xkw2nkHEAjcTdk-ePxvdwj6dyTrCGLu9qVVNk-gdQVRe3dgjaAXwvVK9N7_CgiuqCmDiKIFGdAMaB25GY3Vgb5l3FIk4na51SzHZkNWuWVUWz6Cfi6y9IMCltOkgu3dB07dekC4CFhUWjRRgDVKlV68BP3YwO29RCQqJkbgJoyVDV2ci-1owD57-UpjeB0iEX7m6rGPxcyPX8L5GQ6N6-vKo2sd9g&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Klub Żak — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Klub Żak</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48583440573">Sprawdź program</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">centrum kulturalne, kino artystyczne · Gdańsk</div>
+    <h1>Kino artystyczne, koncerty</h1>
+    <p>Klub Żak to miejsce dla tych, którzy szukają czegoś więcej niż komercyjne kino. Nonkonformistyczny repertuar filmów, koncertów, spektakli i warsztatów w wyjątkowej atmosferze.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48583440573">Sprawdź program</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Klub Żak to kulturalne serce Gdańska — biuro serwisujące nie tylko miłośników kina artystycznego, ale całej rodziny szukającej alternatywy dla głównego nurtu. W siedzibie na Grunwaldzką odbywają się seanse filmowe doceniane przez krytyków, a jednocześnie przystępne dla każdego. Tuż obok czeka mały bar z piwami, kawą i herbatą — idealne uzupełnienie wieczoru. Klub to również sceną dla koncertów, spektakli teatralnych i różnorodnych warsztatów twórczych.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3kHd6MSh7xyz6M-QzU1GZR85HCcHBECpxVzVMLpFHvlpuFjn9LtIdrlyeFTB0_Pzpbluh5QquGS-Kl3qnlhGOc-4GZkdKdj36YjHulNnKwnSrgu1Vu2p_VypUAL016_BhGKlTMAJQ5MqwdSlLtr9_61GlBdJKarbkYyq9tdbV7dac3lYX0I_gQ6fi_INfpWpA3B85chfysw4_onjr8DsGWAJnoHG_t1p0-XYyIzWAY2ejd5sbQyN9lEp5bzeiYJ77lksYTPMEhiAZHesmElKtzJsXcCNxRJCDF5aa5cH205mgkCu0nzZuv5GLCRjD3rNavvQjm7oolV6p4RXiSrfaO3w0gvLswJ_GTnNY3M2Njiu5PfgTOUnP3bKBf7KfQ0rRPTScc1IYTyea_Jags3cHb5wLNFrrldkn1LJaCJ9qYuuQ&amp;w=1200" alt="Klub Żak" loading="lazy"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3n138AnC-ikKiWrY5IrjzZtc2us8Q35FvDQIG_EfDz9yBSe12PbLAKAfWLYpOt6HxQaR0HfdzaR8Um0U1peCUtwYEvn6JAmVuKDWlvuRMiKwKrgDaMs4ztazQt-3EYtLbhkWBWYRxt33KcuZfanm-nG9armEjd0WNbNZ6t6U0t3XGYHIstGfEgwqpzETIvLiEbZNckPszY9zsgjn9mMWUbfReg6udPYDpeQuzbmEaOj7ys0D_sE_yNg1O88tAITFIkThE_sYlzcj-bDnHJBgLepqJlf_uCXHeBuoNWpR9a4sMBPdHl6m4rfNnPpL1YN63RTodsS6vxh6Aa2VrSJwQuqQZGUnjDP8GWg3jTyGCUn2sdPMz_LczUXERNmNh6FH8vjUCT2w9HMTjGbpp4LQkEpitqCaAnhupiLir-6IKM&amp;w=1200" alt="Klub Żak" loading="lazy"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3k5LLoRLI9IHKqWoxSgDP6czIjsMwnUBhMdY24ryXDZ5o2-DNMkIeN5gcDSfrUSNFCcb0weF0nAaI021kuIFYu6Lh9U05Kfs_-zFXZgE_qpwN9DSl7wCVbqQXrGLD4wqfVS0JwMKff6lMpuBSPWsUN4ucsZ4vEQ3AXG_FuCHNRY9ntLjp3Uaxy9zuAeS9mzJgtuKlARoLzkeJe9Lpo2y4_9mFvoimQlZ1IXnpFxv3VSYPtuzR9dESWNVbfxe7kZk9dBHFQTVZgrnHpcttKpz58i0f7y4qbIHh-NiTQoYFZPv_QPOeA171MN7SIDqiaRVTgejmj5y6WhVtak8QVzQL-64wyg3H7Bg9uTCzXT-qgyxvDJFxlW4qRBhVg-h6eEry4tBl4l0n7fX-VDMd2N1j341GrqW5pSVYxN89I_qm0J_qsv&amp;w=1200" alt="Klub Żak" loading="lazy"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3nhLFB9Bv99N4oP5yLjzEFlx1dB7BkbeoAhcfo1zx363vYkAHATBdqH96pKZfNBPlSl-1a4zpU8_rxRkoSfPMvz4WgDo9Vib-wzSN8bndjFeh3pNFji18_tOKcvlCS27-kq0FhNZTXVAeNRIXLtNr7Kiz1oJ9gjN8pkDd1ZddHyTtRT7ITFIMdC14EOYv-k2cEpi3zGgZjVDwMhle46I93cS6JkJrVTdGf9sJ1GvwPYqRkTFM2b_9xlxuJyIcE1nb1K6rMPFz7z9vNGHWqDys_Rh825cxoE4iJlsKZHpoSYc82dL36bZ-xeGCNDdvjgczxOuMMpkRbP-Nd7EIFmYaO3FePxmPUCT-lAsNHatuNEyPrQM9bFx-mcipQKAmw1PSg5Sa3AvKQjeS-EE7MnYF0YBfybMquAt2HFzE25HKZ7h1g&amp;w=1200" alt="Klub Żak" loading="lazy"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3lEAcVFRj5uQ6Nl7FAdbepm86ni_2WjwbZVrswuYiyrwbOg6LZwKktYceSPJWs1_PIzRbUxUH8sTiwzNZrVyfsGAK9XCfTCV32CyInelOpUveiPMBqltO1ukt8S3Sw2V9H3vwp1aMCAtj0W4-e_xzRbjpzmEH8hu8P2ESklbRUFt12hKxDQB-dmBWQzQ_k2pY2BkFluFw8jFjHTGTiPghAXgjkAjtTTX5waZ7KuOBmLSAm7DJ0gzt0eFl5KzgePl_rrzrgXhFNNw3q-TtKAkfgOLtIogeKjsnUlWv8yAvNsqTVocUVmsxudGa3KOjvVO3QzMRu1w3F4Ak2pDnx1JVQMt-52pFPJTNUquydUj2M4D8LGaCItykiappXVPp1uZJsdG7ym7qjo7qZn0YeDRYxh7p36TqaPnZ3V5zVr0744TCHZ&amp;w=1200" alt="Klub Żak" loading="lazy"><img src="/api/photo?ref=places%2FChIJl8D4JsN0_UYRoZggaCS8Mwc%2Fphotos%2FAaVGc3m91OtFGbPmUfv7JF8VluG8lQLiDxykLsCfMoO8JoxE3KcAoL-iQPkt_Y14bdSuBWn72rJ8-f89x7eondqNH1_Ssol9FzwHzIKnjjmK6LgNQ5wcI49DBBj-JAKNy3HFyrbwi8mgQFeL-b-CQjp5uZ1t8Bn6tKebS0G9AETmtZjHnQ8fdOf99gs4Ca3jclisVzViZLGE79b756XXlNAmTDSIwnBFeH2XhzYfu62eofxcV_gtMa-3Fve4sou-u8s2Hj1H3_2F_bOEo60CGECByyNWoT_GEBpo9GOaAP5qp17gBepC7tCTUQ9T381gFMAeUBKI_pt75HswgL-p3Ssnz7QefuFVkeN0cDn2FdV-wIZhuiS08_SjecJkj46lrAjieDquokncNaNx4obwn5Sak_y6Tz2Sodr-Yb_1i06-vcFy1PWXHjyQzb0coyTWjw&amp;w=1200" alt="Klub Żak" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.6 ★ (1947)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Fajna miejscówka, ciekawe imprezy, spokojna luźna atmosfera, knajpka z piwem</blockquote><figcaption>— Mariusz Greń</figcaption></figure><figure><div class="stars">★★★★</div><blockquote>Świetne miejsce na spędzenie wieczoru w ciągu tygodnia lub podczas weekendu. Niebanalne filmy, które często były doceniane przez krytyków, ale nie są komercyjne (choć i te również się zdarzają). Dużym atutem są krótkie reklamy i mini bar.</blockquote><figcaption>— Pavlinka</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Świetny, niebanalny repertuar, przystępne ceny (a już szczególnie tańsza kawa/herbata i ciastko przy zakupie biletu), wyjątkowy klimat no i Litovel (również w wersji 0 %)!</blockquote><figcaption>— Master Yoda</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>aleja Grunwaldzka 197, 80-266 Gdańsk</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48583440573">58 344 05 73</a></div>
+    </div>
+    <div>
+      <h2>Sprawdź program</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48583440573">Zadzwoń: 58 344 05 73</a>
+        <a class="btn-ghost" href="https://wa.me/48583440573">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Klub Żak. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

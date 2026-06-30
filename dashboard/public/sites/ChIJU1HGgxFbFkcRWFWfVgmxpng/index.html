@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wódka Café Bar — bar i kawiarnia Kraków</title>
+  <meta name="description" content="Wódka Café Bar — bar i kawiarnia w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3l00oUnJVhlQe4UG1MB1TqPNDHyBWHWOCZD7cZ_blQW1sYGScgtai4zzlYg_CxbJCnGdEYvH3Q3Jrt9EOgnfSVXR7eK6YzJKEVg-lfjg9BsnUf0klflj_cWg90pHwrOlCHGtQ7Ztg-1Ju895WnSpGvW1sZxkMyZKwnnOPrKMr_iPyQo9WU5ptG0X_7aG6ejEvyHNshLFhKZQYb-8hDNYXNGRMtz2alOruD0WhN5jjnDJuHIOuk4xLJa70mAR7YgzJsWN4AWS-eJ7yCsZNhNbmTIQ8HnXmpu9cZnawHO9SFKd99SdapsAe2BZFSM4lN_zwgCN1gnqjrV55rtFXTisLFHtA-g_JNGXJQMR93V3D_pNDS7FGdFIFaXDWuSuwzt9QXs5B6bgn1RDcDZctvzGgdni7cQ9qwZLsDZ8g69Dhg&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Wódka Café Bar — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Wódka Café Bar</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48124223214">Odwiedź nas</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">bar i kawiarnia · Kraków</div>
+    <h1>Odkryj smaki polskiej</h1>
+    <p>Przytulne miejsce na Mikołajskiej, gdzie tradycja i kreatywność spotykają się w każdym kieliszku. Wódki z wyjątkowymi smakami — od róży po karmel.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48124223214">Odwiedź nas</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Wódka Café Bar to symbol Krakowskiego baru na Starym Mieście. Przez lata zdobyliśmy serca turystów i lokalnych gości dzięki wyjątkowej kolekcji wódek — od klasycznych po artyzanalne, z naturalnymi aromatami figą, różą, bezem czy gruszką. Nasza mała antresola z widokiem na pulsującą Mikołajską to idealne miejsce na szybki drink, spotkanie z przyjaciółmi lub poznanie polskiego ''narodowego dobra''.
+Atmosfera jest swobodna, ciepła i autentyczna — miejsca może brakuje, ale serca i charakteru jest bez granic.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3mmAHPh48z8jQtkNIN2Es2jPVmGc-qcv1G6dyykQUMwU1_7durlItIDznDRNm4F0FJyXKP-mMxsh6apjvUrjbM4RGDHz4L66sRLPTLpYK_Wt2u-kg4cxiWQbJAd5jKw0Po76BQkItCvN4neXoeoCIl15uLQ3HRiHxE0HI2UbffTsb6aqyFGXKMUOuT-LP-N4bBY8IiI5rzdSFgiwNj4NeH4vSQcNT4h2jU41-0qOjZaYlGVB9zZD4GrReCcI3S_kZ3SijW_nzeZjSVCxVXzo6jlHjKIu2qikh4SXu_74j9Y557qdnlWPOzX9jG8giWcYlcZP8_u3XiDpyHFRsu-D26IYYG-TDUBwebkaOx6XrbDMJ7gnJ4lbRokLKWEgsEBN62T9Jsk8vVr-ioGTXM2mW06DJ-KG2JkrXQKljCbfVEVA_gM&amp;w=1200" alt="Wódka Café Bar" loading="lazy"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3mIDy3rl3bgTvMGkG7hyx0sGsz_A0q-NNtkXLWiKorCyd9-sDZ6fNH9PGOjUzjthMsIZiUvCamoGAJWOT5G1zkQ_apSLK5yYX0syVyfBKRlx8w4C1arpraM0tPO_dWJ9rFPPE9QbSrklWSJdDEf-Tmd8UVDd-IhR1_wMvnjzZy_YtCdR4zO_LInb_HgltyonsyVlsYTldDM8GqTul8lIgeOWFA86kc7B9eZNcZEvfK5YyvfdFKJlnbM2pludjTgym0fU9zynokdcK45QXznVTg5ChU4VtYL7HfMKGc9M7vIN3HjeYwBPp6nVPZ--3-p_ZTzkCDeGakjTSBDvDFwKllXehlskbu-Qa1jYdhl89rBfNS43OSsMAcvfBiMXACRUotjUzIZ43gggOgHRvezNs6zr-32Ig2AyjLvmICi2WuTRRIjfBf9ZYg70CSC0w&amp;w=1200" alt="Wódka Café Bar" loading="lazy"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3mMLWp9KmI_ZGj5PRW-3MbYz9yz9jS36yvL-47mGmaFPuII_h_mScwpnDWa8fstFM30Aw8lNOK3agKVtp46OOvhHBuwgxD0oaLLfjYSpAah2sHJ12skPqwAbyGWoksdN2W01NLrT4h2SaAmddgXgPHLtaYR2m5C3pWvzJL5nmwEHz9eFQ-VSmTazhYoBdAZdZicwDwhDtH3ygQ-UGuan907k2YVCY2rCvyfH7hOXhxRzLrVt5AIH1X-Gl6hcasYHyTx30Ob8NynYD-_FFdr2MgXmSz6gx-luMdhc5Q7NAu9ILPihfYuN4QNBlkXvUjIFEsiMt14UJHY8NNl5WPZBXvu9k9o5wF-pN9PDaJvWAZLtPsMXc18C58rXRiAncDs0XHtI76mCCspPazy_tAMzQN7HQn6fC_gHgy-O7HObhcHBhzkq-rD2mdKDlfLpFRV&amp;w=1200" alt="Wódka Café Bar" loading="lazy"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3kjhjbxutNC8HiR6f4cmcvUd0J7BhZ91VyE6fJ-oYzFcZBw7pJ2MTanVQ2Udt3Sd_Yx2iFP4N95npxswC0gj0mDRtGE_3-lDAQx1Ah8SVVyt5uOLw6mozkF137y_vGbyLnNm3D1lK_HG2P2tinvuu6iHrpT93NmVYLEaibLe0-BrNavooZgtMVn0S60OG0p8wDJ7znlc2rpTH7bzRG6tt5M154Id_P_-7qAfab-2WFZJqeqGvLULr-WXGx0InOHmz3lYrm4sxGHCJ-Hi7EY3-EAuqKQdGwiLtDXiCG6_z-pCPKmZfPNNCxdLxceAUho_MggnkHyaxG9W-EP-7LtNLvX81hTNKa_Xrx3B3gp-tk1zmGfAgT99c6bYFY5q5qQc_I6jU7VeA9976eovgp_JJxxPI7YE4Vw3-UYB5UCNUbk0ccOoJadnn1CW3kTzcqU&amp;w=1200" alt="Wódka Café Bar" loading="lazy"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3lm5v4omZxQrCAugowzYUgwOXDuEldcDNCuEAPwd20Z6DY8WuLMEuLFxespkV6QkIB7wIxMxNjpAy9TZcnwQ9iVqdRfLeXq5EY4CwnD8DGgKkKaEIsOE5APGcZcvejflk9w_ThfjVkqSGcqXX5gYlvrsMuS91ordcUs_NgQmsrwpmRztZrob8zsVXffRU6a8VjFM5vTWuSWJdOLC9Z6WU952aFYQsZWuZIuunUGRJvT9JeCk82opNPyZ1DlgUDyxto7uvwNyBnaNRDJPdZxlewLnJcDlPMkK_hR0r2j7cmRxQmcQSvxC_zxmv0uQgr7nXFspy_7UjIih6XlwyhgWnrCaUAhwxpXjHUZAD8cfAw1rgvMKwpY_-66uCsuss_f6e9E5CaAE3V7xGKQZOzCkeg796kixJEIcVGnRTzitl22sU4uP67PeQG7qBVCv4VJ&amp;w=1200" alt="Wódka Café Bar" loading="lazy"><img src="/api/photo?ref=places%2FChIJU1HGgxFbFkcRWFWfVgmxpng%2Fphotos%2FAaVGc3nPPgHpcj1-9rJaarZoHo7SDxBHZ4aObCitXr9Xs7zKfuoRJgh03E1s12q5igYXU4UJTQHlxtWSpJmfp9xbKDVnzMYNzT6usFDMvKOFX33QcX-mp_bUWkpLos7dlennfftucPd8jPiVV1pnn-gXFCFHgh6ZNL7WvB_IkIiXAzz8Df5NsyhY00WyiQab9n1t053nzUy2Rk8g2Hw1f3XXPNviEYvU0DD4QSu7nbXItBRuDkSsXKjkR5tNVyaKqbd8v8NfXEwHxzARLY5k8PdjJmtIirphQ4kbmzAyDqx63vfKVoxK12L1IlD9mNOrlqMLZCqrTr9oj4XXwwRDbGNxwiOPco7GMkO9T4EyDX8qD6uEMibgVkYslA3kRgsUBK3Ejrd7RVRLGNIPNC8g-VB-ygvWT7iH6Se2__LdCMyGFhv6oJDCrf0tWYD5hhmI5a0H&amp;w=1200" alt="Wódka Café Bar" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.5 ★ (2480)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Niby dla turystów ale warto wpaść żeby spróbować tej wódki jakiej w życiu nie podejrzewaliście ze istnieje (np. różana). Dla znajomych z zagranicy dobre miejsce żeby się zapoznać z naszym narodowym dobrem. Z różnych gorzelni, mnóstwo smakow</blockquote><figcaption>— Piotr Kania</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Bardzo smaczna wódka- szczególnie przypadła mi do gustu pieprzówka i Karmel. Duży wybór, piękne podane. Klimatyczne miejsce- siedzonko na antresoli z widokiem na bar i ulicę mega wygodne. Wiem dlaczego były tam tylko dwie poduszki- jakby by</blockquote><figcaption>— Klaudia Lubszczyk</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Bardzo fajne miejsce, na szybkie co nieco :-) Pan kelner obsłużył nas mimo wcześniejszej informacji, że już zamyka. Bardzo dziękujemy :-) Będąc następnym razem w Krakowie, na pewno zawitamy ponownie.</blockquote><figcaption>— Joanna Dobrucka</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Mikołajska 5, 31-027 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48124223214">12 422 32 14</a></div>
+    </div>
+    <div>
+      <h2>Odwiedź nas</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48124223214">Zadzwoń: 12 422 32 14</a>
+        <a class="btn-ghost" href="https://wa.me/48124223214">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Wódka Café Bar. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

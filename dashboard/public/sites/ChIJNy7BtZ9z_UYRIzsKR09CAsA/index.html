@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Józef K. — kawa i piwo w klimatycznym wnętrzu Gdańsk</title>
+  <meta name="description" content="Józef K. — kawa i piwo w klimatycznym wnętrzu w Gdańsku. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3kTxactIgn33n3HxPOE14wTtnESK6geLhHq7IHP5ausTa8OtVE6P2QIM9INJEmsVYBhV3TJsXo0QAs_0NO3ANmECoB8I_ZdvB8mjeaHr8yZ_Dt-vw-KQMJiDwMyni8KR7vnk1g-ZzLL61fnX3AZmNgZyZPpihW55GEN44stzA6LImoh9YTf0zpzfVsxDkGvI9ocQh6Y82fVtyRIDSGqiKXXS82eVY7r8Rx7pX2MC1bt3wfJmb8W-FZGrZoDYnyYa3R8FNhHmntE8Vj_9O6hZcu5rY6XqM3ksUMGI9F9_1KAMRzDZa4_slBPQxLpvbpfhwvUXwP4rGJ20mUHaFpSdUKXl-y5VsYqwEanMHRW_LMpGIjfLMAid-VQPfD78zzedIDZbC0Nk55tntgKn1GAVJbW-yRG58FbZ0lhYRMwslgPcg&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Józef K. — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Józef K.</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48503346164">Odwiedź nas</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">kawa i piwo w klimatycznym wnętrzu · Gdańsk</div>
+    <h1>Kawiarnia z klimatem</h1>
+    <p>Nietuziinkowe miejsce pełne osobliwości, piwnego humoru i smacznych trunków. Idealne do spotkań, rozmów i spędzania czasu z przyjaciółmi.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48503346164">Odwiedź nas</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols">
+        <div class="menu-sec">
+          <h3>Kawy</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Espresso</span><span class="mi-dots"></span><span class="mi-price">6 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Cappuccino</span><span class="mi-dots"></span><span class="mi-price">10 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Americano</span><span class="mi-dots"></span><span class="mi-price">8 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Café Latte</span><span class="mi-dots"></span><span class="mi-price">11 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Piwa</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Piwo z nalewaka — Jasne</span><span class="mi-dots"></span><span class="mi-price">13 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Piwo z nalewaka — Ciemne</span><span class="mi-dots"></span><span class="mi-price">13 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Piwo butelkowe — Złota</span><span class="mi-dots"></span><span class="mi-price">12 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Piwo butelkowe — Ambra</span><span class="mi-dots"></span><span class="mi-price">14 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Napoje bezalkoholowe</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Woda mineralna</span><span class="mi-dots"></span><span class="mi-price">5 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Sok naturalny</span><span class="mi-dots"></span><span class="mi-price">9 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Herbata</span><span class="mi-dots"></span><span class="mi-price">7 zł</span></div>
+              
+            </li>
+          </ul>
+        </div>
+        <div class="menu-sec">
+          <h3>Przystawki</h3>
+          <ul>
+            <li>
+              <div class="mi-top"><span class="mi-name">Chleb z masłem</span><span class="mi-dots"></span><span class="mi-price">8 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Oliwki</span><span class="mi-dots"></span><span class="mi-price">10 zł</span></div>
+              
+            </li><li>
+              <div class="mi-top"><span class="mi-name">Ser i charcuteria</span><span class="mi-dots"></span><span class="mi-price">18 zł</span></div>
+              
+            </li>
+          </ul>
+        </div></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Józef K. to jedno z najbardziej oryginalnych miejsc w Gdańsku — kawiarnia przesiąknięta atmosferą portowo-gdańskiego klimatu z nutą retro i eklektycznym wyposażeniem. Wnętrze pełne jest starego sprzętu okrętowego, książek, plakatów i eksponatów, które nadają mu wyjątkowego charakteru i sprawiają, że każde odwiedzenie to odkrywanie nowych szczegółów.
+
+W Józef K. znajdziesz świetnie serwowane piwo z nalewaka, smaczną kawę i miłą obsługę. To miejsce, w którym czasami brakuje miejsc siedzących — ale to nie przypadek, to oznak jego popularności.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3mymbFa_vUXtsN41BIHSIY0XnCljudfd68sfVuHXUrlEd10AYPr5AMfI-lyh0T1ibzCpe7HwcHBrrS08iraBdpWFFOViwrc0x-uRUzBKoUoOtZR2A7xRUqsn67Q-3QQ83c2MfJknWLPviwuBfGNTgZ2Fkjxq-RTQ8wIVpbbwdHeTo8Z0JfLo9g0nmGZlw6YQFWqWhgFIc-ZpSkQKjuqE8G7-alaWWsqCMUGf5bGWEBlBNjps1_2EOuEBe9YOwQMQOeqv3GHk74h8tK-mGf0MpPSEDJE5pIKhwpKk3lTxC96k_N19Urri_rXj4tWcM7IN_jbP8AJzS3CnA4c_GrOuqWKbX8SSik7kW-yFHb90vBG--mg8SLD9EYUjc6lAf-tN_SQ9t2SIMOjRgGDpYjgvQoYvXQYHiY7uqsw4hMh577MRYeutjDdePLs8HbiFauV&amp;w=1200" alt="Józef K." loading="lazy"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3mRvtRzW7cxB3aiY6OzvhpKZnaUb5SL16YRz4K5mW3Uz9vyrA4m3SjGoeyMRXsPFTbT2RMsNNXM75X6Yp2wBck0WxpN0aNm3nCisOb5hdFtVBWjgBlAfaPtbeAD5Nc98pTPM0cxlXooQ4AqYxjuPcZQ-XSAtBZHMcdV3nfqxH-L_PJrkdFQdPcfz_lYqCnKIUoowRkkbRG4J29HOLCSjV-rXDwgF1u_M057Mzt4kSDd9a8GDoeYPKXtrZGOpVV4D1S9otA1zqPvm4bvyLL1gWiKWBJ25U3NmqbrbuF6MPzgU4mxyo8THfmhduETF1k6vTZRLaPx0Yxc8Q603YpqUcQIkME2XN31851ZEhS8O0kMzqRkKyKvfn05TE3MQpB4BPH5hTM_Ly2Ppvqp9pkl7LBiXA6hWC20R7cWvMc3dv1t7GzC&amp;w=1200" alt="Józef K." loading="lazy"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3mLksgAGNJrsj3CURKwO2tqbcNfLRZoX9WPPSfynE3PSYpyymxzePe3L_c5oCrTDOWWKY6-ZDL9cNKdQbB-woV1_KNwYajM8jJRzo4LCwTyTxoBFnIPFNNcR1rAx8PBY6c6g_xxCxCS6APtqDOjS5tQinIrr-6SGvZ1exchCYDqwa6j197arDN_T8BH-BvihwObu29oz0qSx-PksqMqsF2SRSOwzkgdpKyFxY-oI1_YvbUedVRWJmhSwoPhF0UFtyLK_9VY7f1YuG2vBmYxa8To6gHwNF40zlOwrmpXYVGPtDl3AHPyQIqjmt9m0wG-nTzI4B8lO6-SeXQc3P87k0jukB4hK-JOKJH-LcN5QIM_54Hsx8_ahPbcqAH24HX7TRWJit5dVmDgGviWdpNo5fXDQwNOv5VU0wNgffbv5BVnEuNoXeI_KQ4hrdqvhGKM&amp;w=1200" alt="Józef K." loading="lazy"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3mrPcoUJ1mI95O0oOlzLjUUkf6YarQACsj0LLJu4Or2yn0zLrwNVwKgUz-o4G8CXRK7O1Zr2B3WLgvnmpaIqegKjuXXu3RE725867ButcKV6fpbQ83Sg4diziB5u6cJxSOWdR0Q-LG3W3fIXbhtBeLOhT6T3z-aKgDGTc2a3DG8N57YLJUXTuJ4p05qaU18FSCCT1enZhPf4nwrtNLzAMyKJSZu1OQeIumCidKZiIXLMRe8JMLviIvUS7yEdFgKeK6MlJpCmh2QcDB9wS1BePbVxIf77hLmZdwzt-NzkgV8ebOxu-lrOwlP_5qHZ-a_C-b2hpvzNZ37KOXCPKtD83Z9tqJIUKXdxuhc0XUY7rDUaPVnhMRdF9aEZzhwnxUcREQf3e8ASvGzBb-UM_q2EK-hA7h-X25_PjwYFk7OZ9A-_SnZvahf_Sy7ieY4QD1Y&amp;w=1200" alt="Józef K." loading="lazy"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3k2VU7tSQQPZWt3SkqzED4RR2ey4fiPgGyllDL5EEB7XYi0HZ4dyMHEae6I2Tg1r2D4n_ZNmAL8rBkIjgP9tTb4_y1C8z9nmlFGtjBloCeUnHOELvWM2QH3Zv2CBSnkyPTSFOVOqS1nfluSXbNI7mZ4CVX11xkGvzvRnzkrGIMRZFgBRXDqdH_5gKiaLiOrOLxUlbU7ID8kBPaa5nkiAsc_tvQRJWk0OKkW3TsFDIl4xtcdzSikKGwmDti7nlxlf8R39RCyEeaS3M0H4nXz9x1aaEnNQNZ5zNhPc2_RkS7U2JQsJbCdw4U2_E6YZan819suQlA90JvyhRYs0ReRNXMsG668OxDqzFX5DTU86hW79zvEHVU30OjEsln03KxbFpys7qkcVgvxvIbcApYdhLsMwmDWiDJWlmLzk-FALzw_031xQyFEGF_5rfFbz6fa&amp;w=1200" alt="Józef K." loading="lazy"><img src="/api/photo?ref=places%2FChIJNy7BtZ9z_UYRIzsKR09CAsA%2Fphotos%2FAaVGc3lS45sfnZSO-eaDMu7mHc3_ly_i0-wdwEskgL8uvW2iGP-kmW5fGU0zNuUC51x3CD0BIjueLDKTK4Z5GTvPI_aUfP8-LO-VH1F5VGAadt3BNAkAGreqq_TY65z7SalCl0CXLCRQNderlNWRrZL2wssNFDzZpzL5B8rK0D5-BhrQNbKa_-jGqLW6iBFdR5yYG4XuQYbYDd5yi6skW-iSrGtT_PkjXlUDYOipenDIafkzeiNdYTMqtDE-ph5YzOyU8HTW5RVrUOZQUHKP8p-yRUyBy8TWc36QkEFo7cNxVeR1yMhi55t1eqml2Xpu8MwpXsAB_JNm4LGoJoObwHRj6kwBs1mS5FzR7G_LrwYl4tSCC7KxxYS_VXlQedsGzT9Kg-tzdpuNrpKXtKz9HUeqPP2oiiWht0G9BrASeagkn3MIsnkkTEmR__xhFTNrfzwP&amp;w=1200" alt="Józef K." loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.7 ★ (4665)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Do odwiedzenia akurat tego lokalu skusiły mnie zdjęcia w Google Maps i nie zawiodłam się. Wystrój knajpki jest na prawdę mega klimatyczny i oryginalny, najbardziej podobał mi się żuraw! Smaczna kawka i piwo z nalewaka. Ps. Jedyny jak dla mn</blockquote><figcaption>— Aga Joswowitz-Niemierska</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Fajna kawiarnia z ciekawym wnętrzem. W środku masa książek, plakatów i eksponatów. Styl ciężki do określenia - taki miks portowo-loftowy z nietuzikonową domieszką eklektyzmu :) Miejsce idealne na randkę lub spotkanie z przyjaciółmi. Polecam</blockquote><figcaption>— gagatek1983</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Super pub w samym sercu miasta. Szczególnie polecam w tygodniu kiedy łatwiej znaleźć miejsce siedzące. Klimat trochę w stylu PRL z elementami symbolizującymi Gdańsk i stare elementy wyposażenia okrętowego.</blockquote><figcaption>— Łu Kasz</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Ul. Piwna 1/pok. 407, 80-831 Gdańsk</span></div>
+      <div class="row"><b>Godziny</b><span>Pn-Pt 10-23, So-Nd 11-23</span></div>
+      <div class="row"><b>Telefon</b><a href="+48503346164">503 346 164</a></div>
+    </div>
+    <div>
+      <h2>Odwiedź nas</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48503346164">Zadzwoń: 503 346 164</a>
+        <a class="btn-ghost" href="https://wa.me/48503346164">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Józef K.. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

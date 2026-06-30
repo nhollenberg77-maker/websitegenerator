@@ -18,7 +18,7 @@ function getVariant(lead: Lead): TemplateVariant {
   return CATEGORY_VARIANT[lead.category_query || ""] || "premium";
 }
 
-type TemplateStyle = "editorial" | "service" | "established" | "food";
+type TemplateStyle = "editorial" | "service" | "established" | "food" | "salon" | "medical" | "retail";
 
 // Horeca-types → eigen template met menukaart, openingstijden en reserveren.
 const FOOD_TYPES = new Set([
@@ -26,10 +26,41 @@ const FOOD_TYPES = new Set([
   "pizza_restaurant", "ice_cream_shop", "fast_food_restaurant", "food", "sandwich_shop",
   "bistro", "brunch_restaurant", "breakfast_restaurant", "tea_house", "pub", "wine_bar",
 ]);
-function isFood(lead: Lead): boolean {
-  const types = `${lead.category_query || ""} ${lead.primary_type || ""} ${lead.types || ""}`.toLowerCase();
-  return Array.from(FOOD_TYPES).some((t) => types.includes(t));
+// Afspraak / persoonlijke verzorging → prijslijst, openingstijden, "umów wizytę", galerij.
+const SALON_TYPES = new Set([
+  "hair_care", "hair_salon", "barber_shop", "beauty_salon", "nail_salon",
+  "spa", "day_spa", "tattoo_parlor", "massage", "skin_care_clinic", "make_up_artist",
+  "waxing_hair_removal_service", "tanning_studio", "wellness_center",
+]);
+// Zorg / medisch → behandelingen, vertrouwen, afspraak (geen verzonnen claims).
+const MEDICAL_TYPES = new Set([
+  "dentist", "dental_clinic", "doctor", "physiotherapist", "medical_center", "clinic",
+  "veterinary_care", "chiropractor", "optician", "optometrist", "psychologist",
+  "podiatrist", "dermatologist", "orthodontist", "hospital",
+]);
+// Retail / lokale winkel → assortiment, aanbod, openingstijden, locatie.
+const RETAIL_TYPES = new Set([
+  "store", "clothing_store", "shoe_store", "furniture_store", "florist", "book_store",
+  "jewelry_store", "electronics_store", "hardware_store", "pet_store", "gift_shop",
+  "bicycle_store", "home_goods_store", "sporting_goods_store", "supplement_store",
+  "convenience_store", "grocery_store", "liquor_store", "bookstore",
+]);
+// Exacte token-match (GEEN substring — anders matcht 'barber_shop' op 'bar').
+function matchesTypes(lead: Lead, set: Set<string>): boolean {
+  const tokens = new Set<string>();
+  if (lead.category_query) tokens.add(lead.category_query.toLowerCase());
+  if (lead.primary_type) tokens.add(lead.primary_type.toLowerCase());
+  const raw = lead.types || "";
+  try {
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) arr.forEach((t) => tokens.add(String(t).toLowerCase()));
+  } catch {
+    raw.toLowerCase().split(/[\s,[\]"']+/).forEach((t) => { if (t) tokens.add(t); });
+  }
+  for (const t of set) if (tokens.has(t)) return true;
+  return false;
 }
+function isFood(lead: Lead): boolean { return matchesTypes(lead, FOOD_TYPES); }
 
 // Trefwoorden die wijzen op een echte 24/7 noodservice — alleen die krijgen
 // het phone-first urgency-template. Een normale loodgieter/elektricien zonder
@@ -47,11 +78,17 @@ function isEmergencyService(lead: Lead): boolean {
 function getTemplateStyle(lead: Lead): TemplateStyle {
   // Horeca → food-template (menukaart, openingstijden, reserveren)
   if (isFood(lead)) return "food";
+  // Persoonlijke verzorging (kapper/beauty/nagels/tattoo/spa) → afspraak-template
+  if (matchesTypes(lead, SALON_TYPES)) return "salon";
+  // Zorg (tandarts/fysio/kliniek/dierenarts) → zorg-template
+  if (matchesTypes(lead, MEDICAL_TYPES)) return "medical";
+  // Lokale winkel → retail-template
+  if (matchesTypes(lead, RETAIL_TYPES)) return "retail";
   // Echte noodservice (24h locksmith/hydraulik/elektryk pogotowie) → phone-first
   if (isEmergencyService(lead)) return "service";
   // Dakdekkers → established (traditioneel, gevestigd gevoel)
   if (lead.category_query === "roofing_contractor") return "established";
-  // Default: editorial — nette site die de service verkoopt
+  // Default: editorial — nette neutrale site die de dienst verkoopt
   return "editorial";
 }
 
@@ -78,6 +115,8 @@ export interface SiteContentSpec {
   cuisine?: string;        // bv. "kuchnia polska", "ramen", "piekarnia rzemieślnicza"
   hours?: string;          // bv. "Pn-Pt 8-20, So-Nd 9-18"
   menu?: { section: string; items: { name: string; description?: string; price?: string }[] }[];
+  // Afspraak/verzorging + zorg + retail: prijslijst van diensten/behandelingen/aanbod.
+  pricelist?: { name: string; price?: string; note?: string }[];
 }
 
 function parseSiteContent(lead: Lead): SiteContentSpec | null {
@@ -328,8 +367,12 @@ const CATEGORY_PL: Record<string, string> = {
 };
 
 export function generateSiteHtml(lead: Lead): string {
-  if (getTemplateStyle(lead) === "food") return generateFoodSiteHtml(lead);
-  if (getTemplateStyle(lead) === "service") return generateServiceSiteHtml(lead);
+  const style = getTemplateStyle(lead);
+  if (style === "food") return generateFoodSiteHtml(lead);
+  if (style === "salon") return generateAppointmentSiteHtml(lead, "salon");
+  if (style === "medical") return generateAppointmentSiteHtml(lead, "medical");
+  if (style === "retail") return generateAppointmentSiteHtml(lead, "retail");
+  if (style === "service") return generateServiceSiteHtml(lead);
   const variant = getVariant(lead);
   const templateStyle = getTemplateStyle(lead);
   const sc = parseSiteContent(lead);
@@ -1272,6 +1315,183 @@ function generateFoodSiteHtml(lead: Lead): string {
     <div>
       <h2>${cta}</h2>
       <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        ${hasPhone ? `<a class="btn" href="${phoneLnk}">Zadzwoń: ${escapeHtml(phone)}</a>` : ""}
+        ${waPhone ? `<a class="btn-ghost" href="https://wa.me/${waPhone}">WhatsApp</a>` : ""}
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© ${new Date().getFullYear()} ${fullName}. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>`;
+}
+
+// Eén flexibele renderer voor afspraak/verzorging (salon), zorg (medical) en
+// lokale winkel (retail). Zelfde structuur, archetype bepaalt accent, labels en CTA.
+type ApptArchetype = "salon" | "medical" | "retail";
+const APPT_CONFIG: Record<ApptArchetype, {
+  accent: string; accentH: string; ink: string; bg: string; soft: string; line: string; dark: string;
+  listTitle: string; cta: string; ghost: string; reviewWord: string; bookingNote: string; metaTail: string;
+}> = {
+  salon: { accent: "#a8576b", accentH: "#8f4659", ink: "#241b1e", bg: "#faf5f3", soft: "#7a6b6f", line: "#ecdfe0", dark: "#241619",
+    listTitle: "Cennik usług", cta: "Umów wizytę", ghost: "Zobacz cennik", reviewWord: "klientów",
+    bookingNote: "Umów się telefonicznie lub przez WhatsApp — potwierdzamy termin od ręki.", metaTail: "Cennik, opinie i rezerwacja wizyty." },
+  medical: { accent: "#2c7a7b", accentH: "#236363", ink: "#1b2a2a", bg: "#f4f8f8", soft: "#5e7373", line: "#d9e8e8", dark: "#142525",
+    listTitle: "Zakres usług", cta: "Umów wizytę", ghost: "Zobacz usługi", reviewWord: "pacjentów",
+    bookingNote: "Umów wizytę telefonicznie — pomożemy dobrać dogodny termin.", metaTail: "Zakres usług, opinie i rejestracja." },
+  retail: { accent: "#3f6f52", accentH: "#335c43", ink: "#1f2620", bg: "#f6f7f4", soft: "#65706a", line: "#e2e7df", dark: "#16201a",
+    listTitle: "Oferta", cta: "Zadzwoń", ghost: "Zobacz ofertę", reviewWord: "klientów",
+    bookingNote: "Zadzwoń lub odwiedź nas — chętnie doradzimy i sprawdzimy dostępność.", metaTail: "Oferta, opinie i informacje o sklepie." },
+};
+
+function generateAppointmentSiteHtml(lead: Lead, archetype: ApptArchetype): string {
+  const cfg = APPT_CONFIG[archetype];
+  const sc = parseSiteContent(lead);
+  const fullName = escapeHtml(lead.name);
+  const brand = brandLine(lead, sc);
+  const city = lead.city_query || "Twoje miasto";
+  const label = escapeHtml(categoryLabel(lead, sc));
+  const hasPhone = !!(lead.phone_national || lead.phone_intl);
+  const phone = formatPhone(lead.phone_national);
+  const phoneLnk = phoneLink(lead.phone_intl || lead.phone_national);
+  const waPhone = phoneDigits(lead.phone_intl || lead.phone_national);
+  const address = lead.address || "";
+  const rating = lead.rating ?? 0;
+  const ratingCount = lead.rating_count ?? 0;
+  const hasRating = ratingCount > 0 && rating > 0;
+  const hours = sc?.hours ? escapeHtml(sc.hours) : "";
+  const about = sc?.about || lead.description || `${lead.name} — ${wCity(city)}.`;
+  const cta = escapeHtml(sc?.cta_label || cfg.cta);
+  const heroTitle = escapeHtml(sc?.hero_headline || lead.name);
+  const heroSub = escapeHtml(sc?.hero_lead || `${label}${city ? " " + wCity(city) : ""}.`);
+  const ctaHref = hasPhone ? phoneLnk : "#kontakt";
+
+  const photoUrls = proxyPhotos(applyPhotoCuration(parseJson<string[]>(lead.photo_urls, []), lead.ai_polish));
+  const heroImg = photoUrls[0] || "";
+  const gallery = photoUrls.slice(1, 7);
+
+  const reviews = parseJson<LeadReview[]>(lead.reviews_json, [])
+    .filter((r) => r.rating >= 4 && r.text && r.text.trim().length >= 20)
+    .map((r) => (r.original_language === "pl" && r.original_text ? { ...r, text: r.original_text } : r))
+    .filter((r) => !(r.original_language && r.original_language !== "pl") && !(r.language && r.language !== "pl" && !r.original_language))
+    .slice(0, 3);
+
+  // Prijslijst: agent-pricelist → anders services-titels → anders zachte placeholder.
+  const pricelist = sc?.pricelist?.length ? sc.pricelist.slice(0, 14) : null;
+  const svc = sc?.services?.length ? sc.services.slice(0, 8) : [];
+  const listHtml = pricelist
+    ? `<ul class="plist">${pricelist.map((p) => `<li>
+        <div class="pl-top"><span class="pl-name">${escapeHtml(p.name)}</span>${p.price ? `<span class="pl-dots"></span><span class="pl-price">${escapeHtml(p.price)}</span>` : ""}</div>
+        ${p.note ? `<div class="pl-note">${escapeHtml(p.note)}</div>` : ""}</li>`).join("")}</ul>`
+    : svc.length
+      ? `<ul class="plist">${svc.map((s) => `<li><div class="pl-top"><span class="pl-name">${escapeHtml(s.title)}</span></div>${s.description ? `<div class="pl-note">${escapeHtml(s.description)}</div>` : ""}</li>`).join("")}</ul>`
+      : `<p class="pl-empty">Zadzwoń lub napisz — chętnie przedstawimy pełną ofertę i aktualne ceny.</p>`;
+
+  const galleryHtml = gallery.length
+    ? `<section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid">${gallery.map((u) => `<img src="${escapeHtml(u)}" alt="${fullName}" loading="lazy">`).join("")}</div></div></section>`
+    : "";
+
+  const reviewsHtml = reviews.length
+    ? `<section class="reviews"><div class="wrap"><h2>Opinie ${cfg.reviewWord}${hasRating ? ` · ${rating.toFixed(1)} ★ (${ratingCount})` : ""}</h2><div class="r-grid">${reviews.map((r) => `<figure><div class="stars">${"★".repeat(Math.round(r.rating))}</div><blockquote>${escapeHtml(r.text.slice(0, 240))}</blockquote><figcaption>— ${escapeHtml(r.author)}</figcaption></figure>`).join("")}</div></div></section>`
+    : "";
+
+  const navLabel = archetype === "retail" ? "Oferta" : "Cennik";
+
+  return `<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow"><meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${fullName} — ${label} ${escapeHtml(city)}</title>
+  <meta name="description" content="${fullName} — ${label} ${wCity(city)}. ${cfg.metaTail}">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--accent:${cfg.accent};--accenth:${cfg.accentH};--ink:${cfg.ink};--bg:${cfg.bg};--soft:${cfg.soft};--line:${cfg.line};--dark:${cfg.dark}}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.12}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--accenth)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:70vh;display:flex;align-items:flex-end;color:#fff;${heroImg ? `background:linear-gradient(180deg,rgba(15,12,12,.12),rgba(15,12,12,.74)),url('${escapeHtml(heroImg)}') center/cover` : "background:linear-gradient(135deg,var(--accent),var(--dark))"}}
+    .hero .wrap{padding-top:80px;padding-bottom:52px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:12px;opacity:.9;margin-bottom:14px}
+    .hero h1{font-size:clamp(38px,6.5vw,70px);max-width:15ch}
+    .hero p{font-size:clamp(16px,2.3vw,20px);max-width:48ch;margin-top:14px;opacity:.93}
+    .hero-cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.55);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:60px 0}
+    h2.sec{font-size:clamp(26px,4vw,38px);margin-bottom:28px;text-align:center}
+    .plist{list-style:none;max-width:640px;margin:0 auto}
+    .plist li{padding:14px 0;border-bottom:1px solid var(--line)}
+    .pl-top{display:flex;align-items:baseline}
+    .pl-name{font-weight:600}.pl-dots{flex:1;border-bottom:1px dotted var(--line);margin:0 10px;transform:translateY(-3px)}.pl-price{font-weight:600;color:var(--accent);white-space:nowrap}
+    .pl-note{font-size:14px;color:var(--soft);margin-top:3px}
+    .pl-empty{text-align:center;color:var(--soft);max-width:42ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:220px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:var(--dark);color:#f3ece6}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:28px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:rgba(255,255,255,.6);font-weight:600}
+    .info a{color:#f3ece6}
+    footer{background:#13100e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla ${fullName} — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">${escapeHtml(brand || lead.name)}</span>
+    <nav class="nav-links"><a href="#oferta">${navLabel}</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="${ctaHref}">${cta}</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">${label} · ${escapeHtml(city)}</div>
+    <h1>${heroTitle}</h1>
+    <p>${heroSub}</p>
+    <div class="hero-cta">
+      <a class="btn" href="${ctaHref}">${cta}</a>
+      <a class="btn-ghost" href="#oferta">${escapeHtml(cfg.ghost)}</a>
+    </div>
+  </div></header>
+
+  <section id="oferta"><div class="wrap">
+    <h2 class="sec">${escapeHtml(cfg.listTitle)}</h2>
+    ${listHtml}
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2 class="sec">O nas</h2>
+    <p>${escapeHtml(about)}</p>
+  </div></section>
+
+  ${galleryHtml}
+  ${reviewsHtml}
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Kontakt</h2>
+      ${address ? `<div class="row"><b>Adres</b><span>${escapeHtml(address)}</span></div>` : ""}
+      ${hours ? `<div class="row"><b>Godziny</b><span>${hours}</span></div>` : `<div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny.</span></div>`}
+      ${hasPhone ? `<div class="row"><b>Telefon</b><a href="${phoneLnk}">${escapeHtml(phone)}</a></div>` : ""}
+    </div>
+    <div>
+      <h2>${cta}</h2>
+      <p style="color:rgba(255,255,255,.7);margin-bottom:18px">${escapeHtml(cfg.bookingNote)}</p>
       <div class="hero-cta">
         ${hasPhone ? `<a class="btn" href="${phoneLnk}">Zadzwoń: ${escapeHtml(phone)}</a>` : ""}
         ${waPhone ? `<a class="btn-ghost" href="https://wa.me/${waPhone}">WhatsApp</a>` : ""}

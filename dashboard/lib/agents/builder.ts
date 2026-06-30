@@ -44,6 +44,7 @@ Voor deze lead (welk type bedrijf dan ook — kapper, restaurant, tandarts, gara
 1. get_lead om naam, type, stad, reviews en beschrijving te zien.
 2. set_site_content: schrijf de VOLLEDIGE Poolse copy, toegespitst op DIT bedrijf en deze branche/stad — brand_name (volledige naam zonder rechtsvorm), category_label, hero-kop, intro, over-ons, diensten, highlights, faq, formulier-opties. Leid alles af uit naam/type/reviews. Geloofwaardig en concreet; verzin GEEN keurmerken/certificaten/garanties.
    → HORECA (restaurant/bistro/café/bakkerij): vul OOK cuisine, hours (leeg als onbekend) en menu (secties met passende gerechten + prijzen in zł) — verzin een plausibel, smakelijk menu.
+   → KAPPER/BARBERSHOP/BEAUTY/NAGELS/TATTOO/SPA, ZORG (tandarts/fysio/kliniek) of WINKEL: vul OOK hours en een pricelist — passende diensten/behandelingen/aanbod met prijzen in zł (bv. 'Strzyżenie męskie — 60 zł'). Verzin plausibele posten op basis van type/naam/reviews; geen medische beloften of verzonnen keurmerken.
 Roep set_site_content precies één keer aan met complete content, en stop dan. Hou je redenering kort.`
   );
 
@@ -59,6 +60,17 @@ Roep set_site_content precies één keer aan met complete content, en stop dan. 
     maxIterations: def.maxIterations,
     maxTokensPerTurn: def.maxTokensPerTurn,
   });
+
+  // 2b) Content-garantie: schreef de agent geen content? Eén gerichte herkansing
+  //     (i.p.v. meteen terugvallen op de generieke template).
+  if (!getLeadById(placeId)?.site_content) {
+    await runAgentLoop({
+      agent: "builder", system,
+      userPrompt: `Je hebt nog GEEN set_site_content aangeroepen voor "${lead.name}". Roep set_site_content nu één keer aan met de volledige Poolse content. Niet beschrijven — doen. place_id=${placeId}.`,
+      tools: def.tools, model: def.model, taskId: task.id, leadPlaceId: placeId,
+      budgetTokens: def.budgetTokens, maxIterations: 4, maxTokensPerTurn: def.maxTokensPerTurn,
+    }).catch(() => {});
+  }
 
   // 3) CODE genereert de site + screenshot — gegarandeerd, ongeacht of de agent
   //    het zelf had aangeroepen. Geen lege builds meer.

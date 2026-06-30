@@ -14,6 +14,7 @@ import type { Task } from "./types";
 interface DiscoverPayload { cities?: string[]; categories?: string[]; radius?: number; limitPerCategory?: number }
 
 const MIN_REVIEWS = 10;
+const MAX_REVIEWS = 1200; // boven dit aantal: te groot/gevestigd bedrijf (keten/hotspot) — geen doel
 const MAX_QUALIFY_PER_RUN = 6;   // genoeg per ronde; de orchestrator maakt steeds nieuwe discover-taken
 const MAX_FETCH_PER_RUN = 25;    // begrens dure website-fetches + e-mail-scrapes per ronde
 
@@ -53,6 +54,7 @@ export async function runScout(task: Task): Promise<void> {
         // 2) Gezond profiel: genoeg reviews, niet permanent gesloten.
         if (p.business_status === "CLOSED_PERMANENTLY") { rej(p.place_id, "permanent gesloten", "gesloten"); continue; }
         if ((p.rating_count ?? 0) < MIN_REVIEWS) { rej(p.place_id, `te weinig reviews (${p.rating_count ?? 0})`, "weinig-reviews"); continue; }
+        if ((p.rating_count ?? 0) > MAX_REVIEWS) { rej(p.place_id, `te groot/gevestigd (${p.rating_count} reviews)`, "te-groot"); continue; }
         // 3) Moet een eigen website hebben (anders niet te mailen = geen doel).
         if (!p.website) { rej(p.place_id, "geen eigen website (niet mailbaar)", "geen-website"); continue; }
 
