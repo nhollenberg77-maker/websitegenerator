@@ -12,6 +12,7 @@ import {
   activitySeries,
 } from "@/lib/agents/store";
 import { costForModel, totalCost, MODEL_PRICES } from "@/lib/agents/pricing";
+import { budgetStatus } from "@/lib/agents/budget";
 import type { Goal, GoalParams } from "@/lib/agents/types";
 
 function goalProgress(goal: Goal): number {
@@ -114,11 +115,13 @@ export async function GET(request: Request) {
       recentTasks,
       pendingApprovals: countLeads("WHERE approval_status='pending'"),
       cost,
+      budget: budgetStatus(),
       activity: { range, series },
       stats: {
         qualified: countLeads("WHERE qualified=1"),
         sites: countLeads("WHERE site_generated_at IS NOT NULL"),
         emailed: countLeads("WHERE emailed_at IS NOT NULL"),
+        replied: countLeads("WHERE replied_at IS NOT NULL"),
       },
     });
   } catch (error) {

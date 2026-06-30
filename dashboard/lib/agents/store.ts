@@ -148,6 +148,8 @@ export function ensureAgentTables(): void {
     addCol("approved_at", "TEXT");
     addCol("site_content", "TEXT"); // agent-geschreven content-spec (JSON)
     addCol("dossier", "TEXT"); // agent-notities per lead
+    addCol("replied_at", "TEXT"); // gevoed door lib/inbox.ts (ook in db.ts-migratie)
+    addCol("bounced_at", "TEXT");
 
     migrated = true;
   } finally {
@@ -362,6 +364,21 @@ export function tokenUsageByModel(): { model: string; inputTokens: number; outpu
          FROM agent_runs WHERE model IS NOT NULL GROUP BY model`
       )
       .all() as { model: string; inputTokens: number; outputTokens: number; runs: number }[];
+  } finally {
+    d.close();
+  }
+}
+
+// Tokenverbruik per model sinds een tijdstip (voor kosten per periode).
+export function tokenUsageSince(sinceIso: string): { model: string; inputTokens: number; outputTokens: number }[] {
+  const d = db(true);
+  try {
+    return d.prepare(
+      `SELECT COALESCE(model,'onbekend') as model,
+              SUM(COALESCE(input_tokens,0)) as inputTokens,
+              SUM(COALESCE(output_tokens,0)) as outputTokens
+       FROM agent_runs WHERE model IS NOT NULL AND finished_at >= ? GROUP BY model`
+    ).all(sinceIso) as { model: string; inputTokens: number; outputTokens: number }[];
   } finally {
     d.close();
   }
@@ -864,16 +881,18 @@ export function setDossier(placeId: string, text: string): void {
 }
 
 // Prestaties per kolom (category_query / city_query) — voor de leerlus van de Manager.
-export function leadStatsBy(column: "category_query" | "city_query"): { key: string; total: number; qualified: number; emailed: number }[] {
+export function leadStatsBy(column: "category_query" | "city_query"): { key: string; total: number; qualified: number; emailed: number; replied: number; bounced: number }[] {
   const d = db(true);
   try {
     return d.prepare(
       `SELECT COALESCE(${column},'?') as key,
               COUNT(*) as total,
               SUM(CASE WHEN qualified=1 THEN 1 ELSE 0 END) as qualified,
-              SUM(CASE WHEN emailed_at IS NOT NULL THEN 1 ELSE 0 END) as emailed
-       FROM leads GROUP BY ${column} ORDER BY qualified DESC, total DESC LIMIT 30`
-    ).all() as { key: string; total: number; qualified: number; emailed: number }[];
+              SUM(CASE WHEN emailed_at IS NOT NULL THEN 1 ELSE 0 END) as emailed,
+              SUM(CASE WHEN replied_at IS NOT NULL THEN 1 ELSE 0 END) as replied,
+              SUM(CASE WHEN bounced_at IS NOT NULL THEN 1 ELSE 0 END) as bounced
+       FROM leads GROUP BY ${column} ORDER BY replied DESC, qualified DESC, total DESC LIMIT 30`
+    ).all() as { key: string; total: number; qualified: number; emailed: number; replied: number; bounced: number }[];
   } finally {
     d.close();
   }

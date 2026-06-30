@@ -28,11 +28,22 @@ export interface AgentSettings {
   focusHint: string;          // vrije tekst die de Manager-agent leest
   approvalRequired: boolean;  // mails eerst door mens laten goedkeuren
   paused: boolean;            // hele team pauzeren
+  monthlyBudgetUsd: number;   // 0 = geen plafond; anders: stop dure agent-arbeid bij dit bedrag
+}
+
+// IMAP voor reply-/bounce-tracking (los van SMTP). Leeg = uitgeschakeld.
+export interface ImapSettings {
+  enabled: boolean;
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
 }
 
 export interface AppSettings {
   smtp: SmtpSettings;
   agent: AgentSettings;
+  imap: ImapSettings;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -55,6 +66,14 @@ const DEFAULT_SETTINGS: AppSettings = {
     focusHint: "",
     approvalRequired: true,
     paused: false,
+    monthlyBudgetUsd: 0,
+  },
+  imap: {
+    enabled: false,
+    host: "",
+    port: 993,
+    user: "",
+    pass: "",
   },
 };
 
@@ -66,6 +85,7 @@ export function getSettings(): AppSettings {
       return {
         smtp: { ...DEFAULT_SETTINGS.smtp, ...parsed.smtp },
         agent: { ...DEFAULT_SETTINGS.agent, ...parsed.agent },
+        imap: { ...DEFAULT_SETTINGS.imap, ...parsed.imap },
       };
     }
   } catch {

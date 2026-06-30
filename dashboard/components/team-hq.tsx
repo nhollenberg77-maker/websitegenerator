@@ -34,8 +34,9 @@ interface TeamData {
   feed: FeedMsg[]; learnings: { id: number; note: string | null }[];
   recentTasks: RecentTask[]; pendingApprovals: number;
   cost: { total: number; totalTokens: number; byModel: { model: string; tokens: number; cost: number }[] };
+  budget: { month: number; monthlyCap: number; remaining: number | null; pctUsed: number | null; costPerQualified: number | null };
   activity: { range: string; series: { t: number; runs: number; tokens: number }[] };
-  stats: { qualified: number; sites: number; emailed: number };
+  stats: { qualified: number; sites: number; emailed: number; replied: number };
 }
 
 const AGENT_META: Record<AgentName, { label: string; icon: typeof Compass; tint: string }> = {
@@ -124,6 +125,20 @@ export function TeamHQ() {
             <div className="font-display text-3xl font-semibold tracking-tight">{money(data?.cost.total ?? 0)}</div>
             <div className="text-xs text-white/40 mt-1">{kfmt(data?.cost.totalTokens ?? 0)} tokens totaal</div>
           </div>
+          {data?.budget && data.budget.monthlyCap > 0 && (
+            <div className="mt-3">
+              <div className="flex items-baseline justify-between text-xs mb-1">
+                <span className="text-white/55">deze maand</span>
+                <span className="font-mono text-white/80">{money(data.budget.month)} / {money(data.budget.monthlyCap)}</span>
+              </div>
+              <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
+                <div className={cn("h-full rounded-full transition-all", (data.budget.pctUsed ?? 0) >= 90 ? "bg-orange-400" : "bg-emerald-400")} style={{ width: `${Math.min(100, data.budget.pctUsed ?? 0)}%` }} />
+              </div>
+            </div>
+          )}
+          {data?.budget?.costPerQualified != null && (
+            <div className="text-[11px] text-white/40 mt-2">{money(data.budget.costPerQualified)} per qualified lead</div>
+          )}
           <div className="mt-4 space-y-2">
             {(data?.cost.byModel ?? []).map((m) => (
               <div key={m.model} className="flex items-center justify-between text-xs">
@@ -142,8 +157,8 @@ export function TeamHQ() {
             <QuickBtn label={`Goedkeuren (${data?.pendingApprovals ?? 0})`} hint="Mails klaar om te versturen" onClick={() => document.getElementById("approvals")?.scrollIntoView({ behavior: "smooth" })} />
             <div className="grid grid-cols-3 gap-2 pt-1">
               <Mini label="Qualified" value={data?.stats.qualified ?? 0} />
-              <Mini label="Sites" value={data?.stats.sites ?? 0} />
               <Mini label="Gemaild" value={data?.stats.emailed ?? 0} />
+              <Mini label="Replies" value={data?.stats.replied ?? 0} />
             </div>
           </div>
           {showGoalForm && <GoalForm onDone={() => { setShowGoalForm(false); fetchAll(); }} />}

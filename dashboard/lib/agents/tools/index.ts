@@ -407,6 +407,22 @@ const categoryPerformance: AgentTool = {
   },
 };
 
+const budgetStatusTool: AgentTool = {
+  name: "budget_status",
+  description: "Zie de kosten (USD): vandaag, deze week, deze maand, het maandplafond, wat er nog over is, en de kosten per qualified lead. Gebruik dit om te bewaken dat de kosten niet te hoog worden — neem gas terug of stop lage-ROI-sectoren als je het plafond nadert.",
+  input_schema: { type: "object", additionalProperties: false, properties: {} },
+  handler: async () => {
+    const { budgetStatus } = await import("../budget");
+    const b = budgetStatus();
+    return J({
+      vandaag_usd: +b.today.toFixed(2), week_usd: +b.week.toFixed(2), maand_usd: +b.month.toFixed(2),
+      maandplafond_usd: b.monthlyCap || "geen", resterend_usd: b.remaining == null ? "n.v.t." : +b.remaining.toFixed(2),
+      plafond_gebruikt_pct: b.pctUsed == null ? "n.v.t." : Math.round(b.pctUsed),
+      qualified_leads: b.qualified, kosten_per_qualified_usd: b.costPerQualified == null ? "n.v.t." : +b.costPerQualified.toFixed(3),
+    });
+  },
+};
+
 const recordInsight: AgentTool = {
   name: "record_insight",
   description: "Leg een geleerde les vast (verschijnt in 'Wat het team leerde').",
@@ -423,4 +439,4 @@ const recordInsight: AgentTool = {
 export const SCOUT_TOOLS: AgentTool[] = [placesSearch, fetchWebsiteTool, placeDetailsTool, getLead, qualifyLead, findEmail, saveDossier, postMessage];
 export const BUILDER_TOOLS: AgentTool[] = [getLead, placeDetailsTool, enrichLead, setSiteContent, generateSite, screenshotTool, viewScreenshot, setSiteQuality, saveDossier, postMessage];
 export const WRITER_TOOLS: AgentTool[] = [getLead, findEmail, setEmailCopy, postMessage];
-export const MANAGER_TOOLS: AgentTool[] = [readStatus, readFeedback, readMessages, categoryPerformance, createDiscoverTask, setStrategy, manageGoal, recordInsight, postMessage];
+export const MANAGER_TOOLS: AgentTool[] = [readStatus, readFeedback, readMessages, categoryPerformance, budgetStatusTool, createDiscoverTask, setStrategy, manageGoal, recordInsight, postMessage];

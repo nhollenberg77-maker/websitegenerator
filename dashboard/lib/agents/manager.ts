@@ -24,11 +24,12 @@ export async function runManager(): Promise<void> {
     "manager",
     `${focus ? `FOCUS van de eigenaar (leidend): ${focus}\n\n` : ""}Werkwijze (managementronde):
 1. read_status — bekijk doelen + voortgang, wachtrij, goedkeuringen.
-2. category_performance — kijk welke branches/steden de beste qualified leads opleveren. LEER hiervan: stuur targeting bij naar wat werkt.
-3. read_messages + read_feedback — wat meldt het team, wat leren we uit uitkomsten?
-4. Voor elk actief doel dat nog niet gehaald is en waar geen discover-taken lopen: create_discover_task (max 2 per ronde). Kies steden/categorieën die passen bij de FOCUS hierboven en bij wat goed presteert; durf BREED te gaan (elk lokaal MKB-bedrijf met zwakke/ontbrekende site telt — niet alleen bouw). Gebruik geldige Google place types (bv. plumber, electrician, hair_care, restaurant, dentist, car_repair, beauty_salon, physiotherapist, bakery, florist).
-5. Stel waar zinvol de strategie van Scout/Builder/Writer bij met set_strategy — concreet, op basis van wat je leerde.
-6. Sluit gehaalde doelen met manage_goal(close); maak zo nodig een nieuw, breder doel. Leg max één nuttige les vast met record_insight.
+2. category_performance — kijk welke branches/steden de beste qualified leads (en replies) opleveren. LEER hiervan: stuur targeting bij naar wat werkt; stop sectoren die slecht presteren.
+3. budget_status — bewaak de KOSTEN. Nader je het maandplafond (>80%), neem gas terug: minder/geen nieuwe discover-taken en focus op de goedkoopste, best presterende sectoren. Let op kosten per qualified lead — als een sector veel kost en weinig oplevert, stop ermee.
+4. read_messages + read_feedback — wat meldt het team, wat leren we uit uitkomsten (replies/bounces)?
+5. Voor elk actief doel dat nog niet gehaald is en waar geen discover-taken lopen: create_discover_task (max 2 per ronde). Kies steden/categorieën die passen bij de FOCUS hierboven en bij wat goed presteert; durf BREED te gaan (elk lokaal MKB-bedrijf met zwakke/ontbrekende site telt — niet alleen bouw). Gebruik geldige Google place types (bv. plumber, electrician, hair_care, restaurant, dentist, car_repair, beauty_salon, physiotherapist, bakery, florist).
+6. Stel waar zinvol de strategie van Scout/Builder/Writer bij met set_strategy — concreet, op basis van wat je leerde.
+7. Sluit gehaalde doelen met manage_goal(close); maak zo nodig een nieuw, breder doel. Leg max één nuttige les vast met record_insight.
 Houd het kort en doelgericht. Verstuur nooit zelf mails.`
   );
 

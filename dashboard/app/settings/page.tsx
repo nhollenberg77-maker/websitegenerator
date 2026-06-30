@@ -31,8 +31,10 @@ interface AgentSettings {
   focusHint?: string;
   approvalRequired?: boolean;
   paused?: boolean;
-  [k: string]: unknown; // legacy velden round-trippen mee
+  monthlyBudgetUsd?: number;
+  [k: string]: unknown;
 }
+interface ImapSettings { enabled: boolean; host: string; port: number; user: string; pass: string }
 
 function Toggle({ on, onClick, title, desc }: { on: boolean; onClick: () => void; title: string; desc: string }) {
   return (
@@ -54,7 +56,8 @@ export default function SettingsPage() {
     host: "", port: 587, secure: false, user: "", pass: "", fromName: "", fromEmail: "",
     signatureName: "", replyToEmail: "", companyName: "", companyAddress: "", companyNip: "", companyRegon: "",
   });
-  const [agent, setAgent] = useState<AgentSettings>({ focusHint: "", approvalRequired: true, paused: false });
+  const [agent, setAgent] = useState<AgentSettings>({ focusHint: "", approvalRequired: true, paused: false, monthlyBudgetUsd: 0 });
+  const [imap, setImap] = useState<ImapSettings>({ enabled: false, host: "", port: 993, user: "", pass: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -65,19 +68,20 @@ export default function SettingsPage() {
     fetch("/api/settings").then((r) => r.json()).then((data) => {
       setSmtp(data.smtp);
       setAgent(data.agent);
+      if (data.imap) setImap(data.imap);
       setLoading(false);
     });
   }, []);
 
   async function save() {
     setSaving(true); setSaved(false);
-    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ smtp, agent }) });
+    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ smtp, agent, imap }) });
     setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 3000);
   }
 
   async function testSmtp() {
     setTesting(true); setTestResult(null);
-    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ smtp, agent }) });
+    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ smtp, agent, imap }) });
     const res = await fetch("/api/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "test-smtp" }) });
     setTestResult(await res.json()); setTesting(false);
   }
@@ -128,6 +132,33 @@ export default function SettingsPage() {
             title="Team pauzeren"
             desc="Stopt alle agent-activiteit (zoeken, bouwen, schrijven, verzenden) tot je dit weer uitzet."
           />
+          <FieldLabel label="Maandbudget (USD)" hint="0 = geen plafond. De Manager bewaakt dit en stopt dure agent-arbeid bij dit bedrag.">
+            <Input type="number" min={0} className="w-40"
+              value={agent.monthlyBudgetUsd ?? 0}
+              onChange={(e) => setAgent((a) => ({ ...a, monthlyBudgetUsd: Math.max(0, parseFloat(e.target.value) || 0) }))} />
+          </FieldLabel>
+        </CardContent>
+      </Card>
+
+      {/* IMAP — reply/bounce-tracking */}
+      <Card className="border-line mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="font-display text-base font-semibold flex items-center gap-2"><Mail className="h-4 w-4 text-navy" /> Inbox-tracking (IMAP)</CardTitle>
+          <p className="text-xs text-ink-soft mt-1">
+            Optioneel. Laat het team de inbox lezen om <strong>antwoorden en bounces</strong> te herkennen — zo leert de Manager welke sectoren écht converteren en beschermt de bounce-circuit-breaker je domein. Vaak dezelfde inloggegevens als SMTP.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Toggle on={imap.enabled} onClick={() => setImap((i) => ({ ...i, enabled: !i.enabled }))}
+            title="Inbox-tracking aan" desc="Zonder dit blijven reply-/bounce-cijfers leeg." />
+          <div className="grid grid-cols-2 gap-4">
+            <FieldLabel label="IMAP host"><Input value={imap.host} onChange={(e) => setImap((i) => ({ ...i, host: e.target.value }))} placeholder="outlook.office365.com" /></FieldLabel>
+            <FieldLabel label="Port"><Input type="number" value={imap.port} onChange={(e) => setImap((i) => ({ ...i, port: parseInt(e.target.value) || 993 }))} /></FieldLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldLabel label="Gebruikersnaam"><Input value={imap.user} onChange={(e) => setImap((i) => ({ ...i, user: e.target.value }))} placeholder="tomek@..." /></FieldLabel>
+            <FieldLabel label="Wachtwoord"><Input type="password" value={imap.pass} onChange={(e) => setImap((i) => ({ ...i, pass: e.target.value }))} placeholder="App-wachtwoord" /></FieldLabel>
+          </div>
         </CardContent>
       </Card>
 

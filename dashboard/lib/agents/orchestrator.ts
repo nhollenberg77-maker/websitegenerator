@@ -20,6 +20,7 @@ import {
   getLeadById,
   recordSendOutcome,
   recentSendFailureRate,
+  recentBounceRate,
   lastEmailedAtMs,
 } from "../db";
 import { siteExists } from "../site-generator";
@@ -29,6 +30,8 @@ import { generateEmailSubject, generateEmailHtml } from "../email-template";
 import { getSettings, isSmtpConfigured } from "../settings";
 import { autoDeploy } from "../deploy";
 import { getPolicy, isWithinWindow, evaluateThrottleAndCap, checkContent, verifyEmail, startOfWarsawDayISO } from "../sending-policy";
+import { isOverBudget, budgetStatus } from "./budget";
+import { pollInbox } from "../inbox";
 import type { Task, GoalParams } from "./types";
 
 const TASK_CONCURRENCY = 2;
@@ -126,6 +129,9 @@ function fallbackPlan(): void {
 
 const UNSUB_BASE = (process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://app.stronadlatwojejfirmy.com.pl").replace(/\/$/, "");
 let lastWindowLog = 0;
+let lastBudgetLog = 0;
+let lastInboxPoll = 0;
+const INBOX_POLL_MS = 10 * 60_000; // reply/bounce-check elke 10 min
 
 function stripHtml(html: string): string {
   return html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -148,6 +154,12 @@ async function sendApproved(): Promise<void> {
   const fr = recentSendFailureRate(20);
   if (fr.total >= 10 && fr.rate >= 0.5) {
     postMessage({ from: "manager", kind: "alert", body: `⛔ Circuit-breaker: ${Math.round(fr.rate * 100)}% van de laatste ${fr.total} verzendingen faalde — verzenden gepauzeerd. Controleer SMTP/domein.` });
+    return;
+  }
+  // Echte bounce-rate (uit IMAP) — beschermt domein-reputatie (schema: stop ≥3.5%).
+  const br = recentBounceRate(100);
+  if (br.sent >= 20 && br.rate >= 0.035) {
+    postMessage({ from: "manager", kind: "alert", body: `⛔ Circuit-breaker: bounce-rate ${(br.rate * 100).toFixed(1)}% (${br.bounced}/${br.sent}) ≥ 3.5% — verzenden gepauzeerd om je domein te beschermen.` });
     return;
   }
 
@@ -238,6 +250,19 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
     }
   }
 
+  // 1b) Budgetplafond bereikt? Stop dure agent-arbeid (LLM-loops), maar laat
+  //     reeds-goedgekeurde mail nog wel verzonden worden (goedkoop).
+  const over = isOverBudget();
+  if (over) {
+    if (Date.now() - lastBudgetLog > 30 * 60_000) {
+      lastBudgetLog = Date.now();
+      const b = budgetStatus();
+      postMessage({ from: "manager", kind: "alert", body: `⛔ Maandbudget bereikt ($${b.month.toFixed(2)}/$${b.monthlyCap}). Agents pauzeren tot volgende maand of verhoog het plafond. Goedgekeurde mails worden nog verstuurd.` });
+    }
+    await sendApproved().catch(() => {});
+    return { ran: 0, summary: "budgetplafond bereikt — agents gepauzeerd" };
+  }
+
   // 2) downstream-taken klaarzetten
   reconcile();
 
@@ -254,6 +279,12 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
 
   // 4) goedgekeurde mails versturen
   await sendApproved().catch((err) => postMessage({ from: "manager", kind: "alert", body: `Verzendfout: ${err instanceof Error ? err.message : "onbekend"}` }));
+
+  // 5) reply-/bounce-tracking (IMAP, alleen als geconfigureerd)
+  if (Date.now() - lastInboxPoll >= INBOX_POLL_MS) {
+    lastInboxPoll = Date.now();
+    await pollInbox().catch(() => {});
+  }
 
   const summary = claimed.length
     ? `${claimed.length} taak/taken uitgevoerd: ${claimed.map((t) => t.type).join(", ")}`

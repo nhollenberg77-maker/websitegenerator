@@ -34,6 +34,9 @@ function ensureMigrated(): void {
     if (!columns.some((c) => c.name === "unsubscribed_at")) {
       db.exec("ALTER TABLE leads ADD COLUMN unsubscribed_at TEXT DEFAULT NULL");
     }
+    for (const col of ["replied_at", "bounced_at"]) {
+      if (!columns.some((c) => c.name === col)) db.exec(`ALTER TABLE leads ADD COLUMN ${col} TEXT DEFAULT NULL`);
+    }
     // Globale uitschrijf-/suppressielijst op e-mailADRES (niet place_id), zodat
     // hetzelfde adres bij meerdere listings nooit opnieuw mail krijgt.
     db.exec("CREATE TABLE IF NOT EXISTS email_suppression (email TEXT PRIMARY KEY, reason TEXT, created_at TEXT)");
@@ -329,6 +332,36 @@ export function recentSendFailureRate(limit = 20): { total: number; failed: numb
   db.close();
   const failed = rows.filter((r) => r.status === "failed").length;
   return { total: rows.length, failed, rate: rows.length ? failed / rows.length : 0 };
+}
+
+// Reply/bounce-tracking (gevoed door lib/inbox.ts).
+export function findLeadByContactEmail(email: string): { place_id: string; category_query: string | null } | undefined {
+  const db = getDb();
+  const row = db.prepare("SELECT place_id, category_query FROM leads WHERE LOWER(contact_email) = ? AND emailed_at IS NOT NULL ORDER BY emailed_at DESC LIMIT 1")
+    .get(email.trim().toLowerCase()) as { place_id: string; category_query: string | null } | undefined;
+  db.close();
+  return row;
+}
+
+export function markLeadReplied(placeId: string): void {
+  const db = getDb(false);
+  db.prepare("UPDATE leads SET replied_at = COALESCE(replied_at, ?) WHERE place_id = ?").run(new Date().toISOString(), placeId);
+  db.close();
+}
+
+export function markLeadBounced(placeId: string): void {
+  const db = getDb(false);
+  db.prepare("UPDATE leads SET bounced_at = COALESCE(bounced_at, ?) WHERE place_id = ?").run(new Date().toISOString(), placeId);
+  db.close();
+}
+
+// Echte bounce-ratio over de laatst gemailde leads — voedt de circuit-breaker.
+export function recentBounceRate(limit = 100): { sent: number; bounced: number; rate: number } {
+  const db = getDb();
+  const rows = db.prepare("SELECT bounced_at FROM leads WHERE emailed_at IS NOT NULL ORDER BY emailed_at DESC LIMIT ?").all(limit) as { bounced_at: string | null }[];
+  db.close();
+  const bounced = rows.filter((r) => r.bounced_at).length;
+  return { sent: rows.length, bounced, rate: rows.length ? bounced / rows.length : 0 };
 }
 
 export function lastEmailedAtMs(): number | null {

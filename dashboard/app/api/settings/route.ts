@@ -4,10 +4,11 @@ import { testSmtpConnection } from "@/lib/mailer";
 
 export async function GET() {
   const settings = getSettings();
-  // mask password for client
+  // mask passwords for client
   return Response.json({
     ...settings,
     smtp: { ...settings.smtp, pass: settings.smtp.pass ? "••••••••" : "" },
+    imap: { ...settings.imap, pass: settings.imap.pass ? "••••••••" : "" },
   });
 }
 
@@ -19,12 +20,12 @@ export async function PUT(request: Request) {
     const updated: AppSettings = {
       smtp: { ...current.smtp, ...body.smtp },
       agent: { ...current.agent, ...body.agent },
+      imap: { ...current.imap, ...body.imap },
     };
 
-    // Don't overwrite password with mask
-    if (updated.smtp.pass === "••••••••") {
-      updated.smtp.pass = current.smtp.pass;
-    }
+    // Don't overwrite passwords with the mask
+    if (updated.smtp.pass === "••••••••") updated.smtp.pass = current.smtp.pass;
+    if (updated.imap.pass === "••••••••") updated.imap.pass = current.imap.pass;
 
     saveSettings(updated);
     // Geen oude cron meer — het agent-team draait via de worker (orchestrator).

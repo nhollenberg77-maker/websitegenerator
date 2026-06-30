@@ -45,3 +45,7 @@ leads-*.csv
 npm-debug.log*
 yarn-debug.log*
 .pnpm-debug.log*
+
+# SQLite WAL (transient)
+*.db-wal
+*.db-shm
