@@ -81,6 +81,7 @@ export async function runAgentLoop(args: {
   let inputTokens = 0, outputTokens = 0, iterations = 0, finalText = "";
   let budgetHit = false;
   let status: "ok" | "error" = "ok";
+  let nudged = false; // één corrigerend duwtje als het model narrate-and-stopt
 
   try {
     for (; iterations < maxIterations; iterations++) {
@@ -106,7 +107,17 @@ export async function runAgentLoop(args: {
       if (textBlocks.length) finalText = textBlocks.map((b) => b.text).join("\n").trim();
 
       const toolUses = resp.content.filter((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
-      if (resp.stop_reason !== "tool_use" || toolUses.length === 0) break;
+      if (resp.stop_reason !== "tool_use" || toolUses.length === 0) {
+        // Narrate-and-stop: het model beschreef alleen wat het ging doen, maar
+        // riep nog geen enkele tool aan. Geef één duwtje om het écht te doen.
+        if (toolCalls.length === 0 && !nudged) {
+          nudged = true;
+          messages.push({ role: "assistant", content: resp.content.length ? resp.content : [{ type: "text", text: "…" }] });
+          messages.push({ role: "user", content: "Je hebt nog geen enkele tool aangeroepen — je beschreef alleen wat je gaat doen. Voer de eerste stap NU uit met een echte tool-aanroep. Niet beschrijven, dóen." });
+          continue;
+        }
+        break;
+      }
 
       messages.push({ role: "assistant", content: resp.content });
       const results: Anthropic.ToolResultBlockParam[] = [];
