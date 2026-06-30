@@ -519,6 +519,7 @@ const recordInsight: AgentTool = {
 /* ─────────────────────────── GROEPEN ─────────────────────────── */
 
 export const SCOUT_TOOLS: AgentTool[] = [placesSearch, fetchWebsiteTool, placeDetailsTool, getLead, qualifyLead, findEmail, saveDossier, postMessage];
-export const BUILDER_TOOLS: AgentTool[] = [getLead, placeDetailsTool, enrichLead, setSiteContent, generateSite, screenshotTool, viewScreenshot, setSiteQuality, saveDossier, postMessage];
+// Builder = alleen content schrijven; verrijken/genereren/screenshotten doet de code.
+export const BUILDER_TOOLS: AgentTool[] = [getLead, placeDetailsTool, setSiteContent, saveDossier, postMessage];
 export const WRITER_TOOLS: AgentTool[] = [getLead, findEmail, setEmailCopy, postMessage];
 export const MANAGER_TOOLS: AgentTool[] = [readStatus, readFeedback, readMessages, categoryPerformance, budgetStatusTool, reviewQualifiedLeads, inspectSite, overruleLead, createDiscoverTask, setStrategy, manageGoal, recordInsight, postMessage];

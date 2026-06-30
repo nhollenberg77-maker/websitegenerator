@@ -1,36 +1,56 @@
-// Builder — echte agent-loop met vision. Bouwt de concept-site en beoordeelt
-// zijn eigen werk via de screenshot.
+// Builder — hybride: de AGENT doet het creatieve werk (de Poolse site-content
+// schrijven, toegespitst op het bedrijf); de CODE garandeert de mechanische
+// stappen (verrijken, HTML genereren, screenshot). Zo eindigt een build nooit
+// "leeg" door narrate-and-stop — de grootste foutbron.
 
 import { runAgentLoop } from "./runner";
 import { AGENT_DEFS, buildSystem } from "./registry";
-import { getLeadById } from "../db";
-import { siteExists } from "../site-generator";
+import { getLeadById, markSiteGenerated } from "../db";
+import { setLeadEnrichment } from "./store";
+import { placeDetails, photoProxyUrls } from "./places";
+import { generateSiteForLead, siteExists } from "../site-generator";
+import { generateScreenshot, hasScreenshot } from "../screenshot";
+import { postMessage, setSiteQuality } from "./store";
 import type { Task } from "./types";
 
 export async function runBuilder(task: Task): Promise<void> {
   const placeId = task.lead_place_id;
   if (!placeId) throw new Error("build_site-taak zonder lead_place_id");
   const def = AGENT_DEFS.builder;
-  const lead = getLeadById(placeId);
 
+  // 1) CODE garandeert verrijking (reviews + foto's) vóór het schrijven.
+  let lead = getLeadById(placeId);
+  if (!lead) throw new Error(`Lead ${placeId} niet gevonden`);
+  if (!lead.enriched_at) {
+    try {
+      const details = await placeDetails(placeId);
+      let refs: string[] = [];
+      try { refs = lead.photo_refs ? (JSON.parse(lead.photo_refs) as string[]) : []; } catch { /* ignore */ }
+      setLeadEnrichment(placeId, {
+        reviewsJson: details?.reviews.length ? JSON.stringify(details.reviews) : null,
+        description: details?.description || null,
+        photoUrls: refs.length ? JSON.stringify(photoProxyUrls(refs)) : null,
+      });
+      lead = getLeadById(placeId) || lead;
+    } catch { /* enrich is best-effort */ }
+  }
+
+  // 2) AGENT schrijft de content (het creatieve deel). Eén heldere opdracht.
   const system = buildSystem(
     "builder",
-    `WERK IN TOOL-AANROEPEN, niet in lange analyse-tekst. Je bent PAS KLAAR als je generate_site én screenshot hebt aangeroepen — stop daar niet eerder mee. Hou je redenering kort.
+    `Jouw taak is ALLEEN het schrijven van de site-content via set_site_content. De site wordt daarna automatisch gegenereerd — jij hoeft niet te genereren of te screenshotten.
 
-Werkwijze voor deze ene lead (welk type bedrijf dan ook — kapper, restaurant, tandarts, garage, vakman, winkel, enz.):
-1. get_lead om de gegevens te zien; place_details / enrich_lead om reviews + foto's op te halen (verplicht vóór genereren).
-2. set_site_content: schrijf de VOLLEDIGE Poolse copy, volledig toegespitst op DIT specifieke bedrijf en deze branche en stad — category_label, hero-kop, intro, over-ons, diensten, highlights, faq en formulier-opties. Leid de branche en diensten af uit de naam, het type en de reviews. Schrijf concreet en geloofwaardig; verzin GEEN keurmerken, certificaten of garanties die je niet kunt verifiëren.
-   → Zet ALTIJD brand_name op de volledige bedrijfsnaam (zonder rechtsvorm) — dit is wat in het logo/de header komt; kap meerwoordige namen niet af (bv. "Kawiarnia Drukarnia", niet "Kawiarnia").
-   → HORECA (restaurant/bistro/café/bakkerij): de site krijgt een eigen menu-template. Vul dan OOK 'cuisine' (type keuken), 'hours' (openingstijden, leeg laten als onbekend) en 'menu' (secties met passende gerechten + prijzen in zł). Verzin een plausibel, smakelijk menu dat past bij de naam/keuken/reviews — geen bouw-diensten.
-3. generate_site → screenshot → view_screenshot: bekijk je eigen resultaat kritisch (spreekt het deze ondernemer aan? past de toon bij de branche?).
-4. Niet goed genoeg of verkeerde branche-toon? Pas set_site_content aan en genereer opnieuw (max 1-2 keer; let op je budget).
-5. set_site_quality met je eindoordeel. Post een handoff aan de Writer als de site klaar is.`
+Voor deze lead (welk type bedrijf dan ook — kapper, restaurant, tandarts, garage, vakman, winkel, enz.):
+1. get_lead om naam, type, stad, reviews en beschrijving te zien.
+2. set_site_content: schrijf de VOLLEDIGE Poolse copy, toegespitst op DIT bedrijf en deze branche/stad — brand_name (volledige naam zonder rechtsvorm), category_label, hero-kop, intro, over-ons, diensten, highlights, faq, formulier-opties. Leid alles af uit naam/type/reviews. Geloofwaardig en concreet; verzin GEEN keurmerken/certificaten/garanties.
+   → HORECA (restaurant/bistro/café/bakkerij): vul OOK cuisine, hours (leeg als onbekend) en menu (secties met passende gerechten + prijzen in zł) — verzin een plausibel, smakelijk menu.
+Roep set_site_content precies één keer aan met complete content, en stop dan. Hou je redenering kort.`
   );
 
   await runAgentLoop({
     agent: "builder",
     system,
-    userPrompt: `Bouw de concept-site voor lead "${lead?.name ?? placeId}" (${lead?.category_query}, ${lead?.city_query}). place_id=${placeId}.`,
+    userPrompt: `Schrijf de site-content voor "${lead.name}" (${lead.category_query}, ${lead.city_query}). place_id=${placeId}.`,
     tools: def.tools,
     model: def.model,
     taskId: task.id,
@@ -40,9 +60,20 @@ Werkwijze voor deze ene lead (welk type bedrijf dan ook — kapper, restaurant, 
     maxTokensPerTurn: def.maxTokensPerTurn,
   });
 
-  // Completion-guard: als er geen site is, is de taak NIET klaar → laat 'm
-  // mislukken zodat hij opnieuw geprobeerd wordt (i.p.v. stil "done").
+  // 3) CODE genereert de site + screenshot — gegarandeerd, ongeacht of de agent
+  //    het zelf had aangeroepen. Geen lege builds meer.
+  const fresh = getLeadById(placeId) || lead;
   if (!siteExists(placeId)) {
-    throw new Error(`Builder voltooide geen site voor ${lead?.name ?? placeId} — opnieuw proberen`);
+    generateSiteForLead(fresh);
+    markSiteGenerated(placeId);
+  }
+  if (!hasScreenshot(placeId)) {
+    await generateScreenshot(placeId).catch(() => {});
+  }
+  if (!fresh.site_content) {
+    // Agent schreef geen content → site draait op de neutrale fallback.
+    postMessage({ from: "builder", to: "manager", kind: "alert", body: `Site voor "${fresh.name}" gegenereerd zónder agent-content (fallback) — controleer met inspect_site.`, leadPlaceId: placeId });
+  } else {
+    setSiteQuality(placeId, 7, { note: "site-content door agent geschreven" });
   }
 }
