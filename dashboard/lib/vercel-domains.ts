@@ -15,6 +15,7 @@ export interface SyncResult {
   projectId: string | null;
   added: string[];
   existed: string[];
+  pruned: string[];
   failed: { domain: string; error: string }[];
   skipped: boolean;
   skipReason?: string;
@@ -55,6 +56,7 @@ export async function syncVercelDomains(): Promise<SyncResult> {
       projectId: null,
       added: [],
       existed: [],
+      pruned: [],
       failed: [],
       skipped: true,
       skipReason: "VERCEL_TOKEN ontbreekt in .env",
@@ -67,15 +69,39 @@ export async function syncVercelDomains(): Promise<SyncResult> {
   const rows = db
     .prepare("SELECT slug FROM leads WHERE qualified = 1 AND slug IS NOT NULL")
     .all() as { slug: string }[];
+  // Actief = gekwalificeerd OF met een mail in de wachtrij/verzonden — die houden
+  // we; de rest van de per-lead subdomeinen is stale en mag weg (binnen de limiet).
+  const activeRows = db
+    .prepare("SELECT slug FROM leads WHERE slug IS NOT NULL AND (qualified = 1 OR approval_status IN ('pending','approved','sent'))")
+    .all() as { slug: string }[];
   db.close();
 
   const result: SyncResult = {
     projectId,
     added: [],
     existed: [],
+    pruned: [],
     failed: [],
     skipped: false,
   };
+
+  // 0) Opruimen: verwijder per-lead subdomeinen die niet meer bij een actieve
+  //    lead horen, zodat het project nooit tegen de 50-domein-limiet aanloopt.
+  const active = new Set(activeRows.map((r) => r.slug));
+  const KEEP_LABELS = new Set(["www", "app", "mail"]);
+  try {
+    const list = await vapi("GET", `/v9/projects/${projectId}/domains?limit=100`);
+    const existing = ((list.body as { domains?: { name: string }[] } | null)?.domains ?? []).map((x) => x.name);
+    for (const name of existing) {
+      if (!name.endsWith(`.${BASE_DOMAIN}`)) continue; // apex/eigen domeinen → behouden
+      const labelEnd = name.length - BASE_DOMAIN.length - 1;
+      const label = name.slice(0, labelEnd);
+      if (!label || label.includes(".") || KEEP_LABELS.has(label)) continue;
+      if (active.has(label)) continue;
+      const del = await vapi("DELETE", `/v9/projects/${projectId}/domains/${name}`);
+      if (del.status < 300) result.pruned.push(name);
+    }
+  } catch { /* opruimen is best-effort */ }
 
   for (const row of rows) {
     const domain = `${row.slug}.${BASE_DOMAIN}`;

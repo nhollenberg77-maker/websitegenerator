@@ -61,7 +61,7 @@ export async function autoDeploy(): Promise<void> {
   try {
     const result = await syncVercelDomains();
     if (result.skipped) { log(`Vercel sync overgeslagen: ${result.skipReason}`); return; }
-    log(`Vercel domains: ${result.added.length} nieuw, ${result.existed.length} bestonden, ${result.failed.length} mislukt`);
+    log(`Vercel domains: ${result.added.length} nieuw, ${result.existed.length} bestonden, ${result.pruned.length} opgeruimd, ${result.failed.length} mislukt`);
   } catch (err) {
     log(`Vercel sync faalde: ${err instanceof Error ? err.message : "onbekend"}`);
   }
