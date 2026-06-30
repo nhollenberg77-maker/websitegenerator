@@ -7,6 +7,7 @@ import { AGENT_DEFS, buildSystem } from "./registry";
 import { getLeadById } from "../db";
 import { setEmailDraft, postMessage } from "./store";
 import { siteExists } from "../site-generator";
+import { getScreenshotLocalUrl } from "../screenshot";
 import { generateEmailHtml, generateEmailSubject } from "../email-template";
 import type { Task } from "./types";
 
@@ -60,7 +61,7 @@ Roep set_email_copy precies één keer aan en stop dan. De mail komt in de goedk
     setEmailDraft({
       placeId,
       subject: generateEmailSubject(fresh),
-      html: generateEmailHtml(fresh, siteUrl, null),
+      html: generateEmailHtml(fresh, siteUrl, getScreenshotLocalUrl(placeId)),
       score: 5,
       approvalStatus: "pending",
     });

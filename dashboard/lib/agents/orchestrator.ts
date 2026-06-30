@@ -134,6 +134,8 @@ let lastWindowLog = 0;
 let lastBudgetLog = 0;
 let lastInboxPoll = 0;
 const INBOX_POLL_MS = 10 * 60_000; // reply/bounce-check elke 10 min
+let lastDeploy = 0;
+const DEPLOY_INTERVAL_MS = 5 * 60_000; // nieuwe sites + screenshots periodiek live zetten op Vercel
 
 function stripHtml(html: string): string {
   return html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -286,6 +288,14 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
   const claimed = claimNextTasks(TASK_CONCURRENCY);
   if (claimed.length > 0) {
     await mapLimit(claimed, TASK_CONCURRENCY, dispatch);
+  }
+
+  // 3b) Nieuwe sites/screenshots periodiek publiceren naar Vercel — zodat de
+  //     klant de concept-site kan zien én de mail-screenshot publiek laadt,
+  //     niet pas op het moment van verzenden.
+  if (Date.now() - lastDeploy >= DEPLOY_INTERVAL_MS) {
+    lastDeploy = Date.now();
+    await autoDeploy().catch((err) => postMessage({ from: "manager", kind: "alert", body: `Deploy-fout: ${err instanceof Error ? err.message : "onbekend"}` }));
   }
 
   // 4) goedgekeurde mails versturen

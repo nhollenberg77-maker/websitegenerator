@@ -10,7 +10,7 @@ import {
   getLeadById, setLeadContactEmail, setLeadAiEmail, markSiteGenerated,
 } from "../../db";
 import { generateSiteForLead, siteExists, deleteSite } from "../../site-generator";
-import { generateScreenshot, screenshotFilePath, hasScreenshot, deleteScreenshot } from "../../screenshot";
+import { generateScreenshot, screenshotFilePath, hasScreenshot, deleteScreenshot, getScreenshotLocalUrl } from "../../screenshot";
 import { generateEmailHtml, generateEmailSubject } from "../../email-template";
 import { findContactEmail } from "../../email-scraper";
 
@@ -354,7 +354,7 @@ const setEmailCopy: AgentTool = {
     // modelrommel — gooi de agent-copy weg en gebruik de schone sjabloontekst.
     const garbage = hasForeignScript(input.branza_pl, input.nisza_pl, input.hero_title, input.hero_sub, input.hero_cta, input.firma_krotka);
     if (garbage) {
-      store.setEmailDraft({ placeId: id, subject: generateEmailSubject(lead), html: generateEmailHtml(lead, siteUrl, null), score: 4, approvalStatus: "pending" });
+      store.setEmailDraft({ placeId: id, subject: generateEmailSubject(lead), html: generateEmailHtml(lead, siteUrl, getScreenshotLocalUrl(id)), score: 4, approvalStatus: "pending" });
       store.postMessage({ from: "writer", to: "manager", kind: "alert", body: `Mail-copy voor "${lead.name}" bevatte niet-Poolse tekens (modelrommel) — vervangen door schone sjabloontekst. Controleer.`, leadPlaceId: id });
       return "agent-copy bevatte niet-Poolse tekens — schone sjabloon-mail klaargezet";
     }
@@ -365,7 +365,7 @@ const setEmailCopy: AgentTool = {
     };
     setLeadAiEmail(id, J(personalization));
     const subject = generateEmailSubject(lead);
-    const html = generateEmailHtml(lead, siteUrl, null);
+    const html = generateEmailHtml(lead, siteUrl, getScreenshotLocalUrl(id));
     store.setEmailDraft({ placeId: id, subject, html, score: input.quality_score as number, approvalStatus: "pending" });
     return `mail klaargezet voor goedkeuring (onderwerp: "${subject}")`;
   },
