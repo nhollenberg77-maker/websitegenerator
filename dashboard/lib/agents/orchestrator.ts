@@ -37,6 +37,7 @@ import type { Task, GoalParams } from "./types";
 const TASK_CONCURRENCY = 6;
 const MANAGER_INTERVAL_MS = 20 * 60 * 1000; // elke 20 min — Manager (Sonnet+vision) is duur; workers draaien los door
 let managerBusy = false; // Manager draait niet-blokkerend; voorkom overlap
+let goalReachedAnnounced = false; // eenmalige "doel bereikt"-melding
 
 let lastManagerRun = 0;
 let initialized = false;
@@ -243,10 +244,21 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
   const appSettings = getSettings();
   if (appSettings.agent.paused) return { ran: 0, summary: "team gepauzeerd (instellingen)" };
 
-  // 1) Manager periodiek — NIET-BLOKKEREND: hij denkt op de achtergrond zodat
-  //    Scout/Builder/Writer ondertussen gewoon doorwerken.
+  // 0b) Doel(en) bereikt? Dan schaalt het team af: géén nieuwe lead-generatie en
+  //     géén (dure) Manager meer. In-flight builds/mails worden nog afgemaakt en
+  //     goedgekeurde mails worden nog verstuurd/opgevolgd (goedkoop), zodat de
+  //     klaarstaande concepten niet blijven hangen.
+  const activeGoals = getActiveGoals();
+  const goalsMet = activeGoals.length > 0 && activeGoals.every((g) => !g.target_value || computeGoalProgress(g) >= g.target_value);
+  if (goalsMet && !goalReachedAnnounced) {
+    goalReachedAnnounced = true;
+    postMessage({ from: "manager", kind: "info", body: "🎯 Doel bereikt — lead-generatie en Manager gestopt. Alleen klaarstaande mails versturen + opvolgen blijft lopen." });
+  }
+  if (!goalsMet) goalReachedAnnounced = false;
+
+  // 1) Manager periodiek — NIET-BLOKKEREND. Stopt zodra het doel bereikt is.
   const sinceManager = Date.now() - lastManagerRun;
-  if (!managerBusy && (sinceManager >= MANAGER_INTERVAL_MS || lastManagerRun === 0)) {
+  if (!goalsMet && !managerBusy && (sinceManager >= MANAGER_INTERVAL_MS || lastManagerRun === 0)) {
     lastManagerRun = Date.now();
     if (isAiConfigured()) {
       managerBusy = true;
