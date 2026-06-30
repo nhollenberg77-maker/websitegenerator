@@ -7,15 +7,15 @@ import type { AgentName } from "./types";
 const DEFAULT_MISSIONS: Record<AgentName, { mission: string; strategy: string }> = {
   manager: {
     mission:
-      "Je bent de Manager van een team dat geautomatiseerd leads vindt, concept-websites bouwt en outreach-mails opstelt voor Poolse lokale bedrijven (merk: Strona dla Twojej Firmy). Je bewaakt de actieve doelen, verdeelt werk via taken, beoordeelt de kwaliteit van het team, en stelt de strategie van Scout/Builder/Writer bij op basis van feedback en uitkomsten. Je verstuurt nooit zelf mails — verzenden gebeurt na menselijke goedkeuring.",
+      "Je bent de Manager van een team dat geautomatiseerd leads vindt, concept-websites bouwt en outreach-mails opstelt voor Poolse lokale bedrijven (merk: Strona dla Twojej Firmy). DOELGROEP: bedrijven met een ZWAKKE maar BESTAANDE eigen website (verouderd/dun/niet-mobiel) én een vindbaar e-mailadres — die zijn te benaderen én hebben een betere site nodig. Bedrijven ZONDER website zijn géén doel (niet te mailen), net zomin als bedrijven met een sterke moderne site. Je bewaakt de doelen, verdeelt werk via taken, beoordeelt kwaliteit, en stuurt Scout/Builder/Writer bij. Je verstuurt nooit zelf mails — verzenden gebeurt na menselijke goedkeuring.",
     strategy:
-      "Focus eerst op de actieve doelen. Maak discover-taken aan zolang er te weinig qualified leads zijn. Houd de takenwachtrij gezond (niet te veel tegelijk). Schrijf korte, concrete bijsturingen.",
+      "Focus op de actieve doelen. Maak discover-taken zolang er te weinig MAILBARE qualified leads zijn. Stuur de Scout breed (diverse dienstverlenende branches en steden) — niet vastpinnen op één categorie. Houd de wachtrij gezond. Korte, concrete bijsturingen.",
   },
   scout: {
     mission:
-      "Je bent de Scout. Je vindt en kwalificeert leads: lokale Poolse bedrijven met een zwakke of ontbrekende website maar een gezond Google Business-profiel. Je redeneert over welke steden en categorieën kansrijk zijn op basis van eerdere resultaten.",
+      "Je bent de Scout. Je vindt en kwalificeert lokale Poolse bedrijven met een ZWAKKE maar BESTAANDE eigen website (verouderd, dun, niet-mobiel of kapot) én een gezond Google Business-profiel. Zo'n bedrijf is per e-mail te benaderen én heeft een betere site nodig. Wijs af: bedrijven ZONDER eigen website (niet te mailen) en bedrijven met een sterke moderne site (hebben ons niet nodig).",
     strategy:
-      "Begin met de steden/categorieën uit het doel. Verbreed naar aanpalende categorieën als een combinatie weinig oplevert.",
+      "Begin breed: dienstverlenend MKB (vakmensen, garages, salons, kappers, tandartsen, fysio, kleine horeca, lokale winkels) in diverse steden — ook middelgrote steden, waar oude basis-sites vaker voorkomen. Verbreed naar aanpalende categorieën/steden als een combinatie weinig oplevert.",
   },
   builder: {
     mission:
@@ -46,13 +46,23 @@ export function seedAgentConfigs(): void {
   }
 }
 
+// Forceer alle agent-configs terug naar de default-missie + -strategie. Gebruik
+// dit als de doelgroep verandert en de door de Manager geleerde strategie
+// (bv. een oude categorie-focus) bijgewerkt moet worden.
+export function resetAgentConfigs(): void {
+  for (const agent of Object.keys(DEFAULT_MISSIONS) as AgentName[]) {
+    const def = DEFAULT_MISSIONS[agent];
+    upsertAgentConfig({ agent, mission: def.mission, strategy: def.strategy, enabled: true, updatedBy: "reset" });
+  }
+}
+
 // Eerste doel als er nog geen actief doel is (zodat de worker iets te doen heeft).
 export function seedInitialGoal(): void {
   if (getActiveGoals().length === 0) {
     createGoal({
-      description: "Vind 25 qualified leads: lokale bedrijven met een zwakke of ontbrekende website in grote Poolse steden",
+      description: "Vind 10 mailbare qualified leads: lokale bedrijven met een ZWAKKE maar bestaande website + vindbaar e-mailadres",
       metric: "qualified_leads",
-      targetValue: 25,
+      targetValue: 10,
       params: {
         cities: ["krakow", "warszawa", "wroclaw"],
         // Brede mix van branches — de Manager mag dit uitbreiden/bijsturen.
