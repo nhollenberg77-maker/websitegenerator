@@ -272,6 +272,11 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
   // 2) downstream-taken klaarzetten
   reconcile();
 
+  // 2a) ALTIJD ontdekkingswerk klaarzetten als we onder het doel zitten — niet
+  //     wachten op de Manager (die draait maar elke 20 min). Houdt de Scout
+  //     continu aan het werk i.p.v. de wachtrij te laten leeglopen.
+  fallbackPlan();
+
   // 2b) Goedkeur-poort uit? Dan keuren we klaargezette mails automatisch goed.
   if (appSettings.agent.approvalRequired === false) {
     for (const lead of listPendingApprovals()) setApproval(lead.place_id, "approved", "auto (goedkeuring uitgeschakeld)");
