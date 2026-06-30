@@ -23,17 +23,11 @@ export interface SmtpSettings {
 }
 
 export interface AgentSettings {
-  enabled: boolean;
-  cronSchedule: string;
-  cities: string[];
-  categories: string[];
-  radius: number;
-  limitPerCategory: number;
-  autoEmail: boolean;
-  targetReadyLeads: number;
-  minGbpScore: number;
-  maxCyclesPerRun: number;
-  autoBroadenOnStagnation: boolean;
+  // Agent-driven besturing. Het team bepaalt zelf wat het zoekt; dit zijn de
+  // enige hoog-niveau knoppen die de mens nog heeft.
+  focusHint: string;          // vrije tekst die de Manager-agent leest
+  approvalRequired: boolean;  // mails eerst door mens laten goedkeuren
+  paused: boolean;            // hele team pauzeren
 }
 
 export interface AppSettings {
@@ -58,17 +52,9 @@ const DEFAULT_SETTINGS: AppSettings = {
     companyRegon: "",
   },
   agent: {
-    enabled: false,
-    cronSchedule: "0 9 * * *",
-    cities: ["krakow", "warszawa", "wroclaw", "poznan", "gdansk"],
-    categories: ["roofing_contractor", "electrician", "plumber", "painter"],
-    radius: 30000,
-    limitPerCategory: 20,
-    autoEmail: true,
-    targetReadyLeads: 5,
-    minGbpScore: 5,
-    maxCyclesPerRun: 3,
-    autoBroadenOnStagnation: true,
+    focusHint: "",
+    approvalRequired: true,
+    paused: false,
   },
 };
 

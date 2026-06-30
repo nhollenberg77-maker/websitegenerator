@@ -5,7 +5,7 @@ import { generateEmailHtml, generateEmailSubject } from "@/lib/email-template";
 import { findContactEmail } from "@/lib/email-scraper";
 import { generateScreenshot, hasScreenshot, getScreenshotEmailUrl, getScreenshotLocalUrl, waitForUrl } from "@/lib/screenshot";
 import { generateSiteForLead, siteExists } from "@/lib/site-generator";
-import { autoDeploy } from "@/lib/agent";
+import { autoDeploy } from "@/lib/deploy";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

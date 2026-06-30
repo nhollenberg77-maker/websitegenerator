@@ -156,7 +156,7 @@ export function generateEmailHtml(
   const replyMailto = `mailto:${replyToEmail}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
   const unsubUrl = unsubscribeUrl(lead);
 
-  const preheader = `Przygotowaliśmy bezpłatny szkic strony dla ${lead.name} — wystarczy spojrzeć, bez zobowiązań.`;
+  const preheader = `Przygotowaliśmy szkic strony dla ${lead.name} — wystarczy spojrzeć, bez zobowiązań.`;
 
   // Preview-block: als we een echte screenshot hebben, embedden we die.
   // Anders fallback naar de tekst-gebaseerde faux-browser preview.
@@ -234,7 +234,7 @@ export function generateEmailHtml(
               Nowa strona dla ${firma} — gotowa do pokazania.
             </h1>
             <p style="margin:14px 0 0 0;font-size:15px;line-height:1.55;color:#4a4b46;max-width:440px;">
-              Przygotowaliśmy bezpłatny szkic strony specjalnie dla Państwa firmy. Bez zobowiązań — wystarczy spojrzeć.
+              Przygotowaliśmy szkic strony specjalnie dla Państwa firmy. Bez zobowiązań — wystarczy spojrzeć.
             </p>
           </td>
         </tr>
@@ -373,9 +373,9 @@ export function generateEmailHtml(
               <a href="${esc(unsubUrl)}" style="color:#7d7e78;text-decoration:underline;">kliknąć tutaj</a>
               lub po prostu odpowiedzieć słowem <strong style="color:#4a4b46;">STOP</strong> — usuniemy adres natychmiast.
             </div>
-            ${smtp?.companyName ? `<div style="margin-top:10px;color:#9a9b95;">
-              ${esc(smtp.companyName)}${smtp.companyAddress ? ` · ${esc(smtp.companyAddress)}` : ""}${smtp.companyNip ? ` · NIP ${esc(smtp.companyNip)}` : ""}${smtp.companyRegon ? ` · REGON ${esc(smtp.companyRegon)}` : ""}
-            </div>` : ""}
+            <div style="margin-top:10px;color:#9a9b95;">
+              ${esc(smtp?.companyName || "[nadawca — uzupełnij w ustawieniach]")}${smtp?.companyAddress ? ` · ${esc(smtp.companyAddress)}` : ""}${smtp?.companyNip ? ` · NIP ${esc(smtp.companyNip)}` : ""}${smtp?.companyRegon ? ` · REGON ${esc(smtp.companyRegon)}` : ""}
+            </div>
           </td>
         </tr>
 

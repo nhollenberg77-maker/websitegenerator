@@ -1,0 +1,196 @@
+# Verzendschema voor leads-poland outreach agent
+# ------------------------------------------------
+# Deze config bepaalt WANNEER, HOEVEEL en HOE de agent mailt.
+# Verandert het uitgangspunt? Pas hier aan, niet in de agent-code.
+#
+# Versie: 1.0
+# Laatst bijgewerkt: 2026-05-18
+
+# ============================================================
+# 1. MAILBOXEN
+# ============================================================
+# Voeg per mailbox een entry toe. De agent rouleert hier doorheen.
+# `daily_cap` is het MAX aantal cold mails per dag voor die mailbox
+# (warming mails tellen NIET mee in deze cap — die regelt Smartlead).
+
+mailboxes:
+  - id: nick_primary
+    email: nick@jouwdomein.pl         # << aanpassen
+    provider: google_workspace         # google_workspace | outlook365
+    warming_started: 2026-05-18        # << datum waarop warming begon
+    daily_cap_max: 35                  # ceiling — agent gaat hier nooit overheen
+    enabled: true
+
+  # Voeg later toe — pas op: minimaal 14 dagen warming voor enabled: true
+  # - id: outreach_secondary
+  #   email: outreach@jouwdomein.pl
+  #   provider: google_workspace
+  #   warming_started: 2026-06-01
+  #   daily_cap_max: 35
+  #   enabled: false
+
+# ============================================================
+# 2. WARMING CURVE (cold mail volume per mailbox per dag)
+# ============================================================
+# De agent kijkt naar (vandaag - warming_started).days en
+# pakt de bijbehorende cold_mails waarde. Het ramp-up is bewust
+# CONSERVATIEF — liever week later op volume dan geblacklist.
+
+warming_curve:
+  # dagen sinds warming start: max cold mails dag
+  - day_from: 0
+    day_to: 6
+    cold_mails: 0        # week 1: alleen warming, geen cold
+  - day_from: 7
+    day_to: 13
+    cold_mails: 8        # week 2: voorzichtig starten
+  - day_from: 14
+    day_to: 20
+    cold_mails: 15       # week 3
+  - day_from: 21
+    day_to: 27
+    cold_mails: 22       # week 4
+  - day_from: 28
+    day_to: 34
+    cold_mails: 30       # week 5: doelvolume bereikt
+  - day_from: 35
+    day_to: null         # week 6+
+    cold_mails: 35       # duurzaam max
+
+# ============================================================
+# 3. VERZENDVENSTER (Poolse tijd)
+# ============================================================
+# Buiten dit venster mailt de agent NIET, ook als de queue vol is.
+# Tijdzone: Europe/Warsaw (CET/CEST automatisch).
+
+sending_window:
+  timezone: Europe/Warsaw
+  days: [mon, tue, wed, thu, fri]    # geen weekenden
+  start_hour: 9                       # 09:00
+  end_hour: 16                        # 16:00 (laatste mail uiterlijk 15:59)
+  skip_polish_holidays: true          # zie holidays.yml of API
+
+# ============================================================
+# 4. THROTTLING TUSSEN MAILS
+# ============================================================
+# Random delay tussen elke verzending. Voorkomt burst-patronen
+# die spamfilters herkennen. NOOIT lager zetten dan 45 sec.
+
+throttling:
+  min_seconds_between_sends: 90
+  max_seconds_between_sends: 240
+  jitter: true                        # echte random, niet vaste interval
+
+# ============================================================
+# 5. MAILBOX ROTATIE
+# ============================================================
+# Bij meerdere mailboxen: hoe verdeelt de agent de queue?
+
+rotation:
+  strategy: round_robin               # round_robin | weighted | least_recently_used
+  # Bij weighted: voeg `weight` toe per mailbox entry hierboven.
+
+# ============================================================
+# 6. CIRCUIT BREAKERS (auto-stop bij problemen)
+# ============================================================
+# Als één van deze drempels wordt overschreden, stopt de agent
+# AUTOMATISCH met verzenden en stuurt een alert. Dit redt je domein.
+
+circuit_breakers:
+  # Bounce rate over laatste 100 verzonden mails
+  bounce_rate_pct:
+    warn: 2.0
+    stop: 3.5
+
+  # Spam complaint rate (klachten / verzonden) — heel streng
+  spam_complaint_rate_pct:
+    warn: 0.05
+    stop: 0.10
+
+  # Open rate (alleen tracking-only, voor follow-ups) — onder deze waarde
+  # is iets mis met deliverability (mails belanden in spam)
+  open_rate_pct_min:
+    warn: 25.0
+    stop: 15.0
+
+  # Reply rate — als die kelderdt onder x% over rolling 50 mails,
+  # check je template of targeting
+  reply_rate_pct_min:
+    warn: 1.5
+    stop: 0.5
+
+  # Wat doet "stop": pauzeer ALLE campagnes, stuur alert naar:
+  alert_email: n.hollenberg@zorgbalans.nl
+
+# ============================================================
+# 7. PER-LEAD COOLDOWNS
+# ============================================================
+# Voorkomt dat dezelfde lead twee keer een eerste mail krijgt,
+# of dat een follow-up te dichtbij de vorige zit.
+
+cooldowns:
+  same_lead_min_days: 180             # 6 maanden voor herbenadering
+  follow_up_min_days: 4               # minimaal 4 werkdagen tussen mails
+  follow_up_max_days: 7
+  max_follow_ups: 2                   # totaal 3 touches (1 + 2)
+
+# ============================================================
+# 8. SUBJECT LINE & CONTENT REGELS
+# ============================================================
+# Validaties die de agent draait VOOR verzenden. Mail gaat niet
+# eruit als hij hier op faalt.
+
+content_guards:
+  subject:
+    max_length_chars: 60
+    forbidden_words:                   # spam-triggers
+      - "free"
+      - "darmowy"                      # PL: "free"
+      - "gwarantowany"                 # PL: "guaranteed"
+      - "limitowana oferta"            # PL: "limited offer"
+      - "$$$"
+      - "!!!"
+    forbid_all_caps: true
+    require_personalization_token: true  # subject MOET {{first_name}} of {{company}} bevatten
+
+  body:
+    max_links: 1                       # max 1 link (de concept-website)
+    forbid_tracking_pixel_on_first_send: true   # follow-ups mag wel
+    forbid_url_shorteners: true        # bit.ly, tinyurl etc.
+    require_unsubscribe_line: true     # GDPR
+    min_words: 40
+    max_words: 150                     # korter = beter voor cold
+
+# ============================================================
+# 9. LEAD VERIFICATIE
+# ============================================================
+# Pre-check elk e-mailadres voor verzending. Voorkomt bounces.
+
+lead_verification:
+  enabled: true
+  provider: neverbounce                # neverbounce | zerobounce | bouncer
+  reject_statuses:
+    - invalid
+    - disposable
+    - unknown                          # liever overslaan dan risico
+  catch_all_handling: skip             # catch-all = onzeker → niet sturen
+
+# ============================================================
+# 10. LOGGING & TELEMETRIE
+# ============================================================
+# Wat houdt de agent bij per verzending? Nodig voor circuit breakers
+# en voor jouw weekly review.
+
+logging:
+  log_path: ./logs/sends.jsonl
+  retain_days: 90
+  fields:
+    - timestamp
+    - mailbox_id
+    - lead_id
+    - lead_email
+    - lead_domain
+    - subject_hash                     # om duplicate detection te doen
+    - template_id
+    - send_status                      # sent | bounced | deferred | failed
+    - smartlead_message_id

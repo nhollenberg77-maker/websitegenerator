@@ -7,13 +7,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-background-alt: #F2F0EA;
-  --color-ink: #1A1A1A;
-  --color-ink-soft: #5A5A55;
-  --color-line: #E5E2DC;
-  --color-navy: #1A2B4A;
-  --color-success: #2D5A3F;
-  --color-warning: #8B3A2E;
+  --color-background-alt: #161d18;
+  --color-ink: #E7EFE9;
+  --color-ink-soft: #8A948C;
+  --color-line: #232d26;
+  --color-navy: #1F7A52;
+  --color-success: #10B981;
+  --color-warning: #E08754;
   --font-sans: var(--font-manrope);
   --font-display: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
@@ -56,39 +56,40 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Dark "Agent Swarm" thema — alle dashboard-pagina's erven dit via tokens. */
 :root {
-  --background: #FAFAF7;
-  --foreground: #1A1A1A;
-  --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  --primary: #1A2B4A;
-  --primary-foreground: #FAFAF7;
-  --secondary: #F2F0EA;
-  --secondary-foreground: #1A1A1A;
-  --muted: #F2F0EA;
-  --muted-foreground: #5A5A55;
-  --accent: #F2F0EA;
-  --accent-foreground: #1A1A1A;
-  --destructive: #8B3A2E;
-  --border: #E5E2DC;
-  --input: #E5E2DC;
-  --ring: #1A2B4A;
-  --chart-1: #1A2B4A;
-  --chart-2: #2D5A3F;
-  --chart-3: #8B3A2E;
-  --chart-4: #5A5A55;
-  --chart-5: #E5E2DC;
+  --background: #0B0F0C;
+  --foreground: #E7EFE9;
+  --card: #121A14;
+  --card-foreground: #E7EFE9;
+  --popover: #121A14;
+  --popover-foreground: #E7EFE9;
+  --primary: #10B981;
+  --primary-foreground: #04130B;
+  --secondary: #161D18;
+  --secondary-foreground: #E7EFE9;
+  --muted: #161D18;
+  --muted-foreground: #8A948C;
+  --accent: #16241B;
+  --accent-foreground: #E7EFE9;
+  --destructive: #E08754;
+  --border: #232D26;
+  --input: #232D26;
+  --ring: #10B981;
+  --chart-1: #10B981;
+  --chart-2: #34D399;
+  --chart-3: #E08754;
+  --chart-4: #8A948C;
+  --chart-5: #232D26;
   --radius: 0.5rem;
-  --sidebar: #1A2B4A;
-  --sidebar-foreground: #E5E2DC;
-  --sidebar-primary: #FAFAF7;
-  --sidebar-primary-foreground: #1A2B4A;
-  --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: #FAFAF7;
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: rgba(255, 255, 255, 0.2);
+  --sidebar: #0B0F0C;
+  --sidebar-foreground: #C7D1C9;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #04130B;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: #E7EFE9;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: rgba(16, 185, 129, 0.4);
 }
 
 @layer base {

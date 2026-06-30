@@ -1,7 +1,6 @@
 import { getSettings, saveSettings } from "@/lib/settings";
 import type { AppSettings } from "@/lib/settings";
 import { testSmtpConnection } from "@/lib/mailer";
-import { startAgent, stopAgent } from "@/lib/agent";
 
 export async function GET() {
   const settings = getSettings();
@@ -28,14 +27,7 @@ export async function PUT(request: Request) {
     }
 
     saveSettings(updated);
-
-    // Restart or stop agent based on new settings
-    if (updated.agent.enabled) {
-      startAgent();
-    } else {
-      stopAgent();
-    }
-
+    // Geen oude cron meer — het agent-team draait via de worker (orchestrator).
     return Response.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

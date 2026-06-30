@@ -34,6 +34,12 @@ function ensureMigrated(): void {
     if (!columns.some((c) => c.name === "unsubscribed_at")) {
       db.exec("ALTER TABLE leads ADD COLUMN unsubscribed_at TEXT DEFAULT NULL");
     }
+    // Globale uitschrijf-/suppressielijst op e-mailADRES (niet place_id), zodat
+    // hetzelfde adres bij meerdere listings nooit opnieuw mail krijgt.
+    db.exec("CREATE TABLE IF NOT EXISTS email_suppression (email TEXT PRIMARY KEY, reason TEXT, created_at TEXT)");
+    // Verzend-log voor de faalpercentage-circuit-breaker (bounce/spam vereisen
+    // ESP-feedback die we niet hebben; dit is de wél-meetbare proxy).
+    db.exec("CREATE TABLE IF NOT EXISTS email_sends (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id TEXT, email TEXT, status TEXT, error TEXT, created_at TEXT)");
     db.close();
     migrated = true;
   } catch {
@@ -283,8 +289,53 @@ export function markLeadUnsubscribed(placeId: string): boolean {
   const info = db
     .prepare("UPDATE leads SET unsubscribed_at = COALESCE(unsubscribed_at, ?) WHERE place_id = ?")
     .run(new Date().toISOString(), placeId);
+  // Suppress het e-mailadres globaal (alle listings van dit adres).
+  const row = db.prepare("SELECT contact_email FROM leads WHERE place_id = ?").get(placeId) as
+    | { contact_email: string | null } | undefined;
+  if (row?.contact_email) {
+    db.prepare("INSERT OR IGNORE INTO email_suppression (email, reason, created_at) VALUES (?,?,?)")
+      .run(row.contact_email.trim().toLowerCase(), "unsubscribe", new Date().toISOString());
+  }
   db.close();
   return info.changes > 0;
+}
+
+export function suppressEmail(email: string, reason = "manual"): void {
+  if (!email) return;
+  const db = getDb(false);
+  db.prepare("INSERT OR IGNORE INTO email_suppression (email, reason, created_at) VALUES (?,?,?)")
+    .run(email.trim().toLowerCase(), reason, new Date().toISOString());
+  db.close();
+}
+
+export function isEmailSuppressed(email: string | null): boolean {
+  if (!email) return false;
+  const db = getDb();
+  const row = db.prepare("SELECT 1 FROM email_suppression WHERE email = ?").get(email.trim().toLowerCase());
+  db.close();
+  return !!row;
+}
+
+export function recordSendOutcome(placeId: string, email: string, status: "sent" | "failed", error?: string): void {
+  const db = getDb(false);
+  db.prepare("INSERT INTO email_sends (place_id, email, status, error, created_at) VALUES (?,?,?,?,?)")
+    .run(placeId, email, status, error ?? null, new Date().toISOString());
+  db.close();
+}
+
+export function recentSendFailureRate(limit = 20): { total: number; failed: number; rate: number } {
+  const db = getDb();
+  const rows = db.prepare("SELECT status FROM email_sends ORDER BY id DESC LIMIT ?").all(limit) as { status: string }[];
+  db.close();
+  const failed = rows.filter((r) => r.status === "failed").length;
+  return { total: rows.length, failed, rate: rows.length ? failed / rows.length : 0 };
+}
+
+export function lastEmailedAtMs(): number | null {
+  const db = getDb();
+  const row = db.prepare("SELECT MAX(emailed_at) as m FROM leads WHERE emailed_at IS NOT NULL").get() as { m: string | null };
+  db.close();
+  return row.m ? Date.parse(row.m) : null;
 }
 
 export function markSiteGenerated(placeId: string): void {

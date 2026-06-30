@@ -2,7 +2,7 @@ import nodemailer, { type Transporter } from "nodemailer";
 import type { SmtpSettings } from "./settings";
 import type { Lead } from "./types";
 import { generateEmailHtml, generateEmailSubject, buildEmailHeaders } from "./email-template";
-import { markLeadEmailed } from "./db";
+import { markLeadEmailed, isEmailSuppressed } from "./db";
 
 // Eén gepoolde transporter per SMTP-config: hergebruikt TCP-handshakes en
 // past pool-niveau rate-limiting toe over alle sends in het proces.
@@ -101,6 +101,14 @@ export async function sendEmailToAddress(
 ): Promise<{ ok: boolean; error?: string }> {
   if (lead.unsubscribed_at) {
     return { ok: false, error: "Lead heeft zich uitgeschreven" };
+  }
+  // Globale suppressie op e-mailadres (uitschrijvingen van andere listings).
+  if (isEmailSuppressed(toEmail)) {
+    return { ok: false, error: "E-mailadres staat op de suppressielijst" };
+  }
+  // Compliance-gate: zonder afzender-identiteit (bedrijfsnaam + NIP) niet versturen.
+  if (!smtp.companyName || !smtp.companyNip) {
+    return { ok: false, error: "Afzender-identiteit ontbreekt (companyName + NIP verplicht in instellingen)" };
   }
   try {
     const transport = getPooledTransport(smtp);

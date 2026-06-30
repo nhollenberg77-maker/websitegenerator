@@ -36,11 +36,37 @@ const ICON_LIST = '<svg class="service-icon" viewBox="0 0 24 24" fill="none" str
 const ICON_TOOL = '<svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
 const ICON_BOLT = '<svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
 
+// Neutrale fallback voor ELK type lokaal bedrijf (niet bouw-specifiek). Wordt
+// gebruikt als er nog geen agent-geschreven site_content is. De Builder-agent
+// overschrijft deze velden per bedrijf, dus dit is alleen een veilige basis.
+export const NEUTRAL_CONTENT: CategoryContent = {
+  heroHeadline: "Lokalna firma,",
+  heroHeadlineEm: "której można zaufać.",
+  heroLead: "Jakość, terminowość i bezpośredni kontakt. Zapraszamy do zapoznania się z naszą ofertą i skontaktowania się z nami.",
+  services: [
+    { title: "Nasze usługi", description: "Szeroki zakres usług dopasowany do potrzeb klientów. Skontaktuj się po szczegóły i wycenę.", icon: ICON_LIST },
+    { title: "Indywidualne podejście", description: "Każde zlecenie traktujemy indywidualnie — doradzamy i proponujemy najlepsze rozwiązanie.", icon: ICON_HOME },
+    { title: "Lokalnie i blisko", description: "Działamy lokalnie, znamy okolicę i jesteśmy łatwo dostępni dla naszych klientów.", icon: ICON_GRID },
+  ],
+  trustItems: ["Wieloletnie doświadczenie", "Lokalna firma", "Bezpośredni kontakt", "Pozytywne opinie"],
+  aboutHeadline: "O nas.",
+  aboutHeadlineEm: "Kilka słów.",
+  aboutP1: "Jesteśmy lokalną firmą, która stawia na jakość i dobry kontakt z klientem. Realizujemy zlecenia rzetelnie i terminowo.",
+  aboutP2: "Zapraszamy do kontaktu — chętnie odpowiemy na pytania i przygotujemy ofertę dopasowaną do Państwa potrzeb.",
+  aboutQuote: "Zadowolony klient to najlepsza wizytówka naszej firmy.",
+  faqItems: [
+    { q: "Jak mogę się umówić?", a: "Wystarczy zadzwonić lub wypełnić formularz kontaktowy — odezwiemy się jak najszybciej, aby ustalić szczegóły." },
+    { q: "Czy przygotowują Państwo wycenę?", a: "Tak, po poznaniu zakresu prac przygotujemy konkretną wycenę bez zobowiązań." },
+    { q: "Gdzie Państwo działają?", a: "Działamy lokalnie, w mieście i okolicach. W razie pytań o dojazd prosimy o kontakt." },
+  ],
+  selectOptions: ["Zapytanie ogólne", "Prośba o wycenę", "Inne"],
+};
+
 export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
   electrician: {
     heroHeadline: "Bezpieczna elektryka.",
     heroHeadlineEm: "Profesjonalne instalacje.",
-    heroLead: "Wykonujemy instalacje elektryczne w domach, mieszkaniach i obiektach komercyjnych. Uprawnienia SEP, gwarancja na każdą pracę. Rozmawia z Państwem bezpośrednio właściciel firmy.",
+    heroLead: "Wykonujemy instalacje elektryczne w domach, mieszkaniach i obiektach komercyjnych. Doświadczenie i gwarancja na każdą pracę. Rozmawia z Państwem bezpośrednio właściciel firmy.",
     services: [
       { title: "Instalacje elektryczne", description: "Kompleksowe instalacje w nowych budynkach i przy remontach. Rozdzielnie, okablowanie, gniazda i oświetlenie zgodnie z normami.", icon: ICON_BOLT },
       { title: "Oświetlenie", description: "Projektowanie i montaż oświetlenia wewnętrznego i zewnętrznego. LED, punktowe, dekoracyjne. Efekt wizualny i oszczędność energii.", icon: ICON_HOME },
@@ -54,12 +80,12 @@ export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
     // professionele elektriker zou onderschrijven.
     trustItems: ["Wieloletnie doświadczenie", "Czysto i terminowo", "Pomiary i protokoły", "Gwarancja na pracę"],
     aboutHeadline: "Doświadczony elektryk.",
-    aboutHeadlineEm: "Uprawnienia i gwarancje.",
-    aboutP1: "Specjalizujemy się w instalacjach elektrycznych dla domów jednorodzinnych, mieszkań i małych obiektów komercyjnych. Posiadamy pełne uprawnienia SEP oraz ubezpieczenie OC.",
+    aboutHeadlineEm: "Dokładność i gwarancje.",
+    aboutP1: "Specjalizujemy się w instalacjach elektrycznych dla domów jednorodzinnych, mieszkań i małych obiektów komercyjnych. Pracujemy zgodnie z obowiązującymi normami i standardami bezpieczeństwa.",
     aboutP2: "Każda praca kończy się protokołem pomiarowym i gwarancją. Pracujemy czysto, terminowo i bez niespodzianek cenowych. Nasi klienci wracają do nas z kolejnymi zleceniami.",
     aboutQuote: "Dobra instalacja to taka, o której nie musisz myśleć. Po prostu działa — bezpiecznie i niezawodnie.",
     faqItems: [
-      { q: "Czy macie uprawnienia SEP?", a: "Tak. Posiadamy aktualne uprawnienia SEP do 1 kV w zakresie eksploatacji i dozoru, ubezpieczenie OC oraz wszystkie wymagane certyfikaty. Dokumenty pokazujemy na pierwszym spotkaniu." },
+      { q: "Jak dbacie o bezpieczeństwo i jakość instalacji?", a: "Wszystkie prace wykonujemy zgodnie z obowiązującymi normami i przepisami. Niezbędne uprawnienia, dokumenty i ubezpieczenie chętnie przedstawiamy na pierwszym spotkaniu." },
       { q: "Jak wygląda wycena instalacji?", a: "Wycena jest bezpłatna. Po obejrzeniu projektu lub mieszkania przygotowujemy szczegółowy kosztorys w ciągu 2-3 dni roboczych z rozbiciem na materiały i robociznę." },
       { q: "Czy wystawiacie protokoły pomiarowe?", a: "Tak, po każdej instalacji wykonujemy pełne pomiary i wystawiamy protokoły zgodne z normami PN-HD. Są one wymagane przez ubezpieczycieli i przy odbiorach budowlanych." },
       { q: "Ile trwa typowa instalacja w domu?", a: "Instalacja elektryczna w domu jednorodzinnym 120-180 m² to zwykle 5-10 dni roboczych. Dokładny czas zależy od zakresu i złożoności projektu." },
@@ -137,8 +163,8 @@ export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
       { title: "Przeglądy i naprawy", description: "Przeglądy stanu dachu, uszczelnianie przecieków, wymiana uszkodzonych dachówek. Szybka reakcja po burzach i wichurach.", icon: ICON_BOLT },
     ],
     trustItems: ["Doświadczona ekipa dekarska", "Materiały renomowanych marek", "Czysta robota", "Gwarancja na pokrycie"],
-    aboutHeadline: "Rodzinna firma dekarska.",
-    aboutHeadlineEm: "Trzecie pokolenie na dachu.",
+    aboutHeadline: "Lokalna firma dekarska.",
+    aboutHeadlineEm: "Lata doświadczenia na dachu.",
     aboutP1: "Specjalizujemy się w pokryciach dachowych i obróbkach blacharskich. Od nowych dachów po naprawy — pracujemy z materiałami najwyższej jakości od sprawdzonych producentów.",
     aboutP2: "Każdy dach traktujemy jak własny. Pracujemy bezpiecznie, terminowo i zostawiamy po sobie porządek. Nasi klienci polecają nas dalej — bo solidna praca mówi sama za siebie.",
     aboutQuote: "Dobry dach to taki, o którym zapominasz na dwadzieścia lat. My budujemy właśnie takie dachy.",
@@ -165,13 +191,13 @@ export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
       { title: "Instalacje", description: "Hydraulika, elektryka, ogrzewanie. Współpraca ze sprawdzonymi, lokalnymi specjalistami. Wszystko z jednej ręki.", icon: ICON_BOLT },
     ],
     trustItems: ["Doświadczona ekipa budowlana", "Umowa pisemna z harmonogramem", "Sprawdzeni podwykonawcy", "Gwarancja na wykonane prace"],
-    aboutHeadline: "Rodzinna firma budowlana.",
-    aboutHeadlineEm: "Trzecie pokolenie w branży.",
-    aboutP1: "Realizujemy budowy domów jednorodzinnych i remonty. Posiadamy pełne uprawnienia budowlane, ubezpieczenie OC i własną ekipę sprawdzonych fachowców.",
+    aboutHeadline: "Lokalna firma budowlana.",
+    aboutHeadlineEm: "Lata doświadczenia w branży.",
+    aboutP1: "Realizujemy budowy domów jednorodzinnych i remonty. Pracujemy z własną, doświadczoną ekipą fachowców, zgodnie z obowiązującymi przepisami prawa budowlanego.",
     aboutP2: "Pracujemy bez pośredników. Z Państwem rozmawia bezpośrednio właściciel. Każdą budowę traktujemy jak własną — bo nasi klienci często są naszymi sąsiadami.",
     aboutQuote: "Solidna budowa to nie przypadek. To plan, materiał i ludzie, którym ufasz.",
     faqItems: [
-      { q: "Czy macie uprawnienia budowlane?", a: "Tak. Posiadamy pełne uprawnienia konstrukcyjno-budowlane, wpis do Izby Inżynierów Budownictwa, ubezpieczenie OC do 1 mln zł." },
+      { q: "Jak zapewniacie jakość i zgodność z przepisami?", a: "Prace realizujemy zgodnie z wymogami prawa budowlanego. Niezbędne uprawnienia i ubezpieczenie przedstawiamy przy podpisaniu umowy." },
       { q: "Jak wygląda wycena?", a: "Wycena jest bezpłatna. Spotykamy się na miejscu, oglądamy i przygotowujemy szczegółowy kosztorys w ciągu 5 dni roboczych." },
       { q: "Czy podpisujemy umowę?", a: "Zawsze. Umowa pisemna z harmonogramem, kosztorysem materiałowym i gwarancjami. Nigdy nie pracujemy na słowo." },
       { q: "Ile trwa budowa domu?", a: "Stan surowy zamknięty: 4-6 miesięcy. Pod klucz z wykończeniem: 9-12 miesięcy. Dokładny harmonogram opracowujemy przed podpisaniem umowy." },

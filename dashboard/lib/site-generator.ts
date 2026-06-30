@@ -4,6 +4,7 @@ import type { Lead, LeadReview } from "./types";
 import { applyPhotoCuration } from "./ai-photo-curator";
 import {
   CATEGORY_CONTENT,
+  NEUTRAL_CONTENT,
   CATEGORY_VARIANT,
   VARIANT_COLORS,
   type TemplateVariant,
@@ -42,7 +43,72 @@ function getTemplateStyle(lead: Lead): TemplateStyle {
 }
 
 function getContent(lead: Lead): CategoryContent {
-  return CATEGORY_CONTENT[lead.category_query || ""] || CATEGORY_CONTENT.general_contractor;
+  // Bekende bouw-categorie → vakspecifieke template; al het andere → neutraal.
+  // (De Builder-agent overschrijft dit toch met eigen, bedrijfsspecifieke copy.)
+  return CATEGORY_CONTENT[lead.category_query || ""] || NEUTRAL_CONTENT;
+}
+
+// Door de Builder-agent geschreven content-spec (geldt voor ELK type bedrijf).
+export interface SiteContentSpec {
+  category_label?: string;
+  hero_headline?: string;
+  hero_headline_em?: string;
+  hero_lead?: string;
+  about?: string;
+  services?: { title: string; description: string }[];
+  highlights?: string[];
+  faq?: { q: string; a: string }[];
+  select_options?: string[];
+  cta_label?: string;
+}
+
+function parseSiteContent(lead: Lead): SiteContentSpec | null {
+  return parseJson<SiteContentSpec | null>(lead.site_content ?? null, null);
+}
+
+// Smelt agent-copy in de basis-template. Lege/ontbrekende velden vallen terug.
+function mergeSiteContent(base: CategoryContent, sc: SiteContentSpec | null): CategoryContent {
+  if (!sc) return base;
+  return {
+    ...base,
+    heroHeadline: sc.hero_headline || base.heroHeadline,
+    heroHeadlineEm: sc.hero_headline_em || base.heroHeadlineEm,
+    heroLead: sc.hero_lead || base.heroLead,
+    aboutP1: sc.about || base.aboutP1,
+    aboutP2: sc.about ? "" : base.aboutP2,
+    services: sc.services?.length
+      ? sc.services.slice(0, 6).map((s, i) => ({ icon: base.services[i % Math.max(1, base.services.length)]?.icon ?? base.services[0]?.icon ?? "", title: s.title, description: s.description }))
+      : base.services,
+    faqItems: sc.faq?.length ? sc.faq.slice(0, 5) : base.faqItems,
+    trustItems: sc.highlights?.length ? sc.highlights.slice(0, 5) : base.trustItems,
+    selectOptions: sc.select_options?.length ? sc.select_options : base.selectOptions,
+  };
+}
+
+function categoryLabel(lead: Lead, sc: SiteContentSpec | null): string {
+  return sc?.category_label || CATEGORY_PL[lead.category_query || ""] || "usługi lokalne";
+}
+
+// Poolse locatief (miejscownik) voor de bekende steden/voivodeships. Voorkomt
+// de "w Warszawa"-fout. Onbekende namen → "w rejonie/regionie X" (grammaticaal
+// veilig, geen verkeerde verbuiging).
+const LOCATIVE_CITY: Record<string, string> = {
+  "Kraków": "Krakowie", "Warszawa": "Warszawie", "Wrocław": "Wrocławiu",
+  "Poznań": "Poznaniu", "Gdańsk": "Gdańsku", "Łódź": "Łodzi",
+  "Katowice": "Katowicach", "Lublin": "Lublinie", "Bydgoszcz": "Bydgoszczy",
+  "Szczecin": "Szczecinie", "Wieliczka": "Wieliczce", "Niepołomice": "Niepołomicach",
+};
+const LOCATIVE_VOIV: Record<string, string> = {
+  "Małopolskie": "Małopolsce", "Mazowieckie": "Mazowieckiem", "Dolnośląskie": "Dolnośląskiem",
+  "Wielkopolskie": "Wielkopolsce", "Pomorskie": "Pomorskiem", "Łódzkie": "Łódzkiem",
+  "Śląskie": "Śląskiem", "Lubelskie": "Lubelskiem", "Kujawsko-pomorskie": "Kujawsko-pomorskiem",
+  "Zachodniopomorskie": "Zachodniopomorskiem",
+};
+function wCity(city: string): string {
+  return LOCATIVE_CITY[city] ? `w ${LOCATIVE_CITY[city]}` : `w rejonie ${city}`;
+}
+function wVoiv(v: string): string {
+  return LOCATIVE_VOIV[v] ? `w ${LOCATIVE_VOIV[v]}` : `w regionie ${v}`;
 }
 
 // Poolse rechtsvormen + prefixen die we niet in het logo willen tonen.
@@ -235,7 +301,8 @@ export function generateSiteHtml(lead: Lead): string {
   if (getTemplateStyle(lead) === "service") return generateServiceSiteHtml(lead);
   const variant = getVariant(lead);
   const templateStyle = getTemplateStyle(lead);
-  const content = getContent(lead);
+  const sc = parseSiteContent(lead);
+  const content = mergeSiteContent(getContent(lead), sc);
   const colors = VARIANT_COLORS[variant];
   const { main: namePart1, sub: namePart2 } = splitCompanyName(lead.name);
   const city = lead.city_query || "Twojego miasta";
@@ -248,7 +315,7 @@ export function generateSiteHtml(lead: Lead): string {
   const address = lead.address || "";
   const rating = lead.rating ?? 0;
   const ratingCount = lead.rating_count ?? 0;
-  const categoryPl = CATEGORY_PL[lead.category_query || ""] || "usługi budowlane";
+  const categoryPl = categoryLabel(lead, sc);
 
   const photoUrls: string[] = proxyPhotos(applyPhotoCuration(parseJson(lead.photo_urls, []), lead.ai_polish));
   const reviews: LeadReview[] = parseJson<LeadReview[]>(lead.reviews_json, [])
@@ -264,7 +331,7 @@ export function generateSiteHtml(lead: Lead): string {
       if (r.language && r.language !== "pl" && !r.original_language) return false;
       return true;
     });
-  const businessDesc = lead.description || "";
+  const businessDesc = sc?.about || lead.description || "";
   const hasPhotos = photoUrls.length > 0;
   const hasReviews = reviews.length > 0;
   const hasRating = ratingCount > 0 && rating > 0;
@@ -404,13 +471,15 @@ export function generateSiteHtml(lead: Lead): string {
   return `<!DOCTYPE html>
 <html lang="pl">
 <head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${escapeHtml(city)}</title>
-  <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} w ${escapeHtml(city)}. ${businessDesc ? escapeHtml(businessDesc.slice(0, 140)) : (hasPhone ? `Zadzwoń: ${escapeHtml(phone)}` : "Zapraszamy do kontaktu.")}">
+  <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${wCity(city)}. ${businessDesc ? escapeHtml(businessDesc.slice(0, 140)) : (hasPhone ? `Zadzwoń: ${escapeHtml(phone)}` : "Zapraszamy do kontaktu.")}">
   ${buildSeoHead(lead, {
     title: `${lead.name} — ${categoryPl} ${city}`,
-    description: businessDesc || (hasPhone ? `${lead.name} — ${categoryPl} w ${city}. Zadzwoń: ${phone}.` : `${lead.name} — ${categoryPl} w ${city}. Zapraszamy do kontaktu.`),
+    description: businessDesc || (hasPhone ? `${lead.name} — ${categoryPl} ${wCity(city)}. Zadzwoń: ${phone}.` : `${lead.name} — ${categoryPl} ${wCity(city)}. Zapraszamy do kontaktu.`),
     city,
     accent: colors.accent,
   })}
@@ -683,6 +752,7 @@ export function generateSiteHtml(lead: Lead): string {
   </style>
 </head>
 <body class="style-${templateStyle}">
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla ${escapeHtml(lead.name)} — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
 
   ${templateStyle === "service" && hasPhone ? `<div class="emergency-strip">
     <div class="emergency-strip-inner">
@@ -694,7 +764,7 @@ export function generateSiteHtml(lead: Lead): string {
   </div>` : ""}
 
   <div class="topbar">
-    ${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} w ${escapeHtml(city)} — <a href="#kontakt">zapytaj o wycenę →</a>
+    ${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${wCity(city)} — <a href="#kontakt">zapytaj o wycenę →</a>
   </div>
 
   <header>
@@ -819,12 +889,12 @@ export function generateSiteHtml(lead: Lead): string {
       <div class="area-grid">
         <div class="area-text">
           <div class="eyebrow">Obszar działania</div>
-          <h2 class="area-heading">Pracujemy <em>w ${escapeHtml(voivodeship)} i okolicach.</em></h2>
+          <h2 class="area-heading">Pracujemy <em>${wVoiv(voivodeship)} i okolicach.</em></h2>
           <p class="area-intro">Główny obszar działania: ${escapeHtml(city)} i okolice w promieniu 30 km. Większe zlecenia realizujemy też dalej.</p>
           <dl class="area-facts">
             <div>
               <dt>Czas dojazdu</dt>
-              <dd>~30 min w ${escapeHtml(city)}, ~1 h w okolicach</dd>
+              <dd>~30 min ${wCity(city)}, ~1 h w okolicach</dd>
             </div>
             <div>
               <dt>Wolne terminy</dt>
@@ -1015,7 +1085,8 @@ export function generateSiteHtml(lead: Lead): string {
 // Completely different page architecture from the editorial template.
 // ============================================================
 function generateServiceSiteHtml(lead: Lead): string {
-  const content = getContent(lead);
+  const sc = parseSiteContent(lead);
+  const content = mergeSiteContent(getContent(lead), sc);
   const { main: namePart1, sub: namePart2 } = splitCompanyName(lead.name);
   const city = lead.city_query || "Twojego miasta";
   const voivodeship = lead.voivodeship || city;
@@ -1027,7 +1098,7 @@ function generateServiceSiteHtml(lead: Lead): string {
   const address = lead.address || "";
   const rating = lead.rating ?? 0;
   const ratingCount = lead.rating_count ?? 0;
-  const categoryPl = CATEGORY_PL[lead.category_query || ""] || "usługi";
+  const categoryPl = categoryLabel(lead, sc);
 
   const reviews: LeadReview[] = parseJson<LeadReview[]>(lead.reviews_json, [])
     .filter((r) => r.rating >= 4 && r.text && r.text.trim().length >= 20)
@@ -1149,13 +1220,15 @@ function generateServiceSiteHtml(lead: Lead): string {
   return `<!DOCTYPE html>
 <html lang="pl">
 <head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${escapeHtml(city)}${hasPhone ? ` · tel. ${escapeHtml(phone)}` : ""}</title>
-  <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} w ${escapeHtml(city)}.${hasPhone ? ` Zadzwoń: ${escapeHtml(phone)}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}">
+  <meta name="description" content="${escapeHtml(lead.name)} — ${escapeHtml(categoryPl)} ${wCity(city)}.${hasPhone ? ` Zadzwoń: ${escapeHtml(phone)}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}">
   ${buildSeoHead(lead, {
     title: `${lead.name} — ${categoryPl} ${city}`,
-    description: `${lead.name} — ${categoryPl} w ${city}.${hasPhone ? ` Zadzwoń: ${phone}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}`,
+    description: `${lead.name} — ${categoryPl} ${wCity(city)}.${hasPhone ? ` Zadzwoń: ${phone}.` : ""} ${isEmergency ? "Awarie 24/7, dojazd ~2h." : "Bezpłatna wycena."}`,
     city,
     accent: isEmergency ? "#0F3D8C" : "#1E3A8A",
   })}
@@ -1364,6 +1437,7 @@ function generateServiceSiteHtml(lead: Lead): string {
   </style>
 </head>
 <body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla ${escapeHtml(lead.name)} — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
 
   <header class="svc-header">
     <div class="svc-header-inner">
@@ -1513,12 +1587,12 @@ function generateServiceSiteHtml(lead: Lead): string {
       <div class="svc-area-grid">
         <div class="svc-area-text">
           <div class="eyebrow">Obszar działania</div>
-          <h2>Pracujemy w <em>${escapeHtml(city)} i okolicach.</em></h2>
-          <p>Główny obszar: ${escapeHtml(city)} + 30 km. Większe zlecenia realizujemy też dalej w ${escapeHtml(voivodeship)}.</p>
+          <h2>Pracujemy <em>${wCity(city)} i okolicach.</em></h2>
+          <p>Główny obszar: ${escapeHtml(city)} + 30 km. Większe zlecenia realizujemy też dalej ${wVoiv(voivodeship)}.</p>
           <dl class="svc-area-facts">
             <div>
               <dt>Czas dojazdu</dt>
-              <dd>${isEmergency ? `~2 h w ${escapeHtml(city)} (awarie szybciej)` : `~30 min w ${escapeHtml(city)}, ~1 h w okolicach`}</dd>
+              <dd>${isEmergency ? `~2 h ${wCity(city)} (awarie szybciej)` : `~30 min ${wCity(city)}, ~1 h w okolicach`}</dd>
             </div>
             <div>
               <dt>${isEmergency ? "Awarie" : "Wolne terminy"}</dt>

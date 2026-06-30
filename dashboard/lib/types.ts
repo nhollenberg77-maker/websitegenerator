@@ -33,6 +33,17 @@ export interface Lead {
   unsubscribed_at: string | null;
   ai_polish: string | null;
   ai_email: string | null;
+  // Agent-team velden (zie AGENT_TEAM.md §4)
+  site_quality_score?: number | null;
+  site_critique?: string | null;
+  email_quality_score?: number | null;
+  email_subject?: string | null;
+  email_body_html?: string | null;
+  approval_status?: string | null;
+  approval_note?: string | null;
+  approved_at?: string | null;
+  site_content?: string | null;
+  dossier?: string | null;
 }
 
 export interface LeadReview {

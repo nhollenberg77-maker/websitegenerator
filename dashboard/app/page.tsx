@@ -1,7 +1,7 @@
-import { Cockpit } from "@/components/cockpit";
+import { TeamHQ } from "@/components/team-hq";
 
 export const dynamic = "force-dynamic";
 
 export default function Home() {
-  return <Cockpit />;
+  return <TeamHQ />;
 }
