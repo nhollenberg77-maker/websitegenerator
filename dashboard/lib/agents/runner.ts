@@ -108,14 +108,20 @@ export async function runAgentLoop(args: {
 
       const toolUses = resp.content.filter((b): b is Anthropic.ToolUseBlock => b.type === "tool_use");
       if (resp.stop_reason !== "tool_use" || toolUses.length === 0) {
-        // Narrate-and-stop: het model beschreef alleen wat het ging doen, maar
-        // riep nog geen enkele tool aan. Start opnieuw met een dwingender prompt
-        // (op beurt 0 gaat geen werk verloren). We spelen de modeltekst NIET
-        // terug — een leeg tekstblok daarin gaf 400-fouten.
-        if (toolCalls.length === 0 && !nudged) {
+        // Narrate-and-stop: het model beschreef wat het ging doen maar maakte de
+        // taak niet af. Geef één duwtje. (resp.content heeft hier GEEN tool_use,
+        // dus terugspelen is veilig — geen "tool_use zonder tool_result"-400.)
+        if (!nudged) {
           nudged = true;
-          messages.length = 0;
-          messages.push({ role: "user", content: `${args.userPrompt}\n\nBELANGRIJK: geef GEEN inleidende tekst. Je EERSTE antwoord moet meteen een tool-aanroep zijn (bv. places_search). Beschrijf niet wat je gaat doen — doe het.` });
+          if (toolCalls.length === 0) {
+            // pure inleiding op beurt 0 → herstart forceful (geen werk verloren)
+            messages.length = 0;
+            messages.push({ role: "user", content: `${args.userPrompt}\n\nBELANGRIJK: geef GEEN inleidende tekst. Je EERSTE antwoord moet meteen een tool-aanroep zijn. Beschrijf niet wat je gaat doen — doe het.` });
+          } else {
+            // wel werk gedaan maar gestopt zonder af te maken → duw door, context behouden
+            messages.push({ role: "assistant", content: resp.content.length ? resp.content : [{ type: "text", text: "…" }] });
+            messages.push({ role: "user", content: "Je hebt de taak nog niet afgemaakt — je beschreef alleen wat je gaat doen. Roep NU de volgende vereiste tool aan (bv. set_site_content / set_email_copy / qualify_lead). Niet beschrijven, dóen." });
+          }
           continue;
         }
         break;

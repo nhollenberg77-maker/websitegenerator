@@ -8,7 +8,7 @@ import { AGENT_DEFS, buildSystem } from "./registry";
 import { getLeadById, markSiteGenerated } from "../db";
 import { setLeadEnrichment } from "./store";
 import { placeDetails, photoProxyUrls } from "./places";
-import { generateSiteForLead, siteExists } from "../site-generator";
+import { generateSiteForLead } from "../site-generator";
 import { generateScreenshot, hasScreenshot } from "../screenshot";
 import { postMessage, setSiteQuality } from "./store";
 import type { Task } from "./types";
@@ -75,10 +75,10 @@ Roep set_site_content precies één keer aan met complete content, en stop dan. 
   // 3) CODE genereert de site + screenshot — gegarandeerd, ongeacht of de agent
   //    het zelf had aangeroepen. Geen lege builds meer.
   const fresh = getLeadById(placeId) || lead;
-  if (!siteExists(placeId)) {
-    generateSiteForLead(fresh);
-    markSiteGenerated(placeId);
-  }
+  // Altijd (her)genereren — niet overslaan als het bestand bestaat, anders pakt
+  // een herbouw nieuwe/gewijzigde content niet op.
+  generateSiteForLead(fresh);
+  markSiteGenerated(placeId);
   if (!hasScreenshot(placeId)) {
     await generateScreenshot(placeId).catch(() => {
       postMessage({ from: "builder", to: "manager", kind: "alert", body: `Screenshot mislukt voor "${fresh.name}" — de outreach-mail mist straks een voorbeeld-afbeelding.`, leadPlaceId: placeId });
