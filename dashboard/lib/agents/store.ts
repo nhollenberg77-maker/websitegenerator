@@ -880,6 +880,16 @@ export function setDossier(placeId: string, text: string): void {
   finally { d.close(); }
 }
 
+// Recent gekwalificeerde leads — voor de QC-inspectie door de Manager.
+export function recentQualified(limit = 10): Lead[] {
+  const d = db(true);
+  try {
+    return d.prepare("SELECT * FROM leads WHERE qualified=1 ORDER BY qualified_at DESC LIMIT ?").all(limit) as Lead[];
+  } finally {
+    d.close();
+  }
+}
+
 // Prestaties per kolom (category_query / city_query) — voor de leerlus van de Manager.
 export function leadStatsBy(column: "category_query" | "city_query"): { key: string; total: number; qualified: number; emailed: number; replied: number; bounced: number }[] {
   const d = db(true);

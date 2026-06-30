@@ -9,8 +9,8 @@ import * as store from "../store";
 import {
   getLeadById, setLeadContactEmail, setLeadAiEmail, markSiteGenerated,
 } from "../../db";
-import { generateSiteForLead, siteExists } from "../../site-generator";
-import { generateScreenshot, screenshotFilePath, hasScreenshot } from "../../screenshot";
+import { generateSiteForLead, siteExists, deleteSite } from "../../site-generator";
+import { generateScreenshot, screenshotFilePath, hasScreenshot, deleteScreenshot } from "../../screenshot";
 import { generateEmailHtml, generateEmailSubject } from "../../email-template";
 import { findContactEmail } from "../../email-scraper";
 
@@ -454,6 +454,56 @@ const budgetStatusTool: AgentTool = {
   },
 };
 
+const reviewQualifiedLeads: AgentTool = {
+  name: "review_qualified_leads",
+  description: "KWALITEITSCONTROLE: haal een steekproef van recent gekwalificeerde leads op en controleer ze kritisch. Per lead wordt de site live opgehaald en gemarkeerd of die toch STERK is (= fout gekwalificeerd), plus het bedrijfstype. Gebruik dit om te zien of het team de juiste leads kiest.",
+  input_schema: { type: "object", additionalProperties: false, properties: { limit: { type: "integer" } } },
+  handler: async (input) => {
+    const leads = store.recentQualified((input.limit as number) ?? 8);
+    const out: Record<string, unknown>[] = [];
+    for (const l of leads) {
+      let siteFlag = l.website ? "onbekend" : "geen-site";
+      if (l.website) {
+        try { const s = await fetchWebsite(l.website); siteFlag = isStrongSite(s) ? "⚠ STERKE SITE (mogelijk fout gekwalificeerd)" : (s.ok ? "zwakke/oude site" : "onbereikbaar"); }
+        catch { siteFlag = "onbereikbaar"; }
+      }
+      out.push({ place_id: l.place_id, name: l.name, type: l.category_query, reviews: l.rating_count, site: l.website ? l.website.slice(0, 45) : "GEEN", site_oordeel: siteFlag, heeft_concept_site: !!l.site_generated_at });
+    }
+    return J(out);
+  },
+};
+
+const inspectSite: AgentTool = {
+  name: "inspect_site",
+  description: "KWALITEITSCONTROLE: bekijk de gebouwde concept-site van een lead visueel (screenshot). Beoordeel kritisch: past de site bij dit type bedrijf en deze branche? Spreekt het aan? Klopt het (geen verkeerde template/sector)? Gebruik dit om het werk van de Builder te controleren.",
+  input_schema: { type: "object", additionalProperties: false, required: ["place_id"], properties: { place_id: { type: "string" } } },
+  handler: async (input) => {
+    const id = String(input.place_id);
+    const lead = getLeadById(id);
+    const p = screenshotFilePath(id);
+    if (!hasScreenshot(id)) return { content: `Geen screenshot voor ${lead?.name ?? id} — site nog niet (volledig) gebouwd.`, isError: true };
+    const data = fs.readFileSync(p).toString("base64");
+    return { content: [
+      { type: "image", source: { type: "base64", media_type: "image/png", data } },
+      { type: "text", text: `Concept-site voor "${lead?.name}" (${lead?.category_query}, ${lead?.city_query}). Beoordeel of de site past bij dit bedrijf/branche, of de toon klopt, en of het aanspreekt.` },
+    ] };
+  },
+};
+
+const overruleLead: AgentTool = {
+  name: "overrule_lead",
+  description: "Overrule een foute kwalificatie: wijs een lead alsnog af (bv. omdat hij toch een sterke site heeft of niet binnen de doelgroep valt). Verwijdert ook de eventueel gebouwde concept-site.",
+  input_schema: { type: "object", additionalProperties: false, required: ["place_id", "reason"], properties: { place_id: { type: "string" }, reason: { type: "string" } } },
+  handler: async (input) => {
+    const id = String(input.place_id);
+    const name = getLeadById(id)?.name ?? id;
+    try { if (siteExists(id)) deleteSite(id); deleteScreenshot(id); } catch { /* best-effort */ }
+    store.rejectLead(id, `manager-overrule: ${input.reason}`);
+    store.postMessage({ from: "manager", to: "scout", kind: "feedback", body: `Lead "${name}" teruggedraaid: ${input.reason}` });
+    return `lead "${name}" afgewezen en opgeruimd: ${input.reason}`;
+  },
+};
+
 const recordInsight: AgentTool = {
   name: "record_insight",
   description: "Leg een geleerde les vast (verschijnt in 'Wat het team leerde').",
@@ -470,4 +520,4 @@ const recordInsight: AgentTool = {
 export const SCOUT_TOOLS: AgentTool[] = [placesSearch, fetchWebsiteTool, placeDetailsTool, getLead, qualifyLead, findEmail, saveDossier, postMessage];
 export const BUILDER_TOOLS: AgentTool[] = [getLead, placeDetailsTool, enrichLead, setSiteContent, generateSite, screenshotTool, viewScreenshot, setSiteQuality, saveDossier, postMessage];
 export const WRITER_TOOLS: AgentTool[] = [getLead, findEmail, setEmailCopy, postMessage];
-export const MANAGER_TOOLS: AgentTool[] = [readStatus, readFeedback, readMessages, categoryPerformance, budgetStatusTool, createDiscoverTask, setStrategy, manageGoal, recordInsight, postMessage];
+export const MANAGER_TOOLS: AgentTool[] = [readStatus, readFeedback, readMessages, categoryPerformance, budgetStatusTool, reviewQualifiedLeads, inspectSite, overruleLead, createDiscoverTask, setStrategy, manageGoal, recordInsight, postMessage];
