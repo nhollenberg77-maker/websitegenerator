@@ -18,7 +18,18 @@ function getVariant(lead: Lead): TemplateVariant {
   return CATEGORY_VARIANT[lead.category_query || ""] || "premium";
 }
 
-type TemplateStyle = "editorial" | "service" | "established";
+type TemplateStyle = "editorial" | "service" | "established" | "food";
+
+// Horeca-types → eigen template met menukaart, openingstijden en reserveren.
+const FOOD_TYPES = new Set([
+  "restaurant", "cafe", "coffee_shop", "bakery", "bar", "meal_takeaway", "meal_delivery",
+  "pizza_restaurant", "ice_cream_shop", "fast_food_restaurant", "food", "sandwich_shop",
+  "bistro", "brunch_restaurant", "breakfast_restaurant", "tea_house", "pub", "wine_bar",
+]);
+function isFood(lead: Lead): boolean {
+  const types = `${lead.category_query || ""} ${lead.primary_type || ""} ${lead.types || ""}`.toLowerCase();
+  return Array.from(FOOD_TYPES).some((t) => types.includes(t));
+}
 
 // Trefwoorden die wijzen op een echte 24/7 noodservice — alleen die krijgen
 // het phone-first urgency-template. Een normale loodgieter/elektricien zonder
@@ -34,6 +45,8 @@ function isEmergencyService(lead: Lead): boolean {
 }
 
 function getTemplateStyle(lead: Lead): TemplateStyle {
+  // Horeca → food-template (menukaart, openingstijden, reserveren)
+  if (isFood(lead)) return "food";
   // Echte noodservice (24h locksmith/hydraulik/elektryk pogotowie) → phone-first
   if (isEmergencyService(lead)) return "service";
   // Dakdekkers → established (traditioneel, gevestigd gevoel)
@@ -60,6 +73,10 @@ export interface SiteContentSpec {
   faq?: { q: string; a: string }[];
   select_options?: string[];
   cta_label?: string;
+  // Horeca-specifiek (restaurant/bistro/café/bakkerij):
+  cuisine?: string;        // bv. "kuchnia polska", "ramen", "piekarnia rzemieślnicza"
+  hours?: string;          // bv. "Pn-Pt 8-20, So-Nd 9-18"
+  menu?: { section: string; items: { name: string; description?: string; price?: string }[] }[];
 }
 
 function parseSiteContent(lead: Lead): SiteContentSpec | null {
@@ -298,6 +315,7 @@ const CATEGORY_PL: Record<string, string> = {
 };
 
 export function generateSiteHtml(lead: Lead): string {
+  if (getTemplateStyle(lead) === "food") return generateFoodSiteHtml(lead);
   if (getTemplateStyle(lead) === "service") return generateServiceSiteHtml(lead);
   const variant = getVariant(lead);
   const templateStyle = getTemplateStyle(lead);
@@ -1084,6 +1102,175 @@ export function generateSiteHtml(lead: Lead): string {
 // SERVICE TEMPLATE (plumber / electrician — phone-first design)
 // Completely different page architecture from the editorial template.
 // ============================================================
+// ============================================================
+//  FOOD-TEMPLATE — restaurant / bistro / café / bakkerij
+//  Menukaart, openingstijden, reserveren. Copy komt van de Builder-agent.
+// ============================================================
+function generateFoodSiteHtml(lead: Lead): string {
+  const sc = parseSiteContent(lead);
+  const fullName = escapeHtml(lead.name);
+  const { main: brand } = splitCompanyName(lead.name);
+  const city = lead.city_query || "Twoje miasto";
+  const hasPhone = !!(lead.phone_national || lead.phone_intl);
+  const phone = formatPhone(lead.phone_national);
+  const phoneLnk = phoneLink(lead.phone_intl || lead.phone_national);
+  const waPhone = phoneDigits(lead.phone_intl || lead.phone_national);
+  const address = lead.address || "";
+  const rating = lead.rating ?? 0;
+  const ratingCount = lead.rating_count ?? 0;
+  const hasRating = ratingCount > 0 && rating > 0;
+  const cuisine = escapeHtml(sc?.cuisine || categoryLabel(lead, sc));
+  const hours = sc?.hours ? escapeHtml(sc.hours) : "";
+  const about = sc?.about || lead.description || `${lead.name} — miejsce, do którego wraca się z przyjemnością.`;
+  const cta = escapeHtml(sc?.cta_label || (hasPhone ? "Zarezerwuj stolik" : "Skontaktuj się"));
+  const heroTitle = escapeHtml(sc?.hero_headline || lead.name);
+  const heroSub = escapeHtml(sc?.hero_lead || `${sc?.cuisine || "Dobre jedzenie"} ${wCity(city)}.`);
+
+  const photoUrls = proxyPhotos(applyPhotoCuration(parseJson<string[]>(lead.photo_urls, []), lead.ai_polish));
+  const heroImg = photoUrls[0] || "";
+  const gallery = photoUrls.slice(1, 7);
+
+  const reviews = parseJson<LeadReview[]>(lead.reviews_json, [])
+    .filter((r) => r.rating >= 4 && r.text && r.text.trim().length >= 20)
+    .map((r) => (r.original_language === "pl" && r.original_text ? { ...r, text: r.original_text } : r))
+    .filter((r) => !(r.original_language && r.original_language !== "pl") && !(r.language && r.language !== "pl" && !r.original_language))
+    .slice(0, 3);
+
+  const menu = sc?.menu ?? [];
+  const menuHtml = menu.length
+    ? menu.slice(0, 6).map((sec) => `
+        <div class="menu-sec">
+          <h3>${escapeHtml(sec.section)}</h3>
+          <ul>
+            ${sec.items.slice(0, 12).map((it) => `<li>
+              <div class="mi-top"><span class="mi-name">${escapeHtml(it.name)}</span>${it.price ? `<span class="mi-dots"></span><span class="mi-price">${escapeHtml(it.price)}</span>` : ""}</div>
+              ${it.description ? `<div class="mi-desc">${escapeHtml(it.description)}</div>` : ""}
+            </li>`).join("")}
+          </ul>
+        </div>`).join("")
+    : `<p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p>`;
+
+  const galleryHtml = gallery.length
+    ? `<section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid">${gallery.map((u) => `<img src="${escapeHtml(u)}" alt="${fullName}" loading="lazy">`).join("")}</div></div></section>`
+    : "";
+
+  const reviewsHtml = reviews.length
+    ? `<section class="reviews"><div class="wrap"><h2>Opinie gości${hasRating ? ` · ${rating.toFixed(1)} ★ (${ratingCount})` : ""}</h2><div class="r-grid">${reviews.map((r) => `<figure><div class="stars">${"★".repeat(Math.round(r.rating))}</div><blockquote>${escapeHtml(r.text.slice(0, 240))}</blockquote><figcaption>— ${escapeHtml(r.author)}</figcaption></figure>`).join("")}</div></div></section>`
+    : "";
+
+  const ctaHref = hasPhone ? phoneLnk : "#kontakt";
+
+  return `<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${fullName} — ${cuisine} ${escapeHtml(city)}</title>
+  <meta name="description" content="${fullName} — ${cuisine} ${wCity(city)}. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;${heroImg ? `background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('${escapeHtml(heroImg)}') center/cover` : "background:linear-gradient(135deg,#2c2018,#3c2a20)"}}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla ${fullName} — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">${escapeHtml(brand || lead.name)}</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="${ctaHref}">${cta}</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">${cuisine} · ${escapeHtml(city)}</div>
+    <h1>${heroTitle}</h1>
+    <p>${heroSub}</p>
+    <div class="hero-cta">
+      <a class="btn" href="${ctaHref}">${cta}</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols">${menuHtml}</div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>${escapeHtml(about)}</p>
+  </div></section>
+
+  ${galleryHtml}
+  ${reviewsHtml}
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      ${address ? `<div class="row"><b>Adres</b><span>${escapeHtml(address)}</span></div>` : ""}
+      ${hours ? `<div class="row"><b>Godziny</b><span>${hours}</span></div>` : `<div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>`}
+      ${hasPhone ? `<div class="row"><b>Telefon</b><a href="${phoneLnk}">${escapeHtml(phone)}</a></div>` : ""}
+    </div>
+    <div>
+      <h2>${cta}</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        ${hasPhone ? `<a class="btn" href="${phoneLnk}">Zadzwoń: ${escapeHtml(phone)}</a>` : ""}
+        ${waPhone ? `<a class="btn-ghost" href="https://wa.me/${waPhone}">WhatsApp</a>` : ""}
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© ${new Date().getFullYear()} ${fullName}. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>`;
+}
+
 function generateServiceSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const content = mergeSiteContent(getContent(lead), sc);

@@ -119,9 +119,17 @@ const getLead: AgentTool = {
   handler: async (input, ctx) => leadBrief(leadId(input, ctx)),
 };
 
+// Deterministische vangrail: een site die ophaalt mét https + mobiel-meta +
+// (schema.org of OG-tags) + voldoende inhoud, is een STERKE moderne site —
+// zo'n bedrijf heeft ons niet nodig.
+function isStrongSite(s: { ok: boolean; https: boolean; hasViewport: boolean; hasSchemaOrg: boolean; hasOgTags: boolean; textLength: number; isSocialOrListing: boolean }): boolean {
+  if (!s.ok || s.isSocialOrListing) return false;
+  return s.https && s.hasViewport && (s.hasSchemaOrg || s.hasOgTags) && s.textLength >= 1500;
+}
+
 const qualifyLead: AgentTool = {
   name: "qualify_lead",
-  description: "Beslis over een lead op basis van je oordeel: 'keep' (zwakke/ontbrekende site maar gezond Google-profiel = goede prospect) of 'reject' (sterke site, te weinig reviews, of geen eigen website). Bij reject wordt de lead permanent geblokkeerd.",
+  description: "Beslis over een lead: 'keep' (zwakke/ontbrekende site maar gezond Google-profiel = goede prospect) of 'reject'. LET OP: een lead met een STERKE moderne site wordt automatisch afgewezen, ook als jij 'keep' zegt — die hebben ons niet nodig.",
   input_schema: {
     type: "object", additionalProperties: false, required: ["place_id", "decision", "reason"],
     properties: {
@@ -135,8 +143,19 @@ const qualifyLead: AgentTool = {
   handler: async (input, ctx) => {
     const id = leadId(input, ctx);
     if (input.decision === "keep") {
+      const lead = getLeadById(id);
+      // Vangrail: sterke moderne site → heeft ons niet nodig (geldt ongeacht reviews).
+      if (lead?.website) {
+        try {
+          const sig = await fetchWebsite(lead.website);
+          if (isStrongSite(sig)) {
+            store.rejectLead(id, `sterke moderne site: ${sig.title || lead.website}`);
+            return `❌ AUTOMATISCH AFGEWEZEN: ${lead.name} heeft al een sterke moderne site (https + mobiel + schema/OG + ${sig.textLength} tekens). Zulke bedrijven NIET kwalificeren — wij zoeken zwakke/ontbrekende sites.`;
+          }
+        } catch { /* niet bereikbaar → laat het agent-oordeel staan */ }
+      }
       store.markLeadQualified(id, input.gbp_score as number, input.site_score as number);
-      return `lead ${id} gekwalificeerd: ${input.reason}`;
+      return `✓ lead ${id} gekwalificeerd: ${input.reason}`;
     }
     store.rejectLead(id, String(input.reason));
     return `lead ${id} afgewezen: ${input.reason}`;
@@ -204,6 +223,18 @@ const setSiteContent: AgentTool = {
       faq: { type: "array", maxItems: 5, items: { type: "object", additionalProperties: false, required: ["q", "a"], properties: { q: { type: "string" }, a: { type: "string" } } } },
       select_options: { type: "array", maxItems: 6, items: { type: "string" }, description: "opties voor het contactformulier-dropdown" },
       cta_label: { type: "string" },
+      cuisine: { type: "string", description: "ALLEEN horeca: keuken/type, bv. 'kuchnia polska', 'ramen', 'piekarnia rzemieślnicza'" },
+      hours: { type: "string", description: "ALLEEN horeca: openingstijden, bv. 'Pn-Pt 8-20, So-Nd 9-18' (laat leeg als onbekend)" },
+      menu: {
+        type: "array", maxItems: 6, description: "ALLEEN horeca: de menukaart — secties met gerechten. Verzin een plausibel, passend menu voor dit type zaak (op basis van naam/keuken/reviews).",
+        items: {
+          type: "object", additionalProperties: false, required: ["section", "items"],
+          properties: {
+            section: { type: "string", description: "bv. 'Śniadania', 'Dania główne', 'Desery', 'Napoje'" },
+            items: { type: "array", maxItems: 12, items: { type: "object", additionalProperties: false, required: ["name"], properties: { name: { type: "string" }, description: { type: "string" }, price: { type: "string", description: "bv. '24 zł'" } } } },
+          },
+        },
+      },
     },
   },
   handler: async (input, ctx) => {
