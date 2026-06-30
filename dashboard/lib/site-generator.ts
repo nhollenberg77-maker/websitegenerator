@@ -1297,50 +1297,54 @@ function generateFoodSiteHtml(lead: Lead): string {
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    :root{--cream:#faf7f0;--paper:#fffdf9;--ink:#211e19;--soft:#6f685b;--line:#ece3d4;--wine:#8a3b32;--wineh:#a14a3f;--gold:#b89150}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
-    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    html{scroll-behavior:smooth}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.01em}
     a{color:inherit}
-    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
-    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
-    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
-    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,247,240,.82);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+    .brand{font-family:Fraunces,serif;font-size:21px;font-weight:600;letter-spacing:.005em}
+    .nav-links{display:flex;gap:30px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft);transition:color .2s}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:13px 26px;border-radius:999px;font-weight:600;font-size:14px;letter-spacing:.01em;box-shadow:0 1px 2px rgba(40,20,15,.12);transition:background .2s,transform .2s,box-shadow .2s}.btn:hover{background:var(--wineh);transform:translateY(-1px);box-shadow:0 8px 20px rgba(138,59,50,.22)}
     @media(max-width:720px){.nav-links{display:none}}
-    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;${heroImg ? `background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('${escapeHtml(heroImg)}') center/cover` : "background:linear-gradient(135deg,#2c2018,#3c2a20)"}}
-    .hero .wrap{padding-top:80px;padding-bottom:54px}
-    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
-    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
-    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
-    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
-    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
-    section{padding:64px 0}
-    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
-    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
-    .menu-sec{break-inside:avoid;margin-bottom:34px}
-    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .hero{position:relative;min-height:82vh;display:flex;align-items:flex-end;color:#fff;${heroImg ? `background:linear-gradient(180deg,rgba(20,14,11,.1) 0%,rgba(20,14,11,.36) 45%,rgba(18,12,9,.82) 100%),url('${escapeHtml(heroImg)}') center/cover` : "background:linear-gradient(140deg,#2c2018,#43302a)"}}
+    .hero .wrap{padding-top:96px;padding-bottom:66px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.28em;font-size:12px;font-weight:600;opacity:.92;margin-bottom:18px}
+    .hero h1{font-size:clamp(42px,7.2vw,80px);max-width:15ch;text-shadow:0 2px 30px rgba(0,0,0,.22)}
+    .hero p{font-size:clamp(17px,2.4vw,22px);max-width:46ch;margin-top:18px;opacity:.94}
+    .hero-cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.6);color:#fff;text-decoration:none;padding:13px 26px;border-radius:999px;font-weight:600;font-size:14px;backdrop-filter:blur(4px);transition:background .2s}.btn-ghost:hover{background:rgba(255,255,255,.14)}
+    section{padding:92px 0}
+    .sec-head{text-align:center;margin-bottom:46px}
+    .sec-eyebrow{text-transform:uppercase;letter-spacing:.24em;font-size:12px;font-weight:600;color:var(--wine);margin-bottom:12px;display:block}
+    .sec-head h2{font-size:clamp(30px,4.2vw,46px)}
+    .gallery h2,.reviews h2{font-size:clamp(30px,4.2vw,46px);text-align:center;margin-bottom:46px}
+    .menu-cols{columns:2;column-gap:60px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:40px}
+    .menu-sec h3{font-size:14px;text-transform:uppercase;letter-spacing:.16em;font-family:Inter,sans-serif;font-weight:600;color:var(--wine);padding-bottom:12px;margin-bottom:20px;border-bottom:1px solid var(--line)}
     .menu-sec ul{list-style:none}
-    .menu-sec li{margin-bottom:14px}
-    .mi-top{display:flex;align-items:baseline}
-    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
-    .mi-desc{font-size:14px;color:var(--soft)}
-    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
-    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
-    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
-    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
-    .reviews{background:#fff;border-top:1px solid var(--line)}
-    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
-    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
-    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .menu-sec li{margin-bottom:21px}
+    .mi-top{display:flex;align-items:baseline;gap:8px}
+    .mi-name{font-weight:600;font-size:16px}.mi-dots{flex:1;border-bottom:1px dotted #cbbfab;margin-bottom:4px}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap;font-variant-numeric:tabular-nums}
+    .mi-desc{font-size:14px;color:var(--soft);margin-top:5px;max-width:46ch}
+    .menu-empty{text-align:center;color:var(--soft);max-width:42ch;margin:0 auto}
+    .about{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:700px;text-align:center}.about p{font-size:clamp(18px,2.2vw,21px);color:var(--soft);line-height:1.75}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:250px;object-fit:cover;border-radius:12px;display:block;transition:transform .4s ease}.g-grid img:hover{transform:scale(1.02)}
+    .reviews{background:var(--paper);border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:26px}
+    .stars{color:var(--gold);margin-bottom:10px;letter-spacing:2px}.reviews blockquote{font-size:15px;line-height:1.6}.reviews figcaption{margin-top:14px;font-size:13px;color:var(--soft);font-weight:500}
     .info{background:#241a14;color:#f3ece2}
-    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
-    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
-    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:clamp(26px,3vw,34px);margin-bottom:22px}
+    .info .row{display:flex;gap:14px;margin-bottom:16px;font-size:15px}.info .row b{min-width:96px;color:var(--gold);font-weight:600}
     .info a{color:#f3ece2}
-    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:30px;font-size:13px}
   </style>
 </head>
 <body>
@@ -1362,12 +1366,12 @@ function generateFoodSiteHtml(lead: Lead): string {
   </div></header>
 
   <section class="menu" id="menu"><div class="wrap">
-    <h2>Menu</h2>
+    <div class="sec-head"><span class="sec-eyebrow">${escapeHtml(sc?.cuisine || "Nasza kuchnia")}</span><h2>Menu</h2></div>
     <div class="menu-cols">${menuHtml}</div>
   </div></section>
 
   <section class="about"><div class="wrap">
-    <h2>O nas</h2>
+    <div class="sec-head"><span class="sec-eyebrow">Poznaj nas</span><h2>O nas</h2></div>
     <p>${escapeHtml(about)}</p>
   </div></section>
 
