@@ -679,6 +679,8 @@ export function generateSiteHtml(lead: Lead): string {
     .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
     .btn-ghost:hover { background: var(--ink); color: white; border-color: var(--ink); }
     .btn-lg { padding: 16px 28px; font-size: 16px; }
+    a:focus-visible, .btn:focus-visible, summary:focus-visible, .faq-q:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+    .form-group input:focus-visible, .form-group textarea:focus-visible, .form-group select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
     .hero { padding: 64px 24px 80px; max-width: 1340px; margin: 0 auto; }
     @media (min-width: 768px) { .hero { padding: 100px 24px 120px; } }
     .hero-grid { display: grid; grid-template-columns: 1fr; gap: 56px; align-items: center; }
@@ -1303,7 +1305,9 @@ function generateFoodSiteHtml(lead: Lead): string {
     body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
     .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
     h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.01em}
-    a{color:inherit}
+    a{color:inherit;cursor:pointer}
+    .btn,.btn-ghost{cursor:pointer}
+    :focus-visible{outline:2px solid var(--accent,var(--wine,currentColor));outline-offset:3px}
     .topbar{position:sticky;top:0;z-index:30;background:rgba(250,247,240,.82);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
     .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
     .brand{font-family:Fraunces,serif;font-size:21px;font-weight:600;letter-spacing:.005em}
@@ -1487,7 +1491,9 @@ function generateAppointmentSiteHtml(lead: Lead, archetype: ApptArchetype): stri
     body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
     .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
     h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.01em}
-    a{color:inherit}
+    a{color:inherit;cursor:pointer}
+    .btn,.btn-ghost{cursor:pointer}
+    :focus-visible{outline:2px solid var(--accent,var(--wine,currentColor));outline-offset:3px}
     .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
     .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
     .brand{font-family:Fraunces,serif;font-size:21px;font-weight:600}
