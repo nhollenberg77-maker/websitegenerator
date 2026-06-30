@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow"><meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ArtDream — usługi lokalne Kraków</title>
+  <meta name="description" content="ArtDream — usługi lokalne w Krakowie. Cennik, opinie i rezerwacja wizyty.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--accent:#a8576b;--accenth:#8f4659;--ink:#241b1e;--bg:#faf5f3;--soft:#7a6b6f;--line:#ecdfe0;--dark:#241619}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.12}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--accenth)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:70vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(15,12,12,.12),rgba(15,12,12,.74)),url('/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3k1U9VZuGYG9LNMPUdIqyqWxnq2aII4iD3eDWGM3fDB3cvcDk2v_R6LDY654RzOpl-4lOhn288MtRqd4uEAycKYIQ7x3Z2awdYWRPsKoD_sCaeM_-rZD33AEAOihnWQlpW8zR7reaQzfRqN2jWaHj0U4Za0GKtg9UGhbs3COn8iW4laMTQp7IJA8mUCjjZxgcQHh2vaRJ7x8Qm6FdhaJRVjT3AK-AOHxJWDiiPQ0am67Qq0wL-7DLWJ34LJvrL39VmIS_nFkGF1GwnR83hMotNw4UJavkx5aPJQVHvK1Rp6FQpOdReF8Zg3yqGfkC5MDMc_G2o4yLubA10ZV_plDG5YGMHP7XrwLj6X-SI8b9ZU1y1Wz6hvtJHZOVBfz-eRVelSjrpWKW-X8R9TygwQqr2IwEtyqSBBymbW04_MgtxFuXEc&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:52px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:12px;opacity:.9;margin-bottom:14px}
+    .hero h1{font-size:clamp(38px,6.5vw,70px);max-width:15ch}
+    .hero p{font-size:clamp(16px,2.3vw,20px);max-width:48ch;margin-top:14px;opacity:.93}
+    .hero-cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.55);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:60px 0}
+    h2.sec{font-size:clamp(26px,4vw,38px);margin-bottom:28px;text-align:center}
+    .plist{list-style:none;max-width:640px;margin:0 auto}
+    .plist li{padding:14px 0;border-bottom:1px solid var(--line)}
+    .pl-top{display:flex;align-items:baseline}
+    .pl-name{font-weight:600}.pl-dots{flex:1;border-bottom:1px dotted var(--line);margin:0 10px;transform:translateY(-3px)}.pl-price{font-weight:600;color:var(--accent);white-space:nowrap}
+    .pl-note{font-size:14px;color:var(--soft);margin-top:3px}
+    .pl-empty{text-align:center;color:var(--soft);max-width:42ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:220px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:var(--dark);color:#f3ece6}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:28px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:rgba(255,255,255,.6);font-weight:600}
+    .info a{color:#f3ece6}
+    footer{background:#13100e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla ArtDream — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">ArtDream</span>
+    <nav class="nav-links"><a href="#oferta">Cennik</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48530004813">Umów wizytę</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">usługi lokalne · Kraków</div>
+    <h1>ArtDream</h1>
+    <p>usługi lokalne w Krakowie.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48530004813">Umów wizytę</a>
+      <a class="btn-ghost" href="#oferta">Zobacz cennik</a>
+    </div>
+  </div></header>
+
+  <section id="oferta"><div class="wrap">
+    <h2 class="sec">Cennik usług</h2>
+    <p class="pl-empty">Zadzwoń lub napisz — chętnie przedstawimy pełną ofertę i aktualne ceny.</p>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2 class="sec">O nas</h2>
+    <p>ArtDream — w Krakowie.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3lYEM17R1n7yVK_JukD8p0YN6FfpkI-aWDZc1UpuO0JP5lGJU_yldAsA5XM2c8VnWalgFiVDEHdla8YwspEb851zLB3GIec7bFl8Q9izqc6r572M4MGGbjTaw7yyNQiXDBKkZBA90bw153RuP8AcVO1iwz5igfT7dtURJc4JYqH1yUVOKKJWnqz7xowI7iIbyUuFJibJqI4n6uq105ms5E37FxMXVMbz_4JSigFNyc6IJtZyYaUEzt-bdJAaqgb66l0iRCIelIp290cyWRSyZdBlSoiv1FWVKwtebPZLdZvynvHrfvI1M1IlsCGaH662PqP_wCXW9jvfPRhn-UGlMZGn941P7xfFKZ2M3nnwpMhCkDa7Pn0XqX_Oi71jfHnqUKtVE9dP2GpUtu85u5Hf02e9VjW4HFGF9aXxh2xGX3BfqOoHVTSivVEbmSFvQ&amp;w=1200" alt="ArtDream" loading="lazy"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3ndS8qbucCmETKI_7HqFMct4FWJPe-onq_kDf6-jE7WhW5SanPaCnShr5WKOm3pYixL6hcUVe1KFT8m8xTQovyvOAkpKaQpHSNVAh6O9rhUcSYxcpApTIB_ctuUsPoF3ABMC1QWJnlIHPfBQuFclnTq8IdWOcH2dhsRJUuAp7YnFfX-rKg2zFLxMGlMxLOpddZxyeCXssfBBiZ7JR-hPPujW2_xSkq3xHAmgd2_5OzDR9eowVqNSZnUWaVZIMyzo5RaByu_Ysqd-SHICFdz55I6v-0OBMTzsTTR5sL0wswEUiouSp4ACrWnU1OQdJ4Xd9b3Q27s73GFLI8y70bKjYR55MZAr1lA1Ap9LLfWU8SxVtK3GzfHS5iWGk0s7LSoGXij5CR1w-xL5PT5FMyiF_3uQuv8V9XOuRtIhjE09mARjU2xbCqYL_9L64VGvyW9&amp;w=1200" alt="ArtDream" loading="lazy"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3mSkTVDSZpsBMDahyxSq9WvwVcPHn6OsveNf4-QHYfAXARzX-BXgvZR11q7D5IJG_qOSA6w9VKzMoz9oyaMDbNOz11YTlcVX8bP0LH7NpSkLONIrytmuf0ViD9-OM7Ttwmk7HvYJVxv2eurS0ah_3Rj06PPpTfO9zaZk2PvygVUDujppFNAFSJZcPaaYMzDXUWunxijtM3VUakxd54mvrgPIUmd7trfjG-HdUl8AR7S-ODBC6a1k_WRbw7EVS2mvf8AIjkopBKNDmQexvwDXQhnJpPYli7iL030vn8akO9KUbr3ufez6-w00CCo4tFYGWw8Jnh_30s-3j_uP3JXCiBHUd4tmBJhHytWPjO9HJmXwY9E2HtJw-R-obAPcRWFJlZUcN4m0xnVgRXKAg9IcGMny30sAM8yXyPUqXt-dlJ3mMae&amp;w=1200" alt="ArtDream" loading="lazy"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3lNB0fgEUjqKSjfY3Ptx8y4mZvEWrRGo1Phda9qrD59Ktq3N9Fw3hmDrq5RxobgzqfxbztCUqtl8g3F2Hi9fiipu3_fPFo5jYB8AgxCwvQeT4KXbXa4S73U_-sM9xaAQ165rgTfys2Nz0GO6oIYQYUpYgFW5UDi-5oyb6kEWqywMTat6agK0hZok3EoPvO44QHVq5ktKLAI11Wu39qiG50jUfTfkxg5rGnNyR_o9IAGpNq-LZKEJsMg6B0vsBr8KoSe6Ypmk7thMGidA9mf75OhwUyNaJJ_zZIF213n-X8yzq4OvKtcJHAZ4JEK86VJGPIw9yeTxe3OTgvI5Kg__mrVgQlWI7uv3gjPyaiRpx1TF2dHVHtiDpOX9SEtXqDcC5cVkMcuoFYqDIy2SOx68-EuRgsh9XzheB4bMu_WMn1n8VoVB744KiWM3wn9Ho-4&amp;w=1200" alt="ArtDream" loading="lazy"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3nd5xGuC7edo9liOGX9THCV0AKQTyCdQCKWKwnihbDYGCo6YBAOflgY1AyciWYdW5QsxJDZ5XoigMKP977QM1UsDIkrWt1YDhkFXFUgOVIq4OJvtA3lFVYzZJw_Uh9_7sxyd1ftXl2QT9eHnY7hjQU6loa7-ph0MEKvxW0PzQU68i7-HNx0kDNbvjS90nPnTycLIMx62xNlL_-jJ_98hXiYlEJ5jeFngY0rHN6ffMySKeuF3QH_TeW80ei9cOxMNpOTmkop76MqPDHCsGpmsNPNpBpPgVmHPZzoCl9_l5CIZxt8onuZXEg0e1p7CG30ZYQq7vpgU5XqDDib9V6GAAWjn8xV5311dSNiS2iJzyo7wRhE7yhflQkFj_EJlRzqE3FvneRGfkXYzzoWLoCAJ-kwL8G-X59AVsvTIuje2dMxB7mP&amp;w=1200" alt="ArtDream" loading="lazy"><img src="/api/photo?ref=places%2FChIJv6HVg3vjFkcRB-zU4ewgT58%2Fphotos%2FAaVGc3n_7VXwQJxPxuArt0WjCT8OA6VdCS7s81TS_kzl0bNSAX7aE10W68--1DvtXcKQKP1ZBsF3vb31btFG1jrPiMWWG_dG2li_nYcUsz3RwYYxcgHWn80ciOGIRtTzGfqrNS0rTVgdvYVmVjYzK1ZJhVfV0iop1Byzt80am4nvYoRgPj_FxpwxNPFjKmIR58-CQwG2cj3_KxuX2nX_Vzey9tow-vTXccHZvbX472q1EMO6-tdmy8n1amY-hdnrBu8Ah9YujMR-mHQ0LElWkxzcibd_hjNrAyHcMAtZPwPoWxNjq1GTWWFrirISkgi-jSxWTyY2fCgHQuqfGd_C0071bG6EwzgIVSrmadq3w8U3W4SXgCkUmMgIwFqgaIB2IlgtwB0SQA6u_OnUXyAxmh0CThB9cRr0PfRiA8YhoyTmriU&amp;w=1200" alt="ArtDream" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie klientów · 4.6 ★ (180)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Bardzo polecam Panią Karolinę. Strzyżenie wykonane świetnie, z ogromną dbałością o szczegóły. Zwłaszcza broda została dopracowana tak dokładnie, że sam nie potrafiłbym osiągnąć takiego efektu. Do tego bardzo miła atmosfera podczas całej wiz</blockquote><figcaption>— Chris Niznik</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Regularnie korzystam z usług stylizacji paznokci i zawsze jestem zadowolona z efektu. Pani stylistka zawsze profesjonalnie podchodzi do klienta a w salonie panuje przyjazna atmosfera. Polecam!</blockquote><figcaption>— Kinga Dybińska</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Karolina Kulka jest prawdziwym geniuszem i absolutną profesjonalistką. Od  pierwszych chwil czułam się w pełni zaopiekowana i wysłuchana. Ogromne zaangażowanie, stawianie klienta w centrum uwagi,  dzielenie się wiedzą, którą wykorzystam w c</blockquote><figcaption>— Magdalena Kozłowska</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Kontakt</h2>
+      <div class="row"><b>Adres</b><span>Pułkownika Francesco Nullo 42/u11, 31-543 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48530004813">530 004 813</a></div>
+    </div>
+    <div>
+      <h2>Umów wizytę</h2>
+      <p style="color:rgba(255,255,255,.7);margin-bottom:18px">Umów się telefonicznie lub przez WhatsApp — potwierdzamy termin od ręki.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48530004813">Zadzwoń: 530 004 813</a>
+        <a class="btn-ghost" href="https://wa.me/48530004813">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 ArtDream. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

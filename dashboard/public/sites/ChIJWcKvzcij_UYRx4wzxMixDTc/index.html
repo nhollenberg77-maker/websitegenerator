@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow"><meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zuzuleo — Sklep obuwniczy i fryzjer dla dzieci Gdańsk</title>
+  <meta name="description" content="Zuzuleo — Sklep obuwniczy i fryzjer dla dzieci w Gdańsku. Cennik, opinie i rezerwacja wizyty.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--accent:#a8576b;--accenth:#8f4659;--ink:#241b1e;--bg:#faf5f3;--soft:#7a6b6f;--line:#ecdfe0;--dark:#241619}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.12}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--accenth)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:70vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(15,12,12,.12),rgba(15,12,12,.74)),url('/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3kjDm7rCVXXliddMNs5xnRODRls4jkFdP9KTwVl_rb5DFCjBoPglXiv654Se3EnYX4nbRld-F82USOWf10N0GCLtzmmqeySgUYMzHz1czCo3o7n1VhRPHaZbOfWwFrY1Eu7bY8Pah6fYytfDdXMK3YhHNHjL8SHtrkhLUspZQ27mpYYqPkQDoIJlY47TO3s1H8qpiCfs3DzuNoxqg2ZI9lD1ObW6AGaThfhTEEIkJtcgJ6JoQaXSezfRQ5vJg-1Hl5ccTXdsIxqkinPVFPa24kBqCxpw4BZX-cb7US-Z70LEAHdU55-_SuJlDgQtzmyCKwWuvtlawOZHifaSvYc44YDFb82sJqtemCuCO31CWYF28AkP5eS6cnS3qH3o44prU7gHrkduSHTrfr5697RIOxtd1y2JNEfp9KyD35ax9UfqlXZ&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:52px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:12px;opacity:.9;margin-bottom:14px}
+    .hero h1{font-size:clamp(38px,6.5vw,70px);max-width:15ch}
+    .hero p{font-size:clamp(16px,2.3vw,20px);max-width:48ch;margin-top:14px;opacity:.93}
+    .hero-cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.55);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:60px 0}
+    h2.sec{font-size:clamp(26px,4vw,38px);margin-bottom:28px;text-align:center}
+    .plist{list-style:none;max-width:640px;margin:0 auto}
+    .plist li{padding:14px 0;border-bottom:1px solid var(--line)}
+    .pl-top{display:flex;align-items:baseline}
+    .pl-name{font-weight:600}.pl-dots{flex:1;border-bottom:1px dotted var(--line);margin:0 10px;transform:translateY(-3px)}.pl-price{font-weight:600;color:var(--accent);white-space:nowrap}
+    .pl-note{font-size:14px;color:var(--soft);margin-top:3px}
+    .pl-empty{text-align:center;color:var(--soft);max-width:42ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:220px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:var(--dark);color:#f3ece6}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:28px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:rgba(255,255,255,.6);font-weight:600}
+    .info a{color:#f3ece6}
+    footer{background:#13100e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Zuzuleo — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Zuzuleo</span>
+    <nav class="nav-links"><a href="#oferta">Cennik</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48735682687">Umów wizytę</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">Sklep obuwniczy i fryzjer dla dzieci · Gdańsk</div>
+    <h1>Zdrowe buty dla</h1>
+    <p>Specjalistyczne buty dziecięce, profesjonalne mierzenie stopy i fryzjerskie usługi dla dzieci — wszystko w jednym miejscu. Zaufają nam rodzice z całego Gdańska.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48735682687">Umów wizytę</a>
+      <a class="btn-ghost" href="#oferta">Zobacz cennik</a>
+    </div>
+  </div></header>
+
+  <section id="oferta"><div class="wrap">
+    <h2 class="sec">Cennik usług</h2>
+    <ul class="plist"><li>
+        <div class="pl-top"><span class="pl-name">Strzyżenie dziewczynki</span><span class="pl-dots"></span><span class="pl-price">od 40 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Strzyżenie chłopczyka</span><span class="pl-dots"></span><span class="pl-price">od 35 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Mierzenie stopy i doradztwo butów</span><span class="pl-dots"></span><span class="pl-price">bezpłatnie</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Buty zdowe dziecięce (mały rozmiar)</span><span class="pl-dots"></span><span class="pl-price">od 120 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Buty zdowe dziecięce (większy rozmiar)</span><span class="pl-dots"></span><span class="pl-price">od 180 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Kapcie barefoot</span><span class="pl-dots"></span><span class="pl-price">od 60 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Zabawki edukacyjne</span><span class="pl-dots"></span><span class="pl-price">od 15 zł</span></div>
+        </li><li>
+        <div class="pl-top"><span class="pl-name">Zabawy kreatywne</span><span class="pl-dots"></span><span class="pl-price">od 25 zł</span></div>
+        </li></ul>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2 class="sec">O nas</h2>
+    <p>Zuzuleo to nowoczesny sklep obuwniczy specjalizujący się w zdowych butach dla dzieci, z wbudowanym gabinetem fryzjerskim i ofertą wysokiej jakości zabawek. Nasze doświadczenie w zdowym rozwoju stóp dziecka oraz profesjonalne podejście do każdego klienta sprawiają, że rodzice wracają do nas z zaufaniem. Panie mogą zmierzyć stopę dziecka z precyzją, doradząc buty idealnie dopasowane do rozwoju — od niemowląt po starsze dzieci.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3ne_nARfaeU1jSWjTqfbcu5a96kx6ZVouY7jWCouJ8f-yoKkihjV7z4ukbZwLYlsF7PSyzuDuSEPQS2bT6POLYEOm8DIKmMLy9ZA_CKQpTStCMzHYU6CvqcOmr-spO9SfwokT6KRCFgGTfotqtoC9n1X_ZzOgcbf6sKL5uBqSdT21wa5QqQCFE_g8WzTSJZAcND4gOU9g5N84f-u-OBjjqDU6Ie6Iw9tKfin2Gs-ZTejRnRsWDQ7OyzM_GgtSI1RwaYbHsj3i-Rb08n6hIVBEgcdRcMvds7Mtf4R3cWsIX5wj_1vG21XHBAJJY_JlIlitffPiIuDjHWspExIUF10iaot4813Qw_I1wH782Insd4NcUhHH7WPbAeckW8PLRXBsH5Gc1tnvvuRXlUHCy3CO_rizvoGFT387mnG3mdRjQzWGg-sfnwTE1AcYKDiPIt&amp;w=1200" alt="Zuzuleo" loading="lazy"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3lJ_lwkLcLqczmD5tUdi1vwn1HiktyDaDS1bodPcFU4_R9WxYosHM7YCscad6wzXBAcFUmKC0mhflgB2NHA2WuVh9RZRH85yoc2qTLC7if3Om2QMh4UM17SSPZoTP-q0u5XtOnze0cldSm8xO2xDzw4EwT1y0Iqd8b9OTorVFFxfq3tXxvrSfUtKKF6jLtHU-k1MZAdbHis5cw1hqUEUUIqPIhbaJc6BCFvO3DeuGLELjwQv76Kb7fIdgaIX8WHqeDdt3DBiJBW2ru_WmH3_vbygN8EsyxI0g8AzQA7npH5Mllc7T4Vn0-wi44C9dSIPXhuVhNuaD6UvxvQlrQeBQHbfaBeFZL1saSAZXV6j1ARL_BZZWN4JmiKc158oNBuiD5I2zSC90jpP3s5OZHBO8lf3mSXBkdQHR_dnRaF5izw_7Mw&amp;w=1200" alt="Zuzuleo" loading="lazy"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3mrYwWhjlyzR84rI5d97feGwEsqOJXs3DhstiLlCqor_5HR4ClPkCnnyLACNkatjfdOgWsosRpbQEPYSwGu4uFKkNLBHshsKiWAblW8chJyZs1ntrBS4OnOLGh0cdBp-0cGvkB23SSAY9VqNdAk1gI6ocvYOuZib6_SdQYLjkhWvAyI5RBnx1Cf3f7WJIB58GbPRusiIQ9KDzMVpe9de9pLHyMNoqHHcE4AXgAu3aVXelbepKhW-DxiOpV-dW3BAfMp0HQl1fVFRmaQmFZlEPtUuEJOTs1JGaTjnQi5uYlPcSR5tdUeGWJZZHWCpA520HnVrgR3WFDbcpQdEvW4HaStUdZxttAoHhKcTXrKD7gF3sQfcVy4TfwmMwqWIBJJz-0Rq0QYQMeZonqzNsbEyYpxIFbbKfB_MnsF23I5fv900g&amp;w=1200" alt="Zuzuleo" loading="lazy"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3nPYMiWwKnqQNrmXBTOfBwdT_eiUoEkmltdjtUCpamzCYKHAP4kQd6jEFNchzEURXLaksv1H9lQtgmzZRBrUVr5FXnElQL1k83MUjQtpIR19VR6J-mpWaDd4A_t78_S6gtqTjYBBcMGjQBotNYl8p2wtpUsBiQLQ_HJL7a1WRfDJxmQQYBwSt3qAp6cKPkUXHaBj4cbNUzwz80pCk_6GPNqHRtp6GFwZTkoGPR2L0axy-X90HrS3Q5FHSMdJ1dK0yFjJFQXdbrfvWpKTO0nDLyua6TcttHAg0J47kM2AxH9Fy8gn_54-cV8xZV0A-2PaPPwlPMWC00hODVOoz8id6izal1jrMGAUMhiIRRgZrhs9oSZbVm4sSdl_fOPtIVR_DNRqIIGMAHoO0v97lEg8zzdHJT1RepIRc-x6K1ZjZWUQA-anVg0pu5f2KPyiZZa&amp;w=1200" alt="Zuzuleo" loading="lazy"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3nBxkxtY7uyM_RPc2cXgsFRje6LHRnRocP4dSZPVc-E6UaiOMsjc852LiSd92AfJGOVLyi8_iOw2mLRsrshz_khDMTMNa8gRU-n4tW497_Vq2ABjCf4rSY4COqbvzpiOw1GV19ZgTizXsW6HXRwAQEugEJiSTzpLc_6TLrSssF0qKDIllD65YUtEdvNDuDXwjYLtSVqMMryskvqj34kVbLP8UXaGAdFdDN1pO-nBrysh1QHdtG4nnFw6GeIpkJAVttq9o9zwFs82WpiTwhxYFqx3t0ego50KTz9BNwY-djyAd4jV0_ieuxsIIRKjodKKz7A8qjtQm76B7lWQaoH_n-U-r5pvjULJm8GJ10c6NOt-kkzvw2TYlKmfYdsgUlQ6NoizinjCsyOnibDpIC9-oMzmv59RRhbB-K1INIf8Zt2p88&amp;w=1200" alt="Zuzuleo" loading="lazy"><img src="/api/photo?ref=places%2FChIJWcKvzcij_UYRx4wzxMixDTc%2Fphotos%2FAaVGc3mKj3JVFOJQ8jNBrF5vQClQTz8pH4BbU4wF0Oq2EKvV6vfpHWhGlsaqN0s2ua6LnJDnEcGJv6nqdf2AUfKxPG-170qpdjNccVK1ITDkmIhmJIyH6fmBcmlXFP7xOuqt-3z1vCHUX6GIvKsj0jwXqqBxwMMKkoRd7atOKr8fRIhJOF7HSruixl2EiL3rzYB0YsANOnStSOvqmrq6Fq-7BVYEiR_CR28ABYR7731T1PARtZF_YO4Vvz_K4ILjGcZgDVXQBTUsn74ZBCp-sFJlEbFzcLkJ_97EqKv0ePNamLTSmWiXLsAakWgxDhkx0Qyp88X_bL0SLQ9tat43TGaUNpeSTmWyeKRgICNh7VyxHWplaMD8_ghmLRqTDl66mtDIjmjvg-r_3rL69NjwYXtXwkv72_lc1dqB18AY3UaotgwbWg&amp;w=1200" alt="Zuzuleo" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie klientów · 4.5 ★ (140)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Serdecznie polecam! Panie mają zawsze morze cierpliwości do dzieci (i rodziców). Duży asortyment z naciskiem na zdrowy rozwój stóp u dzieci i wygodę. Nieoceniona pomoc z mierzeniem małych stópek!</blockquote><figcaption>— Any Rzata</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Świetny sklep obuwniczy z bardzo dużym wyborem zdrowych butów dla dzieci. Idealne dla prawidłowego rozwoju stopy 👣 Do tego fryzjer dla dzieci i przemiła, pomocna obsługa. Zakupy w bardzo fajnej atmosferze – zdecydowanie polecam!😍</blockquote><figcaption>— Patrycja Kurak</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Bardzo dobrej jakości zabawki i buty dziecięce. Można znaleźć aktualne modele, buty i kapcie barefoot. Na miejscu również usługi fryzjerskie dla dzieci. Nawet dwulatka wysiedziała w specjalnym aucie na strzyżeniu.</blockquote><figcaption>— Jagoda Krzywdzińska</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Kontakt</h2>
+      <div class="row"><b>Adres</b><span>Władysława Wagnera 2/u6, 81-602 Gdynia</span></div>
+      <div class="row"><b>Godziny</b><span>Pn-Pt 10-18, Sob 9-17, Nd 10-16</span></div>
+      <div class="row"><b>Telefon</b><a href="+48735682687">735 682 687</a></div>
+    </div>
+    <div>
+      <h2>Umów wizytę</h2>
+      <p style="color:rgba(255,255,255,.7);margin-bottom:18px">Umów się telefonicznie lub przez WhatsApp — potwierdzamy termin od ręki.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48735682687">Zadzwoń: 735 682 687</a>
+        <a class="btn-ghost" href="https://wa.me/48735682687">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Zuzuleo. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>
