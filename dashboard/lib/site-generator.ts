@@ -67,8 +67,17 @@ const VENUE_TYPES = new Set([
   "tourist_attraction", "amusement_center", "bowling_alley", "concert_hall", "art_gallery",
   "museum", "stadium", "gym", "fitness_center", "event_venue", "cultural_center",
 ]);
+// Strikte match: alleen op het PRIMAIRE signaal (zoek-categorie of primary_type),
+// niet op de volledige types-array — anders matcht een restaurant met 'event_venue'
+// in z'n tags ten onrechte als venue.
+function matchesPrimaryTypes(lead: Lead, set: Set<string>): boolean {
+  return set.has((lead.category_query || "").toLowerCase()) || set.has((lead.primary_type || "").toLowerCase());
+}
+function isVenue(lead: Lead): boolean {
+  return matchesPrimaryTypes(lead, VENUE_TYPES);
+}
 function isFood(lead: Lead): boolean {
-  if (matchesTypes(lead, VENUE_TYPES)) return false; // venue met café ≠ restaurant
+  if (isVenue(lead)) return false; // primair een venue (klimhal/bioscoop) ≠ restaurant
   return matchesTypes(lead, FOOD_TYPES);
 }
 
@@ -87,8 +96,9 @@ function isEmergencyService(lead: Lead): boolean {
 
 function getTemplateStyle(lead: Lead): TemplateStyle {
   // Venue/entertainment (klimhal, bioscoop, podium, museum) → neutrale template,
-  // niet horeca/retail/service (hun types-array matcht anders van alles).
-  if (matchesTypes(lead, VENUE_TYPES)) return "editorial";
+  // maar alleen als het PRIMAIR een venue is (niet als 'event_venue' toevallig in
+  // de types-array van een restaurant staat — zoals HEVRE).
+  if (isVenue(lead)) return "editorial";
   // Horeca → food-template (menukaart, openingstijden, reserveren)
   if (isFood(lead)) return "food";
   // Persoonlijke verzorging (kapper/beauty/nagels/tattoo/spa) → afspraak-template
