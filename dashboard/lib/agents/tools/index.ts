@@ -213,6 +213,7 @@ const setSiteContent: AgentTool = {
     required: ["category_label", "hero_headline", "hero_headline_em", "hero_lead", "about", "services"],
     properties: {
       place_id: { type: "string" },
+      brand_name: { type: "string", description: "exacte naam voor het logo/de header — de VOLLEDIGE bedrijfsnaam zonder rechtsvorm (bv. 'Kawiarnia Drukarnia', niet alleen 'Kawiarnia'). Kort 1-3 woorden." },
       category_label: { type: "string", description: "korte branche-omschrijving in het Pools, bv. 'fryzjer', 'restauracja', 'gabinet stomatologiczny', 'usługi dekarskie'" },
       hero_headline: { type: "string", description: "korte krachtige kop (begin)" },
       hero_headline_em: { type: "string", description: "vervolg van de kop (wordt cursief getoond)" },

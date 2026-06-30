@@ -73,6 +73,7 @@ export interface SiteContentSpec {
   faq?: { q: string; a: string }[];
   select_options?: string[];
   cta_label?: string;
+  brand_name?: string;     // exacte naam in logo/header (volledige bedrijfsnaam zonder rechtsvorm)
   // Horeca-specifiek (restaurant/bistro/café/bakkerij):
   cuisine?: string;        // bv. "kuchnia polska", "ramen", "piekarnia rzemieślnicza"
   hours?: string;          // bv. "Pn-Pt 8-20, So-Nd 9-18"
@@ -162,6 +163,18 @@ function splitCompanyName(name: string): { main: string; sub: string } {
   if (words.length === 1) return { main: words[0], sub: "" };
   if (words.length === 2) return { main: words[0], sub: words[1] };
   return { main: words.slice(0, 2).join(" "), sub: "" };
+}
+
+// Naam voor logo/header. De Builder kan dit expliciet sturen via brand_name
+// (zodat een meerwoordige naam als "Kawiarnia Drukarnia" niet wordt afgekapt).
+function displayName(lead: Lead, sc: SiteContentSpec | null): { main: string; sub: string } {
+  const bn = sc?.brand_name?.trim();
+  if (bn) return { main: bn.slice(0, 36), sub: "" };
+  return splitCompanyName(lead.name);
+}
+// Volledige (schone) merknaam voor templates met één logo-regel (food).
+function brandLine(lead: Lead, sc: SiteContentSpec | null): string {
+  return (sc?.brand_name?.trim() || stripCompanyNoise(lead.name) || lead.name).slice(0, 36);
 }
 
 const TRUST_ICONS = [
@@ -322,7 +335,7 @@ export function generateSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const content = mergeSiteContent(getContent(lead), sc);
   const colors = VARIANT_COLORS[variant];
-  const { main: namePart1, sub: namePart2 } = splitCompanyName(lead.name);
+  const { main: namePart1, sub: namePart2 } = displayName(lead, sc);
   const city = lead.city_query || "Twojego miasta";
   const voivodeship = lead.voivodeship || city;
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
@@ -1109,7 +1122,7 @@ export function generateSiteHtml(lead: Lead): string {
 function generateFoodSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const fullName = escapeHtml(lead.name);
-  const { main: brand } = splitCompanyName(lead.name);
+  const brand = brandLine(lead, sc);
   const city = lead.city_query || "Twoje miasto";
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
   const phone = formatPhone(lead.phone_national);
@@ -1274,7 +1287,7 @@ function generateFoodSiteHtml(lead: Lead): string {
 function generateServiceSiteHtml(lead: Lead): string {
   const sc = parseSiteContent(lead);
   const content = mergeSiteContent(getContent(lead), sc);
-  const { main: namePart1, sub: namePart2 } = splitCompanyName(lead.name);
+  const { main: namePart1, sub: namePart2 } = displayName(lead, sc);
   const city = lead.city_query || "Twojego miasta";
   const voivodeship = lead.voivodeship || city;
   const hasPhone = !!(lead.phone_national || lead.phone_intl);
