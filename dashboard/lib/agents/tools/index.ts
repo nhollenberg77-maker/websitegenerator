@@ -28,7 +28,7 @@ const OFF_TARGET_TYPES = new Set([
 ]);
 // Of een kandidaat plausibel binnen de (brede) ICP valt. Onbekend → true:
 // de agent oordeelt verder; alleen duidelijk off-target wordt false.
-function isLikelyIcp(primaryType: string | null, types: string[] = []): boolean {
+export function isLikelyIcp(primaryType: string | null, types: string[] = []): boolean {
   const all = [primaryType, ...types].filter(Boolean) as string[];
   if (all.some((t) => OFF_TARGET_TYPES.has(t))) return false;
   return true;
@@ -122,7 +122,7 @@ const getLead: AgentTool = {
 // Deterministische vangrail: een site die ophaalt mét https + mobiel-meta +
 // (schema.org of OG-tags) + voldoende inhoud, is een STERKE moderne site —
 // zo'n bedrijf heeft ons niet nodig.
-function isStrongSite(s: { ok: boolean; https: boolean; hasViewport: boolean; hasSchemaOrg: boolean; hasOgTags: boolean; textLength: number; isSocialOrListing: boolean }): boolean {
+export function isStrongSite(s: { ok: boolean; https: boolean; hasViewport: boolean; hasSchemaOrg: boolean; hasOgTags: boolean; textLength: number; isSocialOrListing: boolean }): boolean {
   if (!s.ok || s.isSocialOrListing) return false;
   return s.https && s.hasViewport && (s.hasSchemaOrg || s.hasOgTags) && s.textLength >= 1500;
 }
