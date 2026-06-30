@@ -34,7 +34,7 @@ import { isOverBudget, budgetStatus } from "./budget";
 import { pollInbox } from "../inbox";
 import type { Task, GoalParams } from "./types";
 
-const TASK_CONCURRENCY = 3;
+const TASK_CONCURRENCY = 6;
 const MANAGER_INTERVAL_MS = 20 * 60 * 1000; // elke 20 min — Manager (Sonnet+vision) is duur; workers draaien los door
 let managerBusy = false; // Manager draait niet-blokkerend; voorkom overlap
 
