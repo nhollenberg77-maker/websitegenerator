@@ -152,6 +152,22 @@ function parseSiteContent(lead: Lead): SiteContentSpec | null {
   return sc ? cleanProseDeep(sc) : sc;
 }
 
+// Deterministische kwaliteitscontrole van een gebouwde site. Retourneert de
+// concrete problemen (leeg → geen problemen). Gebruikt door de orchestrator om
+// zwakke sites automatisch te laten herbouwen — de Manager doet de inhoudelijke
+// beoordeling (toon, claims, of het bedrijf klopt).
+const QC_FOREIGN = /[぀-ヿ㐀-鿿가-힯Ѐ-ӿ؀-ۿ฀-๿]/;
+export function siteQualityIssues(lead: Lead): string[] {
+  const issues: string[] = [];
+  const sc = parseSiteContent(lead);
+  const style = getTemplateStyle(lead);
+  if (!sc || !sc.about || sc.about.length < 40) issues.push("lege/generieke content");
+  if (lead.site_content && QC_FOREIGN.test(lead.site_content)) issues.push("niet-Poolse tekens");
+  if (style === "food" && !(sc?.menu && sc.menu.length)) issues.push("geen menukaart");
+  if (["salon", "medical", "retail"].includes(style) && !(sc?.pricelist && sc.pricelist.length)) issues.push("geen prijslijst");
+  return issues;
+}
+
 // Smelt agent-copy in de basis-template. Lege/ontbrekende velden vallen terug.
 function mergeSiteContent(base: CategoryContent, sc: SiteContentSpec | null): CategoryContent {
   if (!sc) return base;

@@ -6,7 +6,7 @@
 //
 // Bedoeld om continu te draaien vanuit worker.ts (cloud 24/7).
 
-import { ensureAgentTables, claimNextTasks, completeTask, failTask, createTask, hasTaskForLead, getActiveGoals, getApprovedUnsent, markApprovedSent, addFeedback, postMessage, listTasks, countLeads, listPendingApprovals, setApproval, resetStaleRunningTasks } from "./store";
+import { ensureAgentTables, claimNextTasks, completeTask, failTask, createTask, hasTaskForLead, getActiveGoals, getApprovedUnsent, markApprovedSent, addFeedback, postMessage, listTasks, countLeads, listPendingApprovals, setApproval, resetStaleRunningTasks, requeueSiteRebuild } from "./store";
 import { seedAgentConfigs, seedInitialGoal } from "./seed";
 import { runScout } from "./scout";
 import { runBuilder } from "./builder";
@@ -23,7 +23,7 @@ import {
   recentBounceRate,
   lastEmailedAtMs,
 } from "../db";
-import { siteExists } from "../site-generator";
+import { siteExists, siteQualityIssues } from "../site-generator";
 import { getScreenshotEmailUrl, waitForUrl } from "../screenshot";
 import { sendLeadEmail } from "../mailer";
 import { generateEmailSubject, generateEmailHtml } from "../email-template";
@@ -86,6 +86,31 @@ async function dispatch(task: Task): Promise<void> {
 }
 
 // Zet downstream-taken klaar op basis van de DB-stand (idempotent via dedup).
+// Automatische kwaliteitscontrole: detecteert zwakke sites (lege content, geen
+// menu/prijslijst, niet-Poolse tekens) en laat ze automatisch herbouwen. Na een
+// paar pogingen escaleert het naar de Manager (handmatig bekijken/overrulen).
+const QC_MAX_REBUILDS = 2;
+const qcRebuilds = new Map<string, number>();
+const qcAlerted = new Set<string>();
+let lastQc = 0;
+const QC_INTERVAL_MS = 5 * 60_000;
+
+function qcSites(): void {
+  for (const lead of getLeadsWithSite()) {
+    const issues = siteQualityIssues(lead);
+    if (!issues.length) { qcRebuilds.delete(lead.place_id); qcAlerted.delete(lead.place_id); continue; }
+    const n = qcRebuilds.get(lead.place_id) ?? 0;
+    if (n < QC_MAX_REBUILDS) {
+      qcRebuilds.set(lead.place_id, n + 1);
+      requeueSiteRebuild(lead.place_id);
+      postMessage({ from: "manager", kind: "info", body: `QC: site "${lead.name}" — ${issues.join(", ")} → automatisch opnieuw bouwen (poging ${n + 1}/${QC_MAX_REBUILDS}).`, leadPlaceId: lead.place_id });
+    } else if (!qcAlerted.has(lead.place_id)) {
+      qcAlerted.add(lead.place_id);
+      postMessage({ from: "manager", kind: "alert", body: `QC: site "${lead.name}" blijft zwak (${issues.join(", ")}) na ${QC_MAX_REBUILDS} herbouwen — bekijk handmatig met inspect_site of overrule de lead.`, leadPlaceId: lead.place_id });
+    }
+  }
+}
+
 function reconcile(): void {
   // qualified leads zonder site → build_site
   for (const lead of getQualifiedLeadsWithoutSite()) {
@@ -281,6 +306,13 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
     }
     await sendApproved().catch(() => {});
     return { ran: 0, summary: "budgetplafond bereikt — agents gepauzeerd" };
+  }
+
+  // 1c) Automatische kwaliteitscontrole van gebouwde sites (periodiek). Zwakke
+  //     sites worden vóór reconcile teruggezet, zodat ze meteen herbouwd worden.
+  if (Date.now() - lastQc >= QC_INTERVAL_MS) {
+    lastQc = Date.now();
+    qcSites();
   }
 
   // 2) downstream-taken klaarzetten

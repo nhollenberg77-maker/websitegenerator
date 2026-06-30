@@ -301,6 +301,18 @@ export function listTasks(opts: { status?: TaskStatus; limit?: number } = {}): T
 // 'pending' zodat ze OPNIEUW worden geprobeerd. Belangrijk: niet naar 'failed'
 // zetten — sinds hasTaskForLead 'failed' parkeert, zou een herstart middenin
 // een build de lead anders voorgoed laten vallen.
+// Zet een gebouwde site terug in de bouw-wachtrij (voor automatische QC-herbouw):
+// wis de site + content + oude build-taken zodat reconcile een verse build maakt.
+export function requeueSiteRebuild(placeId: string): void {
+  const d = db();
+  try {
+    d.prepare("DELETE FROM tasks WHERE type='build_site' AND lead_place_id=?").run(placeId);
+    d.prepare("UPDATE leads SET site_generated_at=NULL, site_content=NULL WHERE place_id=?").run(placeId);
+  } finally {
+    d.close();
+  }
+}
+
 export function resetStaleRunningTasks(): number {
   const d = db();
   try {
