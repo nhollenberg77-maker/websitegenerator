@@ -60,7 +60,17 @@ function matchesTypes(lead: Lead, set: Set<string>): boolean {
   for (const t of set) if (tokens.has(t)) return true;
   return false;
 }
-function isFood(lead: Lead): boolean { return matchesTypes(lead, FOOD_TYPES); }
+// Venues/entertainment die als "cafe" opduiken maar GEEN horeca zijn (klimhal,
+// bioscoop, podium, club). Die krijgen de neutrale template i.p.v. een menukaart.
+const VENUE_TYPES = new Set([
+  "movie_theater", "performing_arts_theater", "sports_activity_location", "night_club",
+  "tourist_attraction", "amusement_center", "bowling_alley", "concert_hall", "art_gallery",
+  "museum", "stadium", "gym", "fitness_center", "event_venue", "cultural_center",
+]);
+function isFood(lead: Lead): boolean {
+  if (matchesTypes(lead, VENUE_TYPES)) return false; // venue met café ≠ restaurant
+  return matchesTypes(lead, FOOD_TYPES);
+}
 
 // Trefwoorden die wijzen op een echte 24/7 noodservice — alleen die krijgen
 // het phone-first urgency-template. Een normale loodgieter/elektricien zonder
@@ -76,6 +86,9 @@ function isEmergencyService(lead: Lead): boolean {
 }
 
 function getTemplateStyle(lead: Lead): TemplateStyle {
+  // Venue/entertainment (klimhal, bioscoop, podium, museum) → neutrale template,
+  // niet horeca/retail/service (hun types-array matcht anders van alles).
+  if (matchesTypes(lead, VENUE_TYPES)) return "editorial";
   // Horeca → food-template (menukaart, openingstijden, reserveren)
   if (isFood(lead)) return "food";
   // Persoonlijke verzorging (kapper/beauty/nagels/tattoo/spa) → afspraak-template
