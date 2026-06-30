@@ -49,3 +49,4 @@ yarn-debug.log*
 # SQLite WAL (transient)
 *.db-wal
 *.db-shm
+.claude/
