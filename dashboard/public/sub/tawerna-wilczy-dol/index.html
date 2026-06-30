@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tawerna Wilczy Dół — kuchnia tradycyjna i fantasy Kraków</title>
+  <meta name="description" content="Tawerna Wilczy Dół — kuchnia tradycyjna i fantasy w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3lnPpJhEa6MrDrzcosjS_7YqCTesE3msXS7YF6ksYFbh1U9b9lgTWZqEHZCRhKNVmkpFQfa0x-HnqQD13CQhMgAXkoNJklxEKDBTOxlCLau9Ogxj0BNDWQXTAkji_1ao0U9f6GyQ9dtMNytxWOk3xHzxkrpFViGoFEIGGEGFneVGj1ZVWWD-R7Fu1S3VJh-tpvFbhQB89-7lHNd8pjcGjKA306-hXuozOt6riA22LKeP91OiPtPxSEf1YNK1zJW8jLH0lLlqcryAYlAAvzzki8O88IYobVxh_2Y-N7J8KLn0zhfI3zYOk54dRSajAvhzuMNPuz1i0OqE05DstX1BVz9TBW1Y52Uk_dwpUvCa5FToc6trao3YWhd09IwhLRfRVu6aJ4yK-sToQGxt-AQTWUYLzCp8HmgmFlueXz0jjGwj48&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Tawerna Wilczy Dół — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Tawerna Wilczy Dół</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48692324253">Zarezerwuj stolik</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">kuchnia tradycyjna i fantasy · Kraków</div>
+    <h1>Podróż w świat</h1>
+    <p>Tawerna Wilczy Dół to miejsce, gdzie fantazja staje się rzeczywistością. Immersyjne doświadczenie pełne klimatu, wyśmienitego jedzenia i niezapomnianych przygód czeka na każdego gościa.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48692324253">Zarezerwuj stolik</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Tawerna Wilczy Dół to wyjątkowe miejsce w serca Krakowa, które przenosi gości w uniwersum pełne magii i średniowiecznego urzekania. Od momentu wejścia przytłacza gościa atmosfera: pracownicy w strojach postaci z legend, świece, tajemnicze napoje zwane eliksirami, a nawet możliwość uczestnictwa w ćwiczeniach z łucznictwa czy rzutu toporem. Każda wizyta to nie tylko posiłek, ale pełna przygoda, gdzie nawet system płatności — dukaty zamiast złotówek — dodaje autentyczności doświadczeniu.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3n-bYyxtg06o868vhuEuo55NqzdBmmYjjEZnroEBYkKQ52Ekh-tTMPSzFKElCkUi-xvU-ULbyu669RCOPl1mutmSoX_X2S4Vu2S-8F4oqxAxOKL5KNWySgofW9y40632QkmkTE2g66dffr8NYm58UVsMaJ7yvSyVAxHt_-zg2917ZeIH0ulk3XcIFaKaLx3PD_aoGwn84dKtu7b4FU3bJ2utYcOXqRJttGNm7PUyKU9MfRraiRgCrxH-_gQ8ow7hkzV6H3MdZARUG1slE7i2QLLRU9FPULs4AqeNxqj4UhCqBPbtqe5amNby5LlRpdWZFh0hPaBxHVfBXi36lYrP6W3C4kbFPlfeQ3vK4klZv0ToJKKEZw_7LbQ-2gMIzdJSQXmXpeLmk5uZXyMM-8VFUmGDAMT0P4FT8ylhfIVFyBdgbE14l2b1suYFcTkKgER&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3mIzoNkcNKl6bSXdjBA7uQxvRmNFMXZpCAeQRv0VfwZlHUFcuohcEaJmJ1NgyGEGuJsFK9xp7o2U7hkfiTcFQ0diMj7f_SE9mPSe2fhK1DjzfKX0cYDE-6KnHMpRNJF4n8eY8zL_a8o3lOY6X1rJvfBWLGSUEHaCRCi1G8PwK4Td2Rvipi_8BJC4wWXFdRXgyoP2Ry0LUY-masc-ZeIrZMdkwBn1T6IdEV-cppjgMKqguINH3mfCFxHMFuONSbs5GlvMQ2WuGB4t--eb8r0ftIDrlDdPiG-gVUg9Fkv11_u0ODJz9VdIdX6jQ_T1Q7Y4G-cF8JJlPf0qb38_BpHA0HVxy-78YXtTe8YpQ08qJ86KQ-CjHta_DFr7IchW4ZrM0spJg5akixJgQ4DRwote4nox2q402u-c2SHc103puofqckN2oWnZ35XrLC0eHfb&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3lwgG7uWyiQMFW2U8NoT9CljFI1RgO15p228Tht6bWPkSfGuPTuj32HWgLrUXvKg_fHljNI9G9EAggduhpnyoAxzAKbAUyTORQIKHOSxDNNL3k-Dw-Qe386TN6vM0frA96h6H84A382ChQX4DlnQaSQcP32Oop1S8B_njqgn-U6ZiHe9SP2NuP0nnZXL0g3SNLXe-jTmjMRb9Sh77Itn3JA-J6wcEtwbZvW8gihr2jiO-aUgl58twUn-QIeyC6vbp9LOL0F4JjUk07wZ3l9SrbgSK4z7Jucsa3UHtTlCM60jMoJ_OAQYTZqU-Fb65BAXO6MX00rbRN859rm7m1eNSs732D6aNN9WWrgatv-ZaccSldv7jo4vhX9Dnt5B06czBW3RY0Ft86cMPASHX6CNtSuIjNc6qIrvMr3xBnHm7xGL9CpCFntsTaW-SQ9Puih&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3ly6LhpiqjRfcihz2_p-1t5nhwj0gcpBDNPCapLAUOZQtIMvDQ-c-4JtMzfWmhVYWRiivGwGLFX-jHprr9aKV9b2F3vmoNbWnkAMesfKzBzCyEnnqddqKEkbksZBUXM2woiaL61kmsaTXJFkcZiNvnj0ExxvHmhAOmC7ygbhwIZo_T9gIovwekEctJLYpXy7CA1EtBcyoLcl2l_ZEn8Qi-kvE1VsYZGeGRZ8ne6BjF3QwTJ9Glb69azfiVo2bomkkJ4eX0HXm1NPiOhs8B37cJnv3HG8rhZLLxjuucNaMBbdE6T3C8Ya8xEJGy-qLdP6YGikhiyjDYOgbRQQu5cwx2V-TEfwMk5gnM2etD_4hfOqoWHRZidERPR5CC4xqZnq1kLpPHnQzVOX916nZ2k1hiINwj3zlS8BXNkxH88V-KXIaaDaArn_SjPO473PgGR&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3n0Foc1O1kKfbeveEA3isMnGYqc2DKR0o0aOoVDnlx_qaHbofoIKUUEAhlqM54Eh5hmjV0zsAHYBdODq-QifvJGCCA72IOsv1ksvnP0D5lNLRI6mRp30gecZC3XEJXQs9U0IDI_eSaTsXsTX-38ku_05HmY6kCdV1l0koE0L2FONZK8gUUeSg2D1eqErdsOCYc6YjG5Qz3wzM30b94AFXm1GkVWqnnYlL2Ci4C6VlRueNIik28w0Ovt8-sVzHFqMmwOoZrqyczZ84Ker3yq6B5UZxhyq1HLMXPXhbKyuCAXBzGO9lPimkaVt8Rs0pzc1DW5tAJkKKGsvmXEXKiNSyHHHjZQrqCTj-_ewiWaVLM9H15R8Nfgx3CAk29cgdszrDjM5qX16IahMZK1k0mmJqYJTILZEXVzniDZh5kFXUkVri_lxSDQjCIP9V1Qzs5W&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"><img src="/api/photo?ref=places%2FChIJx9oWOatbFkcRVkTWilS_mmU%2Fphotos%2FAaVGc3m7COPVqzHzBTkQL5WzhQM0JPFHkOXoq4RNgWSflegBK4Ao9lrfH2e1K5wFRUCVOVY4_3bYjwbwGv1Y-iedGfXaxqJMOF-YRZsrCTP_2T4VlSR2QhWLMXIQ2o6D2VHNiPAMenqhtIQpgo-D9gT0DzOOfEqwxdIhkxIj756ppUofP8dOlyz6brbZVV_H7WEGrB1gtT6FgYSUaAlO1bZC0fiLVhOmVmGmsp2bBSqH-RatqrGUbXUqXftKTLWyL8_fCqdxj301acnhNwurG4D3kjV3dlkb2tehrIlEHR7tFnA1ce5jEubyqhi3xaA4m9FyDseKSmxLe20F5jBVFEIv7-vN8bfv3VFhIWMDYUp99agFLzATqNHqALbLheJiJvrmRo2dirbeR0l2Z6UdGfO-KMv3u_u-CVAz6m29pqE4LQD_xOu3q9wvJEasjHIHIuCD&amp;w=1200" alt="Tawerna Wilczy Dół" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.8 ★ (10539)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Jeśli cenisz sobie klimat rodem z uniwersum Wiedźmina to jest to must have. Wspaniały klimat z super obsługą. Jedzenie fenomenalne w sam raz dla strudzonego drogą wędrowca. Eliksiry w wersji alkoholowej i bezalkoholowe cudne i samemu można </blockquote><figcaption>— Nymphetamine Art</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Świetne miejsce naprawdę warte swojej oceny. Problemem jest czas oczekiwania - nam udało się w 45 minut ale czasami idzie stać w kolejce 2h. Samo doświadczenie już od wejścia czuje się taki sredniowieczny/fantasy klimat. Taverna jest bardzo</blockquote><figcaption>— As S</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Miejsce jedyne w swoim rodzaju! Polecam fanom fantazy, a szczególnie serii Wiedźmina. Byłam już dwa razy i chętnie wracam. Genialna atmosfera, gdzie wszyscy pracownicy są przebrani, można zakuć się w dyby, stworzyć własny &quot;eliksir&quot;, a także</blockquote><figcaption>— Hanna A</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Szpitalna 22, 31-024 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48692324253">692 324 253</a></div>
+    </div>
+    <div>
+      <h2>Zarezerwuj stolik</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48692324253">Zadzwoń: 692 324 253</a>
+        <a class="btn-ghost" href="https://wa.me/48692324253">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Tawerna Wilczy Dół. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

@@ -297,12 +297,14 @@ export function listTasks(opts: { status?: TaskStatus; limit?: number } = {}): T
   }
 }
 
-// Verweesde 'running'-taken (van een afgebroken worker) terugzetten — die
-// worden anders nooit meer opgepakt of opnieuw geprobeerd.
+// Verweesde 'running'-taken (van een afgebroken worker) terugzetten naar
+// 'pending' zodat ze OPNIEUW worden geprobeerd. Belangrijk: niet naar 'failed'
+// zetten — sinds hasTaskForLead 'failed' parkeert, zou een herstart middenin
+// een build de lead anders voorgoed laten vallen.
 export function resetStaleRunningTasks(): number {
   const d = db();
   try {
-    return d.prepare("UPDATE tasks SET status='failed', error='orphaned (worker herstart)' WHERE status='running'").run().changes;
+    return d.prepare("UPDATE tasks SET status='pending', error='onderbroken door herstart — opnieuw' WHERE status='running'").run().changes;
   } finally {
     d.close();
   }

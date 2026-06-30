@@ -69,6 +69,12 @@ export async function runAgentLoop(args: {
     description: t.description,
     input_schema: t.input_schema as Anthropic.Tool.InputSchema,
   }));
+  // Prompt-caching: markeer de laatste tool → de hele (stabiele) tools-blok
+  // wordt gecached en niet elke iteratie opnieuw vol betaald.
+  if (apiTools.length) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (apiTools[apiTools.length - 1] as any).cache_control = { type: "ephemeral" };
+  }
 
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: args.userPrompt }];
   const toolCalls: { name: string; input: Record<string, unknown> }[] = [];
@@ -84,7 +90,9 @@ export async function runAgentLoop(args: {
       const payload: any = {
         model: args.model,
         max_tokens: args.maxTokensPerTurn ?? 2000,
-        system: args.system,
+        // System-prompt als cache-block: stabiele prefix wordt hergebruikt
+        // i.p.v. elke iteratie tegen vol inputtarief opnieuw verstuurd.
+        system: [{ type: "text", text: args.system, cache_control: { type: "ephemeral" } }],
         tools: apiTools,
         messages,
       };

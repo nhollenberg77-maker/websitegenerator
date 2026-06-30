@@ -97,9 +97,11 @@ async function searchNearbyOnce(lat: number, lng: number, radiusM: number, categ
   return ((data.places ?? []) as any[]).map(parsePlace);
 }
 
-// 9-tile zoektocht rond het centrum (zoals discovery.py) — meer unieke resultaten.
+// 5-tile kruis rond het centrum. De tiles overlappen ~50% (tileRadius = 0.75×
+// radius, offset = 0.5×radius), dus de 4 hoektegels voegden weinig unieks toe
+// maar verdubbelden bijna de Places-kosten (9 → 5 = ~45% goedkoper per zoek).
 const TILE_OFFSETS: [number, number][] = [
-  [0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1],
+  [0, 0], [1, 0], [-1, 0], [0, 1], [0, -1],
 ];
 
 export async function searchNearby(opts: {

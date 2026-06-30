@@ -68,7 +68,9 @@ Roep set_site_content precies één keer aan met complete content, en stop dan. 
     markSiteGenerated(placeId);
   }
   if (!hasScreenshot(placeId)) {
-    await generateScreenshot(placeId).catch(() => {});
+    await generateScreenshot(placeId).catch(() => {
+      postMessage({ from: "builder", to: "manager", kind: "alert", body: `Screenshot mislukt voor "${fresh.name}" — de outreach-mail mist straks een voorbeeld-afbeelding.`, leadPlaceId: placeId });
+    });
   }
   if (!fresh.site_content) {
     // Agent schreef geen content → site draait op de neutrale fallback.

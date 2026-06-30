@@ -11,7 +11,9 @@ export function getAiClient(): Anthropic {
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new Error("ANTHROPIC_API_KEY ontbreekt in .env");
     }
-    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    // maxRetries hoger dan de SDK-default (2): vangt tijdelijke 429/5xx/timeouts
+    // op met backoff, zodat een korte API-hapering geen taak laat mislukken.
+    _client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 4 });
   }
   return _client;
 }
