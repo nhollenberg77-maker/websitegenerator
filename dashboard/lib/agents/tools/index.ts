@@ -129,7 +129,7 @@ function isStrongSite(s: { ok: boolean; https: boolean; hasViewport: boolean; ha
 
 const qualifyLead: AgentTool = {
   name: "qualify_lead",
-  description: "Beslis over een lead: 'keep' (zwakke/ontbrekende site maar gezond Google-profiel = goede prospect) of 'reject'. LET OP: een lead met een STERKE moderne site wordt automatisch afgewezen, ook als jij 'keep' zegt — die hebben ons niet nodig.",
+  description: "Beslis over een lead: 'keep' (zwakke maar BESTAANDE site + gezond Google-profiel = goede prospect) of 'reject'. LET OP: bij 'keep' checkt het systeem automatisch: geen eigen website → afgewezen (niet te mailen); sterke moderne site → afgewezen (heeft ons niet nodig); geen vindbaar e-mailadres → afgewezen. Alleen bedrijven met een zwakke site én een e-mail blijven over.",
   input_schema: {
     type: "object", additionalProperties: false, required: ["place_id", "decision", "reason"],
     properties: {
@@ -144,18 +144,28 @@ const qualifyLead: AgentTool = {
     const id = leadId(input, ctx);
     if (input.decision === "keep") {
       const lead = getLeadById(id);
-      // Vangrail: sterke moderne site → heeft ons niet nodig (geldt ongeacht reviews).
-      if (lead?.website) {
-        try {
-          const sig = await fetchWebsite(lead.website);
-          if (isStrongSite(sig)) {
-            store.rejectLead(id, `sterke moderne site: ${sig.title || lead.website}`);
-            return `❌ AUTOMATISCH AFGEWEZEN: ${lead.name} heeft al een sterke moderne site (https + mobiel + schema/OG + ${sig.textLength} tekens). Zulke bedrijven NIET kwalificeren — wij zoeken zwakke/ontbrekende sites.`;
-          }
-        } catch { /* niet bereikbaar → laat het agent-oordeel staan */ }
+      // Doelgroep: een ZWAKKE maar BESTAANDE site. Geen website = niet te mailen.
+      if (!lead?.website) {
+        store.rejectLead(id, "geen eigen website — buiten doelgroep (we mikken op een zwakke site mét e-mail)");
+        return `❌ AUTOMATISCH AFGEWEZEN: ${lead?.name ?? id} heeft geen eigen website — niet te mailen. Kwalificeer alleen bedrijven met een zwakke maar bestaande site.`;
       }
+      // Vangrail: sterke moderne site → heeft ons niet nodig.
+      try {
+        const sig = await fetchWebsite(lead.website);
+        if (isStrongSite(sig)) {
+          store.rejectLead(id, `sterke moderne site: ${sig.title || lead.website}`);
+          return `❌ AUTOMATISCH AFGEWEZEN: ${lead.name} heeft al een sterke moderne site (https + mobiel + schema/OG + ${sig.textLength} tekens) — die hebben ons niet nodig.`;
+        }
+      } catch { /* niet bereikbaar → onzeker, probeer hieronder toch een mail te vinden */ }
+      // Mailbaar? Zoek meteen het gepubliceerde e-mailadres; geen adres = afwijzen.
+      const email = await findContactEmail(lead.website);
+      if (!email) {
+        store.rejectLead(id, "geen gepubliceerd e-mailadres op de site — niet te benaderen");
+        return `❌ AUTOMATISCH AFGEWEZEN: ${lead.name} heeft een zwakke site maar GEEN vindbaar e-mailadres — niet te mailen.`;
+      }
+      setLeadContactEmail(id, email);
       store.markLeadQualified(id, input.gbp_score as number, input.site_score as number);
-      return `✓ lead ${id} gekwalificeerd: ${input.reason}`;
+      return `✓ lead ${id} gekwalificeerd én mailbaar (${email}): ${input.reason}`;
     }
     store.rejectLead(id, String(input.reason));
     return `lead ${id} afgewezen: ${input.reason}`;
