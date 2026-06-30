@@ -14,7 +14,9 @@ export async function runWriter(task: Task): Promise<void> {
 
   const system = buildSystem(
     "writer",
-    `Werkwijze voor deze ene lead:
+    `WERK IN TOOL-AANROEPEN, niet in lange tekst. Je bent PAS KLAAR als je set_email_copy hebt aangeroepen (de mail staat dan in de wachtrij). Zeg niet "klaar" zonder die aanroep.
+
+Werkwijze voor deze ene lead:
 1. get_lead om bedrijf, niche, stad, reviews en de gebouwde site te zien.
 2. Heeft de lead geen e-mail? Gebruik find_email.
 3. set_email_copy: schrijf korte, persoonlijke, natuurlijke Poolse copy (branche, niche, hero-titel/sub, CTA, korte bedrijfsnaam). Geen overdrijving, geen spam-woorden. De template zorgt voor opmaak, screenshot, prijs en GDPR-voetnoot — jij levert de overtuigende tekst + je eigen kwaliteitsoordeel.
@@ -33,4 +35,11 @@ De mail komt in de goedkeur-wachtrij; jij verstuurt niets.`
     maxIterations: def.maxIterations,
     maxTokensPerTurn: def.maxTokensPerTurn,
   });
+
+  // Completion-guard: heeft de lead een e-mail maar geen klaargezette mail,
+  // dan heeft de Writer z'n werk niet afgemaakt → opnieuw proberen.
+  const fresh = getLeadById(placeId);
+  if (fresh?.contact_email && !["pending", "approved", "sent"].includes(fresh.approval_status ?? "none")) {
+    throw new Error(`Writer voltooide geen concept voor ${fresh.name} — opnieuw proberen`);
+  }
 }

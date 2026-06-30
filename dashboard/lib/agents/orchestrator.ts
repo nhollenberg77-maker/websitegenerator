@@ -34,8 +34,9 @@ import { isOverBudget, budgetStatus } from "./budget";
 import { pollInbox } from "../inbox";
 import type { Task, GoalParams } from "./types";
 
-const TASK_CONCURRENCY = 2;
-const MANAGER_INTERVAL_MS = 5 * 60 * 1000; // elke 5 min — mail-tempo regelt sending-policy
+const TASK_CONCURRENCY = 3;
+const MANAGER_INTERVAL_MS = 10 * 60 * 1000; // elke 10 min — productie niet ophouden
+let managerBusy = false; // Manager draait niet-blokkerend; voorkom overlap
 
 let lastManagerRun = 0;
 let initialized = false;
@@ -239,12 +240,16 @@ export async function tick(): Promise<{ ran: number; summary: string }> {
   const appSettings = getSettings();
   if (appSettings.agent.paused) return { ran: 0, summary: "team gepauzeerd (instellingen)" };
 
-  // 1) Manager periodiek (of deterministische fallback)
+  // 1) Manager periodiek — NIET-BLOKKEREND: hij denkt op de achtergrond zodat
+  //    Scout/Builder/Writer ondertussen gewoon doorwerken.
   const sinceManager = Date.now() - lastManagerRun;
-  if (sinceManager >= MANAGER_INTERVAL_MS || lastManagerRun === 0) {
+  if (!managerBusy && (sinceManager >= MANAGER_INTERVAL_MS || lastManagerRun === 0)) {
     lastManagerRun = Date.now();
     if (isAiConfigured()) {
-      await runManager().catch((err) => postMessage({ from: "manager", kind: "alert", body: `Manager-fout: ${err instanceof Error ? err.message : "onbekend"}` }));
+      managerBusy = true;
+      runManager()
+        .catch((err) => postMessage({ from: "manager", kind: "alert", body: `Manager-fout: ${err instanceof Error ? err.message : "onbekend"}` }))
+        .finally(() => { managerBusy = false; });
     } else {
       fallbackPlan();
     }

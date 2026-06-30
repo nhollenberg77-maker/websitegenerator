@@ -4,6 +4,7 @@
 import { runAgentLoop } from "./runner";
 import { AGENT_DEFS, buildSystem } from "./registry";
 import { getLeadById } from "../db";
+import { siteExists } from "../site-generator";
 import type { Task } from "./types";
 
 export async function runBuilder(task: Task): Promise<void> {
@@ -14,7 +15,9 @@ export async function runBuilder(task: Task): Promise<void> {
 
   const system = buildSystem(
     "builder",
-    `Werkwijze voor deze ene lead (welk type bedrijf dan ook — kapper, restaurant, tandarts, garage, vakman, winkel, enz.):
+    `WERK IN TOOL-AANROEPEN, niet in lange analyse-tekst. Je bent PAS KLAAR als je generate_site én screenshot hebt aangeroepen — stop daar niet eerder mee. Hou je redenering kort.
+
+Werkwijze voor deze ene lead (welk type bedrijf dan ook — kapper, restaurant, tandarts, garage, vakman, winkel, enz.):
 1. get_lead om de gegevens te zien; place_details / enrich_lead om reviews + foto's op te halen (verplicht vóór genereren).
 2. set_site_content: schrijf de VOLLEDIGE Poolse copy, volledig toegespitst op DIT specifieke bedrijf en deze branche en stad — category_label, hero-kop, intro, over-ons, diensten, highlights, faq en formulier-opties. Leid de branche en diensten af uit de naam, het type en de reviews. Schrijf concreet en geloofwaardig; verzin GEEN keurmerken, certificaten of garanties die je niet kunt verifiëren.
    → Zet ALTIJD brand_name op de volledige bedrijfsnaam (zonder rechtsvorm) — dit is wat in het logo/de header komt; kap meerwoordige namen niet af (bv. "Kawiarnia Drukarnia", niet "Kawiarnia").
@@ -36,4 +39,10 @@ export async function runBuilder(task: Task): Promise<void> {
     maxIterations: def.maxIterations,
     maxTokensPerTurn: def.maxTokensPerTurn,
   });
+
+  // Completion-guard: als er geen site is, is de taak NIET klaar → laat 'm
+  // mislukken zodat hij opnieuw geprobeerd wordt (i.p.v. stil "done").
+  if (!siteExists(placeId)) {
+    throw new Error(`Builder voltooide geen site voor ${lead?.name ?? placeId} — opnieuw proberen`);
+  }
 }
