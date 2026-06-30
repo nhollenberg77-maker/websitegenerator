@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MOOD — usługi lokalne Kraków</title>
+  <meta name="description" content="MOOD — usługi lokalne w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3kqGXRVKGZpa9mkGvoURsz1aI438XejfPD77CrCdv5gED8xA75fF6Wz2nPdbeHa55am697dyHWjGZYkJlHKHDFodjeowwkog67EB-mSNxfls-n1N8powV6NCwR_zEI77eWvAcJ_2Lo-AGWgkc5JDTE1EnmtyyXkQRBHO-gwJ-df8d3TtPHgaeU2c7Sek0hAsClb_NXB_ZxPurlw9hf_rOTRiDg8xAS-F8PK3x_fikQZKBF5lS_lRjuZpphiVOnmObhAnnr5Tacv_xA1aGXEx2Lac9rfWGrV4xV1WS4bOh-WP4lSiSH5KlTJ_FjmNnpT_7KZDadla3VpLESrbqfKWJzOyN8VAlHrSH5g9l4kbhpyEHXnbSy3YCYRg1ifoZFc7-c_b2etQHdvBKJMzehJvuQF_A3Gnpt2zSG8vY_ndIUigw&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla MOOD — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">MOOD</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48780134474">Zarezerwuj stolik</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">usługi lokalne · Kraków</div>
+    <h1>MOOD</h1>
+    <p>Dobre jedzenie w Krakowie.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48780134474">Zarezerwuj stolik</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>MOOD — miejsce, do którego wraca się z przyjemnością.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3mP_TBFAcHGSxL_ugWDo4w3bsTUWkGpWhd0k_7HPJKoKodfg73wRLMVXuharvstLRIBixGUi42sc36j598jOGjNn9Bo17pGBrzkYRCmIywjHSiyGs2TnwogExvq_fYgS4-lskFOK_B4D4eGj5zdP7woCfO9WXivRMopsqIGAsIK1GlSCu71KT_ztURqHVkytmcRrsaSqRRQIppvJkqkQQNFjA3sdWLz6UDOxWOfvVw4Q9gnUVivcaa3JgeK0RL-r4w7B3cEcXTah3iJH6vAcwZ3wKmMgQMIxvk6MQX-QElZw0yn_AFBy0OjmgeGIedK6XyIbkoXO7N89PTtZGj2J_O8CBw-2nM9n4LBZ7CuEnQjHSBxBwxp1MrAZ8v0Zb5hNcX5Frp8egbkfImgrUMXoYzmtoOh9pqVANwOJnpl_bM9EpMq&amp;w=1200" alt="MOOD" loading="lazy"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3kw1IIVhb_8XDN56z8CN3iEHqT0u8gA3f4U4_MzFmxkiIiBs5A-ojlCwJMJ9Jn5YuGiSkY6Y8X_k5qIT--49SxZDH5EyBxYt6Y0IINAPqFOW1B1VdeybMOvhtbCRyjYqCoG9Dt4e6HAUHTPHo7Tj_C_8Nfg4UXq9OQhpMS0N6EvRm3WwfW6hFSPOq45ed6ZJFqK3ybmibMgsEYQm5dXFi4zIrDOw1QwX7O6v9cetMEFuDtew01LRnhb_uGb25wfD_mVrHYeHKGjHajibM_5erjrILjwwlIfUWfdxWhgWBDjxrV7W74x3HTyJT0Rkxgq6XFofpuM_u0nDJ67YrswSc3PvKLvMCG5miwoQ700dkAz4BWgHCREc_gEAjTVO5plQSy7D4M7Rwc92dZAtw1LZXlA6I5YUKfF0TqHX_1PneldfL0aR9H7qaKc6zrsETrJ&amp;w=1200" alt="MOOD" loading="lazy"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3nbIYkxhpU_C6-CUS_FpXwK9lrRDmfWuMB5G93T9AENpH8l5vcFM9B_rkExdG8xpJ0qGC1GeRzX_qzl0wQlb7T7OFpSpcdcyvsIeglYd-tD84HMv130zYQcsAIkyJC40NWxFTfLhQfSaXcuso4dmaJ130Ip5ckAhrnDs71yqIOfgMRly7ibUg0etkpHUnAF0zF9LSKIhaoyLm2TbcM3Kqb-Q2ltqpF5e5InIMMssMRoO55CFr29rQRRa33ZKZDCax15r8ILqhN03fYsgkhVZXlujuPVDzkxo-TtPqUrcvsdJX1rdbBd8F0s5ynDfbHt3j-_t1733vJgZFsqeWsKVZzNw3JRCJaX_I6GxfTdRJ_NgwoUDYNoVentv7J6u6-4UyPxq3q5t2909orC998FuphH_hoNlASQ0gbT3-qyNnsqsSjW_Ne_lsbILdms2SrB&amp;w=1200" alt="MOOD" loading="lazy"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3l29pKOy54JSbBDTI1LSC1DtsEjOcWUhkwVMr6wLYpD3rsr-NWWzI5Lvvd2g946hgSkGNYvajFQYpMYt30dm29mcY157xoIa_I54rrQYOYCETr1AA_61p6g0dfnn7QCNIoMM6r2oyX5weMH_8sxnHhJhS8WFTQ9p226jqgCIv1aIp6x4G7IBoanuhXmaOoab9yo4dQUXtDRa6erXbXINqQtOcn_EiyERr_FueVsYcOpYioGdAOYDf_6AAhnaF7QzAeoD9LC0xE_E1R7nbE_Tnbspq49kMki5WHS8J1p4Bvj7iOKsm03TLtmM3xjDRN5C9GF5hSnq9OeHewdaewOfpxQOvQaKphyofyJftm-8ljhOfu53jR7kA0dSbAR-RjFDys3eFRyVKIWgMJgKrQHYAEdcRNPKdhtcospDGkjso8PGA&amp;w=1200" alt="MOOD" loading="lazy"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3nwrRrMW8B18XtaYTPJL2wUM_oHb9Jq4U-mi8ccD1Grk0CwrKVkZovWsmkLJsRl3FYsOJdTxm_IP660jstJdk16MzlH240X6FCXm-Z_RQEOtXZrb1q0DMRXdlg-EpxtlAPe2GIuV9r-zo0IHW03I1ldC-YL4l8qnE10l8jfDoVHnn3eI2HM0wixY457IRZPtilPd3v4UnMIeaI7VETld7WKgDE3rkhlecM_ktVla3q4CcWzNHo0IDrbGNJiyBXY4usXpnORivmQ9kvL-U4LFyxM0dd6PZ8GQJbRyJje8V324uA-7SwI8jyyd2_YmkhtsLJNnOSr52Tc1ujOP4NawJKa3vvJoNgN98KDKvBwaO2f32BkpKuMvz5IpwTCkpbGDv1H2FqcQ5IOaVtzOI6Dl9Yv9nWLd-YanzPu432zFd7amGpu&amp;w=1200" alt="MOOD" loading="lazy"><img src="/api/photo?ref=places%2FChIJO74DmddbFkcRB9xaNee5HXM%2Fphotos%2FAaVGc3kx8Fei-LYsly14Ujp-G4sfAurioNp2nM1tcZP2OsI5vElBwnJZm38EUPx4_sK0Ym4gRoch98x5tttPqu3UApiky4DFluafAf2CaQT674LvHRMcFL9uldy2LQL1pbuUsStCZSRhtJ27sDAUBo5BlE-Av6_qM0V_AKmWs8vzaVPhlXVJSHN0UZcyH4d1AihB1T84mNRZS8KoyOOrjEFVygLnNMnGiJyYnqWDjomLA6bxDCmpIY_cD8mCYm7PyUDVTF5s7fu_sIlwGR9RXk8EUSCwGlb6KB93JILgqr2xpeqNdn3ayUJcogB7-yl0EDT8RUKEUYJ5Q8Hg3ItQ66q8r9ubqcqvxBJermDMGF3ryNAyijRIs1_zLxVUWCX0udkIejNYfL5PuXCVsbNeZhcyybJeZ1bODy0-emcg9iCam0kGeA&amp;w=1200" alt="MOOD" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.7 ★ (988)</h2><div class="r-grid"><figure><div class="stars">★★★★</div><blockquote>Dużo baldów. Czysto. Podoba mi się koncept oznaczenia trudności po kolorach. To ma sens. Nienachalna Muzyka w tle jest OK. Miejsce na rozgrzewkę: mało.  W Niedzielę brak widocznych opiekunów hali. Kawiarnia: super sprawa i mają też pieczywo</blockquote><figcaption>— Krakowski Sygnalista</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Niesamowite miejsce, świetna obsługa w piekarni jak i ściany. Na ścianie zawsze znajdzie się coś nowego i odpowiedniego dla każdego poziomu wspinaczy. Chodzę tu już od dawna i nigdy się na tym miejscu nie zawiodłem. A poza tym miejsce ma św</blockquote><figcaption>— Jan P</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Super miejsce, bardzo fajna kawiarnia. Świetnie kręcone baldy i to co odróżnia MOOD od innych w PL I Europie to to, że mają dużo miejsca i wszystko znajduje się na tym samym piętrze. Bardzo polecam!</blockquote><figcaption>— Łukasz Wasilewski</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Stanisława Klimeckiego 14B, 30-706 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48780134474">780 134 474</a></div>
+    </div>
+    <div>
+      <h2>Zarezerwuj stolik</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48780134474">Zadzwoń: 780 134 474</a>
+        <a class="btn-ghost" href="https://wa.me/48780134474">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 MOOD. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

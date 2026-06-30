@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Piwnica Pod Baranami — usługi lokalne Kraków</title>
+  <meta name="description" content="Piwnica Pod Baranami — usługi lokalne w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3l20Er0rDqRZJ8CMMVffs2pYaBuSr9G-G3cZK0mF8AyGxgS7uE-PpcLeEEjjy-SB_XLJv6N1Y1Mp55ENoFsMMZMZ74YgjMw6sHVwb5oOoUrynk5YfVgIz8t4M3p0QXgKziqBwN39s5M1KJWaQ64dyF0dE2jMZWhwvEFLT5zlHhBqT3rkHtPHTVN33peLCuSkiisDHH1KK4nLAyEIGRQGgmkTDD7wkPomH6cb4JajrKN2lzsuRQuS4w1Av4CDlFWZ75L6s_YgrDFtLbDVUACh5zqvHt4dsQcy0niEqg_IktRwBH7qskpBc80eIBzrLEDdjRrWSbfnwigni93JYcUjB7TJwO7RdUxpR9NYXru6A6ZQIgWoEmxbrojhnGYEYvdXt3DefoGw4cc6M21VPNWa2DcjruoBEjpj346hCe7rZVb-2Vm&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Piwnica Pod Baranami — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Piwnica Pod Baranami</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="+48124220177">Zarezerwuj stolik</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">usługi lokalne · Kraków</div>
+    <h1>Piwnica Pod Baranami</h1>
+    <p>Dobre jedzenie w Krakowie.</p>
+    <div class="hero-cta">
+      <a class="btn" href="+48124220177">Zarezerwuj stolik</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Koncerty jazzowe, poezja i surrealistyczne występy komediowe w założonym w latach 50. lokalu znanym z kabaretu literackiego.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3nDu3PCP-W-m3LaQWODmn7KpAxStBxH0f4H6AvJ_t6wCSUZmfcTlg-tr789LBs9LqIpLoHQEdZYB7HG1kgZdZ8YcGstE4Pnl3VNs97om99Vu2FT4IFpZgMPIx2SkcK-GlIP3u3d_5VSG-oE96Ll4z-ZosHBhn3yH57cHhXGZ4XwADgpo3e8TuHAQYwhDMEc3dv94HYaSAaIDQrMKtoCtU_qAoBadK3zloZbRMMnznUp2ii28Os_1-mrFIML67Kn4OLjw0SnKa4xTtV0GuRVJ8NSccKApfSy9ObRljLTXsytHnOLlFdPTRUdGtRrlgXTMzaJ2rqfjhHkr7pYQMI6dguNoYvPbZYKdCwrqOjYxQDEmBGrfK_eVYwPcXdSaX89fPv7pn8LtOXRFZMrjGQ5YfclupO2jU261BSc1_1SRhPsPPK_kUsg43VucEFY&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3nq4Bx_ploWR96tjpeVO_41kufp3pYrSLfd5GzTgum_gXtcLFTADGiUvnlfEBgBmRHzRoZCjK95zEyegay8K7MGUIEPlSHkuS0De79mYlrVY-YYKJIv7meQDknbFNiOohsxCzxSaOxddTwSQz7Fyz_VqxYRLSpUFHLh4lrexN2pYGcZU52nb_urxSph9G0HL30kcB8ea7KlO6jjhsN1xoelvldrNpcx_xlVrLLOPWpS5xw2yLD6DURMb-xNJ6v5i2_qKJikTYvj77YKyeTCkfksllP3aCEqqePQi8Xm2DebH0Jn5Au1A0brqyFbvIqJvw5GfSqjR_z0X8yRB-nH0glJKC9F--8vWxvFW5nGerKFy6oBDO5DAZRer6De_3PFboSambaKgXLlebD2AiMavOVx3b0a8-hvqJkK_q-eX7pfug&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3m4CCatEBqLby9yeP8WJ98Xnov8mOC8l8XSoIJt9LMmY6aNIQgulU5qbB8vtDRnDRQlkwVNtE_nQUeUs54lJZ9myQKOZyazz4miKkdmlEzjvcpQpUCGfC7XM2ZUeXMGchvyqskMzOkUlWrlUO66DIDxYP_KdeSgoEmQkft9B5AT7u1JcQbSwO1BGdIVYxG-LJyuD5eQXgWP9eFoC_HR01PgWZ0K3ityTKbTA4-K4QmXkukTYucjE5wh_16FjYNL_ycV2-nVxIa1_E3CylRTUk9lFWmxrZGdksfxgqM8JsujJlz_wKnXFCpcxaQPLDIGnLh7IqP4MnbAZ0LqP-wWKsc7kSOUcM978gdiZeAwRBZcARuo4ttQiBjkg-bPJeng4fn536JzBb22RIERLzuS19XeA-AjQf7f82ronqJzbf2hafTRt6EojFFWFKpHnw&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3ljY2o4niuh6kB1Ip7RKA8G3drAfwobmZbu7ltLu0xtKgaZoShZoSnxMq2g2BACOXtRgibZW8Kx0g665d6Yl9cWfBKeGq5ntiSBj7o8JQIB5ey0D5I_TBjx0ixzy6BsiQvQQSEEWCBOZeKfZ-cN8_CSnmwkjynPlS_5orMEKz8rhx42MK0RLUefmYOiFJPBZu2tAUxBh6OUar7HH3cMGWYTNsTc7pmEtz1YRE-D0O7am6XJf1UTaL-zSjQJ222cLSu7vpP7VS7x8WqcBS-sYIpF4ZovHSsmSzv5arwGOsudHm1m8zeUGX3yXgcBJz2FHabf6Y3Cr8yNml73YflSt3DhqQOeSLCwAWfGdsxVdvetHcmrMhbzEyv7NCGhbSeWmSn8sqGAPt72ENiHAbk5Mip-bDeQhngxTfBqc4mA73ahejWKu_UlcKuBZNOmHIKr&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3mBejOkxsN18bEgX4FVMH_sZPQP8R82Q1vCtwW5DCRsq0o10_EWojD38yauFaZgdcqSqxow5veUSx4PD0KKD3qv1bTVvWCxDZnDlzo-byr0V6MyqOxvCbI9T7JuD-N6UzaC06U4bFjX7Smf4jdDVL0ZLvtM9-V8gmLby_jHW3Or5iRXMgJ9ApTR-YobmNR5-BO88X2Qi2cHvTDo1h4SgYVXJ1zoZ9UW0nOuDMJdI0Whw-lp2GF4qFbKnHZ_S6VY4f2v1V6qvYn_jzv_jaUEf5JX5vMEDV57E4nspFElFGxtGD_ASfD900U4vE2Hr1_ncdd3NVr_NpWAoJnVbAt4lupAm-OmR8RE2lpO6YVUmOHRDjLqxgtMeVqx_ReSh3sryzTZm_DEs7WLJ0v4Gi6joSMci5NT6TeVSgXCm0En2gIba-87g1oQeOWfrCsGgyLY&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"><img src="/api/photo?ref=places%2FChIJlw8d3A1bFkcRqJxp52Plnk4%2Fphotos%2FAaVGc3ny5XzqxmuWb97kSNTT3ZNsnhwiokBjR6UfVIq--NVW5-VqN6JHwrTDNSjArC40dTA3DINWelQpy0zxhuyhTHFrLqPcvOdrDynxFJwH5TTDfjUG94hGYlXkzDIlSM1-pccHYVanuDeK_c5WKtNlY_WLCTFesLa2l_6M7FdeMxsBcKAcMgRL4aDz-YFbDurBaVBZlp6gunMd_SqzgDc4QTRwHvY_YqxOMpBPrUECNaSuOlMDabOs4R3kegTqT4e7olTng_sPyr4JtcbHLh1Q1_14l-94s4LcMAO4XtBNwSDsRuHhQB-_kOC3mWzgalgGkf2MBRyGbPMT4hyy1ZsFS00I4sYDqb0o-oMS_oMyJDMpP3wr5GAv3Lu2lBiA6suxCKa-gSQTZ4XbozDIqnTc7Ot8JiK4blkXyRgcHAYpZkqySGmVaW2BMTbwhzOUAvF2&amp;w=1200" alt="Piwnica Pod Baranami" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.8 ★ (4634)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Piwnica pod Baranami to legendarna polska scena kabaretowa i artystyczna, mieszcząca się w Pałacu Potockich przy Rynku Głównym 27 w Krakowie. Założona w 1956 roku przez Piotra Skrzyneckiego, do dziś funkcjonuje jako kultowy tygiel krakowski</blockquote><figcaption>— Renata K</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Magia w czystej postaci. Siedząc w tych piwnicznych murach, czuć obecność wielkich artystów, którzy tworzyli tu historię polskiej kultury. Występy są na najwyższym poziomie – wzruszają i bawią do łez. Obsługa bardzo uprzejma, a klimat lokal</blockquote><figcaption>— Barbara Steltmann</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Bardzo klimatyczne miejsce.  Nietuzinkowa muzyka jazz, poezja wykonawcy Maanam, Grechuta, Turnau . Wystrój i architektura typowej piwnicy, cegła, zakamarki, krzesła i stoliki oraz kredensy  typowy PRL. Czuć magię tego miejsca.</blockquote><figcaption>— KATARZYNA JASZEWSKA</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Pałac Pod Baranami, Rynek Główny 27, 31-010 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      <div class="row"><b>Telefon</b><a href="+48124220177">12 422 01 77</a></div>
+    </div>
+    <div>
+      <h2>Zarezerwuj stolik</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        <a class="btn" href="+48124220177">Zadzwoń: 12 422 01 77</a>
+        <a class="btn-ghost" href="https://wa.me/48124220177">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Piwnica Pod Baranami. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>

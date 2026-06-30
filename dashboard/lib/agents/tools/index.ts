@@ -16,6 +16,13 @@ import { findContactEmail } from "../../email-scraper";
 
 const J = (v: unknown) => JSON.stringify(v);
 
+// Detecteert duidelijk niet-Poolse tekens (CJK/kana/hangul/Cyrillisch/Arabisch) —
+// een teken dat het model rommel produceerde. Pools is puur Latijns schrift.
+const FOREIGN_SCRIPT = /[぀-ヿ㐀-鿿가-힯Ѐ-ӿ؀-ۿ฀-๿]/;
+function hasForeignScript(...strings: unknown[]): boolean {
+  return strings.some((s) => typeof s === "string" && FOREIGN_SCRIPT.test(s));
+}
+
 // ICP: ELK lokaal MKB-dienstverlenend bedrijf dat baat heeft bij een eigen site
 // (vakman, kapper, restaurant, tandarts, garage, salon, lokale winkel met
 // diensten, enz.). We wijzen alleen types hard af die GEEN baat hebben bij een
@@ -333,15 +340,25 @@ const setEmailCopy: AgentTool = {
   },
   handler: async (input, ctx) => {
     const id = leadId(input, ctx);
+    const lead = getLeadById(id);
+    if (!lead) return "lead niet gevonden";
+    if (!lead.contact_email) return { content: "lead heeft geen e-mailadres — gebruik eerst find_email", isError: true };
+    const siteUrl = siteExists(id) ? `/sites/${id}/index.html` : undefined;
+
+    // Vangrail: bevat de copy niet-Poolse tekens (CJK/Cyrillisch/…)? Dan is het
+    // modelrommel — gooi de agent-copy weg en gebruik de schone sjabloontekst.
+    const garbage = hasForeignScript(input.branza_pl, input.nisza_pl, input.hero_title, input.hero_sub, input.hero_cta, input.firma_krotka);
+    if (garbage) {
+      store.setEmailDraft({ placeId: id, subject: generateEmailSubject(lead), html: generateEmailHtml(lead, siteUrl, null), score: 4, approvalStatus: "pending" });
+      store.postMessage({ from: "writer", to: "manager", kind: "alert", body: `Mail-copy voor "${lead.name}" bevatte niet-Poolse tekens (modelrommel) — vervangen door schone sjabloontekst. Controleer.`, leadPlaceId: id });
+      return "agent-copy bevatte niet-Poolse tekens — schone sjabloon-mail klaargezet";
+    }
+
     const personalization = {
       branza_pl: input.branza_pl, nisza_pl: input.nisza_pl, hero_title: input.hero_title,
       hero_sub: input.hero_sub, hero_cta: input.hero_cta, firma_krotka: input.firma_krotka,
     };
     setLeadAiEmail(id, J(personalization));
-    const lead = getLeadById(id);
-    if (!lead) return "lead niet gevonden";
-    if (!lead.contact_email) return { content: "lead heeft geen e-mailadres — gebruik eerst find_email", isError: true };
-    const siteUrl = siteExists(id) ? `/sites/${id}/index.html` : undefined;
     const subject = generateEmailSubject(lead);
     const html = generateEmailHtml(lead, siteUrl, null);
     store.setEmailDraft({ placeId: id, subject, html, score: input.quality_score as number, approvalStatus: "pending" });

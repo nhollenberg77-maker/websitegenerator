@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fabryczna 13 — usługi lokalne Kraków</title>
+  <meta name="description" content="Fabryczna 13 — usługi lokalne w Krakowie. Menu, opinie i rezerwacja.">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--cream:#faf6ef;--ink:#23201b;--soft:#6b6457;--line:#e7dfd2;--wine:#8a3b32;--wineh:#a14a3f}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .brand{font-family:Fraunces,serif;font-size:20px;font-weight:600;letter-spacing:.01em}
+    .nav-links{display:flex;gap:26px;font-size:14px}.nav-links a{text-decoration:none;color:var(--soft)}.nav-links a:hover{color:var(--ink)}
+    .btn{display:inline-block;background:var(--wine);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;transition:background .2s}.btn:hover{background:var(--wineh)}
+    @media(max-width:720px){.nav-links{display:none}}
+    .hero{position:relative;min-height:74vh;display:flex;align-items:flex-end;color:#fff;background:linear-gradient(180deg,rgba(20,15,12,.15),rgba(20,15,12,.78)),url('/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3lOYfT9cOThcCg8u9kxOPqKy_LDgl3G-yKcW83UT53dXJRSwz41H4-rTHs1OL_aA8qmFYaP5FOIVfV-QoC6J8Kakn1FBOAh5wrxl-s8C2Efz8vvsVYmFfPk7IxLa1gEg-jAfALfs1w_FyredTCMRN3WqWHYd7xqd2uwvGnPZkt2p0EWYxP5JxrwdtFLGgd19WVaPQn-z_9Rfy_ud9j1V724VB-_qbONWYpStf5SRu_E1Uz7pdK1sg-FZl1rIcuatFA8HsiaMEC6nMFUP6nVheHS0cqtYLpRMHkhJ3JFgGuXuzW71vpaXajpgMzkWiKReITzERGwUaWENNfviu8MTTdKoK1C0wKmHT7IeFmw-HVEseyjQnCkoKw4fb7oykXqOWVLHHLvVErs-4biLXeHrOx8-aWjW3f8qsZRR9Cny96WOw&amp;w=1200') center/cover}
+    .hero .wrap{padding-top:80px;padding-bottom:54px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;opacity:.85;margin-bottom:14px}
+    .hero h1{font-size:clamp(40px,7vw,76px);max-width:14ch}
+    .hero p{font-size:clamp(17px,2.4vw,21px);max-width:48ch;margin-top:16px;opacity:.92}
+    .hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn-ghost{display:inline-block;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px}
+    section{padding:64px 0}
+    .menu h2,.gallery h2,.reviews h2,.about h2{font-size:clamp(28px,4vw,40px);margin-bottom:28px;text-align:center}
+    .menu-cols{columns:2;column-gap:48px}@media(max-width:720px){.menu-cols{columns:1}}
+    .menu-sec{break-inside:avoid;margin-bottom:34px}
+    .menu-sec h3{font-size:22px;color:var(--wine);border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:16px}
+    .menu-sec ul{list-style:none}
+    .menu-sec li{margin-bottom:14px}
+    .mi-top{display:flex;align-items:baseline}
+    .mi-name{font-weight:600}.mi-dots{flex:1;border-bottom:1px dotted #c9bfae;margin:0 8px;transform:translateY(-3px)}.mi-price{font-weight:600;color:var(--wine);white-space:nowrap}
+    .mi-desc{font-size:14px;color:var(--soft)}
+    .menu-empty{text-align:center;color:var(--soft);max-width:40ch;margin:0 auto}
+    .about{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .about .wrap{max-width:720px;text-align:center}.about p{font-size:18px;color:var(--soft)}
+    .g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:720px){.g-grid{grid-template-columns:repeat(2,1fr)}}
+    .g-grid img{width:100%;height:230px;object-fit:cover;border-radius:10px;display:block}
+    .reviews{background:#fff;border-top:1px solid var(--line)}
+    .r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}@media(max-width:720px){.r-grid{grid-template-columns:1fr}}
+    .reviews figure{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:22px}
+    .stars{color:#caa23a;margin-bottom:8px}.reviews blockquote{font-size:15px}.reviews figcaption{margin-top:12px;font-size:13px;color:var(--soft)}
+    .info{background:#241a14;color:#f3ece2}
+    .info .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}@media(max-width:720px){.info .grid{grid-template-columns:1fr}}
+    .info h2{color:#fff;font-size:30px;margin-bottom:18px}
+    .info .row{display:flex;gap:12px;margin-bottom:14px;font-size:15px}.info .row b{min-width:96px;color:#cdbfae;font-weight:600}
+    .info a{color:#f3ece2}
+    footer{background:#1b130e;color:#9a8d7c;text-align:center;padding:26px;font-size:13px}
+  </style>
+</head>
+<body>
+  <div style="background:#1a2b4a;color:#fff;text-align:center;font:600 13px/1.45 system-ui,-apple-system,sans-serif;padding:9px 16px">Niezobowiązujący szkic strony przygotowany dla Fabryczna 13 — wersja demonstracyjna do oceny, nie jest to oficjalna strona firmy.</div>
+  <div class="topbar"><div class="wrap nav">
+    <span class="brand">Fabryczna 13</span>
+    <nav class="nav-links"><a href="#menu">Menu</a><a href="#galeria">Galeria</a><a href="#kontakt">Kontakt</a></nav>
+    <a class="btn" href="#kontakt">Skontaktuj się</a>
+  </div></div>
+
+  <header class="hero"><div class="wrap">
+    <div class="eyebrow">usługi lokalne · Kraków</div>
+    <h1>Fabryczna 13</h1>
+    <p>Dobre jedzenie w Krakowie.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#kontakt">Skontaktuj się</a>
+      <a class="btn-ghost" href="#menu">Zobacz menu</a>
+    </div>
+  </div></header>
+
+  <section class="menu" id="menu"><div class="wrap">
+    <h2>Menu</h2>
+    <div class="menu-cols"><p class="menu-empty">Zapraszamy do kontaktu — chętnie przedstawimy aktualne menu i polecenia szefa kuchni.</p></div>
+  </div></section>
+
+  <section class="about"><div class="wrap">
+    <h2>O nas</h2>
+    <p>Fabryczna 13 — miejsce, do którego wraca się z przyjemnością.</p>
+  </div></section>
+
+  <section class="gallery" id="galeria"><div class="wrap"><h2>Galeria</h2><div class="g-grid"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3n2HT9dt6e0n-bbYOMMjxFeBE-l6L6LcUE7lnVzJCjIRRGBPDa-AWEjJyMunVRkKcMaojxP2lNCOX8XDkj8zwvSIiWcVewpB3pt9LFjZKOd_--S-byD_s-usZq0TYmbE9jYRGYcHUMktkBtXdrkhtHe6ZzR7T9wuDRxwrgiUpqF4CIiiHeLvKGgCbUV9OGJAP74iDpECkV7BZLpopiJdR6Uy6zWKqF1CUOsYVk-Fu6p2vqSd-rPA1R7u_Fk9nSn-xXVwV1O7SlH6QiDsaawJODAxXL-dznJ4osFY30qlwrwLxokDj7Yl1d0NxFKWer8sKYL7HtcB7rnPzwSe4pcG3get2XZ1w6NA3UOANjlLrOuJdTuqV8xDPLGRLZ_UF2N9_wRziJPJvlo1K6twpx9wRzGfAbmeT_TaX2HmRE65VNlMp9r&amp;w=1200" alt="Fabryczna 13" loading="lazy"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3mD6jmf2wuPrIom4GSWyqO6_USTYWRAZd3kACql5nMbjdXGz__CP-30VhHe9bkQTqMJUwkXbgxcSa384Btp_W6wZuD1zPML4s9t1ALUDltJac6e6sacAxRIpRHZM2KlibNiN99evQ1a_0PuQROJ1anUII2PjG4oYVJmZZFOAtSjjNiN9INhahKGdOfbCX6ymftJ-dz7aWqnI_QWsfEkgL8PKLMY2Sx1vfSIv1ZPh0FICY2O93KfaYcViHvqNxRECeefYluOxGXP63xxmjwmLnJ04mppE39OC7iu4m5L-eBf09A-xlVYMTYoZO2d04WGHHzdqKKAl9OK3GXYCPBo6txTmFLQnM9hzO_p_c-N5uHUkuvAZgOJkqa1IMWyHk8mc0gb5m0alOJZwQAgYhbFE2qpx5dm-OIuXlTMbXlSG9a0hz2Y-sntPKfSmDlyJ7Xf&amp;w=1200" alt="Fabryczna 13" loading="lazy"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3n6kwD9c41fZdNMOAAT0VxPj2CyCCRPFM55cvPXEaut0p0hQZIOq3Bq32XIe5AMWCq8MQNAZlsHqj-IzXvML1PvxxKQ7Mmv8NbTs3eSd-QFw_DjSXtznvRjG-MM5YWPprCn41gK2H4TUKG-8nPfagxAhz0zHiN9AqfpwIRlHt-19RML2-eYm4OGZ2sUmIWMefxBwy8KG5JnATO3UlG0n8GRC1muPC_AKPGgxMpAu91ln5b-shjPoNaFcwGHKPEQJeHl-8Y7Hmkhqz7CcHJ0GhLVLxvH0QKf35PQ0KGHmiqFe8qERO8cpNlsEsDiyzXfWYF6O7Z86MbaRDO-QiNrv-tzdyR2MNT46JUIuMOrtZsnexHqneWpx7DbY9_h75HMptrsj38IQwryMnr45XXuepU19T_5S4PfUgBRwbfs1J3jdQ&amp;w=1200" alt="Fabryczna 13" loading="lazy"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3n5-egGAJ7D9-uVZ_qXz7dblSpbBnWKQS4hPF7s4DAIvVe5wq8-owiCP2E9KGDg5DgDrjxwHXYH87Y9I_RGFL2ZqBgj0_5zWypblUuKvFHrsCEugosCGhjSPhpZN9VhERhdbHy9M2xvNK7VgS32NrA3eKWWZi--1cPOZQTtEIT_VJWqOFQ74KUR2sIyaTgvtksoTliUcr9DGU7jT3fH6VtKVBXlbG1aVaMMBsNutDt5fV-qjKtVcaKN1AmIer3v3QpXvtfdo3t4Btwy27LJitvYNvSdx7NqHFPaEgm_bs-lupp2KvfQRPhhdrHBLZ7B2nv5WDj4_9l71Jn9yJYQpwKJSD456R7R20Pmo8Xto0W3yfVKY-JJ74WUeKsAw30PkQn7i3ztlwbxJxSVIEZ29MJhvL6Ahp3PnTcyRky0v6W0r7GcgvyrK7cylXnjZz0r&amp;w=1200" alt="Fabryczna 13" loading="lazy"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3lrIVPVmVkLjqstLaoqcYhh5rQ5J7yK3GSIaSycvSeH2XxPuPX-Ui-kMTBqzWzHMZqjJdv6rY2E3R4cfm8RznmgF2RqmO2NgtpjIYeCr5RxOamxttWGF64vnfmjy-Cf2sGblYej6wjsXogHYQYP_9ivJBoSKzgXSu2u3fvO_6utpma1fHmBR5O8g-o2lGf6LWczqD6KLRdL9gJzLgNjhQKz7sota1pUxCIa8SRWLkkIU0B0THssnDsTdRz0DfnWTNeUidP7uRUOrp_lqW4xm74IyTkvwkYQQstezlU6JwJZqreVvdQed6KVRGB7RTe0nJop62jr-eHm-XAJkCslLjuoQ2WXp80Wz4huFpYBgfN96F6j5xc-33zPlgd53JaLJOAdyKWLdlC-Jc-aXVcqbjJ8MscLJdkloCfhCmvjxDMZWrKZiVsJi4qvPrsfgw&amp;w=1200" alt="Fabryczna 13" loading="lazy"><img src="/api/photo?ref=places%2FChIJJWx2u_VbFkcRY4a-oGzOQ3o%2Fphotos%2FAaVGc3m_d0rI9dzeBh5y79vebnymhbEYknJXP2d4yg4VwJfjaFD-FhptuklN-PyUpJpDcmvnaGwrh5uMxdNRmhwRowm8RzV0pLnmOs9mrRNnUwErr7zdGuIiiminuZTDCwPj1j89IYKsQYdFUj3oLZLkU6ut1Sv-9xRaJFe-WhfAUdQx8Vu-NSRWV8B5-QFnsccvVwwb8cbDTMyIvJ0ZfVQa4Uvot_T4WKUFAEpWCoekk6oqarilwx3NFnu5HZJP-JAhKsUiydBXTbPNwv-i_J7AFS1_Q-qNzR0VyO_hDIq6UEorifco86h6h2IBPBZZFL1mZSONdzXt-C09r1f5a6KH-DpX7VlP0bqzxHDm2zPtZ2KxBZiIbwc3eA9KqYPHArEpqC_ThEgF8nu-BbBh-BsT6XYT3b58MALxBs3LuCbqeeMjN7ECNKukD0UCAWr5MzSj&amp;w=1200" alt="Fabryczna 13" loading="lazy"></div></div></section>
+  <section class="reviews"><div class="wrap"><h2>Opinie gości · 4.7 ★ (2408)</h2><div class="r-grid"><figure><div class="stars">★★★★★</div><blockquote>Dawna fabryka wódki przerobiona na hotel, centrum konferencyjne, 4 różne restauracje, browar, bar i muzeum wódki. Naprawdę jest z czego wybierać, a dawne odnowione industrialne wnętrza robią niesamowitą robotę. Bardzo lubię takie miejsca i </blockquote><figcaption>— Przemek_K_ premo18</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Świetne miejsce! Klimat i kuchnia -mega!</blockquote><figcaption>— Tom Jorman</figcaption></figure><figure><div class="stars">★★★★★</div><blockquote>Świetny hotel z wieloma udogodnieniami. Doskonały na rodzinny wypad na koncert, ale także jako miejscówka podczas wyjazdów służbowych. Doskonała restauracja z możliwością zjedzenia posiłku w pokoju hotelowym. Małym minusem jest opłata za pa</blockquote><figcaption>— Piotr Karwowski</figcaption></figure></div></div></section>
+
+  <section class="info" id="kontakt"><div class="wrap"><div class="grid">
+    <div>
+      <h2>Odwiedź nas</h2>
+      <div class="row"><b>Adres</b><span>Fabryczna 13, 31-553 Kraków</span></div>
+      <div class="row"><b>Godziny</b><span>Zadzwoń, aby potwierdzić aktualne godziny otwarcia.</span></div>
+      
+    </div>
+    <div>
+      <h2>Skontaktuj się</h2>
+      <p style="color:#cdbfae;margin-bottom:18px">Zarezerwuj stolik telefonicznie lub przez WhatsApp — odpowiadamy szybko.</p>
+      <div class="hero-cta">
+        
+        <a class="btn-ghost" href="https://wa.me/48000000000">WhatsApp</a>
+      </div>
+    </div>
+  </div></div></section>
+
+  <footer>© 2026 Fabryczna 13. Szkic strony — wersja demonstracyjna.</footer>
+</body>
+</html>
