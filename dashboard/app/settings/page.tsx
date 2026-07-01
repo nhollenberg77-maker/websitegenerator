@@ -99,7 +99,7 @@ export default function SettingsPage() {
       </div>
 
       {/* TEAM — agent-driven besturing */}
-      <Card className="border-line mb-6 overflow-hidden">
+      <Card className="card-elev border-0 mb-6 overflow-hidden">
         <CardHeader className="pb-3 bg-background-alt/30 border-b border-line">
           <CardTitle className="font-display text-base font-semibold flex items-center gap-2">
             <Bot className="h-4 w-4 text-navy" /> Het team
@@ -141,7 +141,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* IMAP — reply/bounce-tracking */}
-      <Card className="border-line mb-6">
+      <Card className="card-elev border-0 mb-6">
         <CardHeader className="pb-3">
           <CardTitle className="font-display text-base font-semibold flex items-center gap-2"><Mail className="h-4 w-4 text-navy" /> Inbox-tracking (IMAP)</CardTitle>
           <p className="text-xs text-ink-soft mt-1">
@@ -163,7 +163,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* SMTP */}
-      <Card className="border-line mb-6">
+      <Card className="card-elev border-0 mb-6">
         <CardHeader className="pb-3">
           <CardTitle className="font-display text-base font-semibold flex items-center gap-2"><Mail className="h-4 w-4 text-navy" /> SMTP e-mail</CardTitle>
         </CardHeader>

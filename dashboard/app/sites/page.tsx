@@ -147,7 +147,7 @@ export default function SitesPage() {
           Laden…
         </div>
       ) : leads.length === 0 ? (
-        <Card className="border-line">
+        <Card className="card-elev border-0">
           <CardContent className="py-16 text-center">
             <Globe className="h-10 w-10 text-ink-faint mx-auto mb-4" />
             <p className="text-ink-soft">Nog geen sites gegenereerd.</p>
@@ -163,7 +163,7 @@ export default function SitesPage() {
             const isActive = generating === lead.place_id;
 
             return (
-              <Card key={lead.place_id} className="border-line">
+              <Card key={lead.place_id} className="card-elev card-hover border-0">
                 <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -182,7 +182,7 @@ export default function SitesPage() {
                     <div className="flex items-center gap-3 text-xs text-ink-soft">
                       {lead.city_query && <span>{lead.city_query}</span>}
                       {lead.rating && (
-                        <span>★ {lead.rating.toFixed(1)} ({lead.rating_count})</span>
+                        <span className="inline-flex items-center gap-1"><span className="text-amber-300">★</span> <span className="num">{lead.rating.toFixed(1)}</span> <span className="text-ink-faint">({lead.rating_count})</span></span>
                       )}
                       {lead.site_generated_at && (
                         <span>

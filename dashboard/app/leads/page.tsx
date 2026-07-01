@@ -219,7 +219,7 @@ function LeadsPageContent() {
         </div>
       </div>
 
-      <div className="bg-card border border-line rounded-xl p-5 sm:p-6 mb-5 shadow-sm">
+      <div className="card-elev rounded-xl p-5 sm:p-6 mb-5">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink-soft font-medium">
             <Sparkles className="h-3.5 w-3.5" />
@@ -373,7 +373,7 @@ function LeadsPageContent() {
         })()}
       </div>
 
-      <div className="bg-card border border-line rounded-lg overflow-x-auto">
+      <div className="card-elev rounded-lg overflow-x-auto">
         <Table className="min-w-[900px]">
           <TableHeader>
             <TableRow>
