@@ -122,8 +122,8 @@ export function TeamHQ() {
         <Panel className="lg:col-span-3">
           <PanelHead title="Tokenkosten" sub="Som van al het verbruik" icon={Coins} />
           <div className="mt-2">
-            <div className="font-display text-3xl font-semibold tracking-tight">{money(data?.cost.total ?? 0)}</div>
-            <div className="text-xs text-white/40 mt-1">{kfmt(data?.cost.totalTokens ?? 0)} tokens totaal</div>
+            <div className="num text-3xl font-semibold">{money(data?.cost.total ?? 0)}</div>
+            <div className="text-xs text-white/40 mt-1"><span className="num">{kfmt(data?.cost.totalTokens ?? 0)}</span> tokens totaal</div>
           </div>
           {data?.budget && data.budget.monthlyCap > 0 && (
             <div className="mt-3">
@@ -179,7 +179,7 @@ export function TeamHQ() {
           <div className="mt-2 overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-white/35 text-left">
+                <tr className="text-white/30 text-left text-[10px] uppercase tracking-wider border-b border-white/[0.06]">
                   <th className="font-medium py-2 pr-2">Agent</th>
                   <th className="font-medium py-2 pr-2">Resultaat</th>
                   <th className="font-medium py-2 pr-2 text-right">Stappen</th>
@@ -192,19 +192,20 @@ export function TeamHQ() {
                 {(data?.recentTasks ?? []).map((t) => {
                   const meta = AGENT_META[t.agent as AgentName];
                   return (
-                    <tr key={t.id} className="border-t border-white/5">
+                    <tr key={t.id} className="border-t border-white/5 hover:bg-white/[0.02] transition-colors">
                       <td className="py-2 pr-2">
-                        <span className={cn("inline-flex items-center gap-1.5", meta?.tint)}>
+                        <span className={cn("inline-flex items-center gap-1.5 font-medium", meta?.tint)}>
                           {meta && <meta.icon className="h-3.5 w-3.5" />}{meta?.label ?? t.agent}
                         </span>
                       </td>
                       <td className="py-2 pr-2 text-white/65 max-w-[240px] truncate">{t.summary ?? "—"}</td>
-                      <td className="py-2 pr-2 text-right font-mono text-white/45">{t.iterations}i·{t.toolCalls}t</td>
-                      <td className="py-2 pr-2 text-right font-mono text-white/60">{kfmt(t.tokens)}</td>
-                      <td className="py-2 pr-2 text-right font-mono text-white/60">{money(t.cost)}</td>
+                      <td className="py-2 pr-2 text-right num text-white/45">{t.iterations}i·{t.toolCalls}t</td>
+                      <td className="py-2 pr-2 text-right num text-white/60">{kfmt(t.tokens)}</td>
+                      <td className="py-2 pr-2 text-right num text-white/60">{money(t.cost)}</td>
                       <td className="py-2 text-right">
-                        <span className={cn("px-2 py-0.5 rounded text-[10px] font-medium",
-                          t.status === "ok" ? "bg-emerald-500/15 text-emerald-300" : "bg-orange-500/15 text-orange-300")}>
+                        <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium",
+                          t.status === "ok" ? "bg-emerald-500/12 text-emerald-300" : "bg-orange-500/12 text-orange-300")}>
+                          <span className={cn("h-1 w-1 rounded-full", t.status === "ok" ? "bg-emerald-400" : "bg-orange-400")} />
                           {t.status === "ok" ? "Klaar" : "Fout"}
                         </span>
                       </td>
@@ -324,26 +325,26 @@ export function TeamHQ() {
 /* ─── building blocks ─── */
 
 function Panel({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
-  return <div id={id} className={cn("rounded-2xl border border-white/8 bg-[#121a14] p-5", className)}>{children}</div>;
+  return <div id={id} className={cn("rounded-2xl card-elev card-hover p-5", className)}>{children}</div>;
 }
 function PanelHead({ title, sub, icon: Icon, action }: { title: string; sub?: string; icon?: typeof Bot; action?: { label: string; onClick: () => void } }) {
   return (
     <div className="flex items-start justify-between">
-      <div className="flex items-center gap-2">
-        {Icon && <Icon className="h-4 w-4 text-white/40" />}
+      <div className="flex items-center gap-2.5">
+        {Icon && <span className="h-7 w-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0"><Icon className="h-3.5 w-3.5 text-emerald-300/80" /></span>}
         <div>
-          <div className="text-sm font-semibold">{title}</div>
+          <div className="text-[13px] font-semibold tracking-tight">{title}</div>
           {sub && <div className="text-[11px] text-white/35">{sub}</div>}
         </div>
       </div>
-      {action && <button onClick={action.onClick} className="text-xs text-emerald-400 hover:underline flex items-center gap-1"><Plus className="h-3 w-3" />{action.label}</button>}
+      {action && <button onClick={action.onClick} className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 cursor-pointer"><Plus className="h-3 w-3" />{action.label}</button>}
     </div>
   );
 }
 function Mini({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg bg-white/[0.03] border border-white/8 p-2 text-center">
-      <div className="font-display text-base font-semibold tabular-nums">{value}</div>
+    <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-2 text-center">
+      <div className="num text-lg font-semibold">{value}</div>
       <div className="text-[9px] text-white/35 uppercase tracking-wide">{label}</div>
     </div>
   );
@@ -424,7 +425,7 @@ function SwarmChart({ series, range }: { series: { t: number; runs: number; toke
   return (
     <div className="mt-2">
       <div className="flex items-baseline gap-2 mb-1">
-        <span className="font-display text-2xl font-semibold tabular-nums">{total}</span>
+        <span className="num text-3xl font-semibold text-emerald-200/90">{total}</span>
         <span className="text-xs text-white/40">taken · {label}</span>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" preserveAspectRatio="none" style={{ height: 150 }}>

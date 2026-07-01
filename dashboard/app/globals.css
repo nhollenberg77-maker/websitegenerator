@@ -98,8 +98,39 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* subtiele diepte in de achtergrond — premium graphite met groene gloed */
+    background-image:
+      radial-gradient(900px 500px at 12% -10%, rgba(16, 185, 129, 0.06), transparent 60%),
+      radial-gradient(1100px 600px at 100% 0%, rgba(16, 185, 129, 0.03), transparent 55%);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
   }
+  /* Alle interactieve knoppen/links krijgen een pointer (UX-checklist). */
+  button:not(:disabled), [role="button"]:not(:disabled), a { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  /* Verfijnde, dunne scrollbars passend bij het dark thema */
+  * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.14) transparent; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 999px; }
+  *::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+}
+
+@layer components {
+  /* Premium verhoogde kaart: subtiele verticale gradient, haarlijn-rand met
+     top-highlight en zachte schaduw — geeft diepte zonder drukte. */
+  .card-elev {
+    background: linear-gradient(180deg, #141c17 0%, #0f150f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 20px 44px -28px rgba(0, 0, 0, 0.9);
+  }
+  .card-hover { transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+  .card-hover:hover { border-color: rgba(16, 185, 129, 0.28); transform: translateY(-1px); }
+}
+
+@layer utilities {
+  /* Cijfers/data in mono met tabular figures — leest als een control panel. */
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
 }
