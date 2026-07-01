@@ -253,15 +253,17 @@ export function TeamHQ() {
             <div className="mt-3 space-y-3">
               {approvals.length === 0 && <p className="text-sm text-white/40">Geen mails om goed te keuren. De Writer zet ze hier neer zodra sites klaar zijn.</p>}
               {approvals.map((a) => (
-                <div key={a.place_id} className="rounded-lg border border-white/8 bg-white/[0.02] p-3.5">
+                <div key={a.place_id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 card-hover">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="font-medium text-sm truncate">{a.name}</div>
+                      <div className="font-semibold text-sm truncate">{a.name}</div>
                       <div className="text-xs text-white/50 truncate">{a.email_subject || "(geen onderwerp)"}</div>
-                      <div className="text-[11px] text-white/35 mt-1">
-                        {a.city_query} · {a.category_query} · → {a.contact_email}
-                        {typeof a.email_quality_score === "number" && <> · mail {a.email_quality_score}/10</>}
-                        {typeof a.site_quality_score === "number" && <> · site {a.site_quality_score}/10</>}
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[11px] text-white/35 mt-1.5">
+                        <span>{a.city_query} · {a.category_query}</span>
+                        <span className="text-white/20">·</span>
+                        <span className="num text-white/45">{a.contact_email}</span>
+                        {typeof a.email_quality_score === "number" && <span className="px-1.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/50">mail <span className="num text-emerald-300/80">{a.email_quality_score}</span>/10</span>}
+                        {typeof a.site_quality_score === "number" && <span className="px-1.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/50">site <span className="num text-emerald-300/80">{a.site_quality_score}</span>/10</span>}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5 shrink-0">
@@ -380,31 +382,31 @@ function AgentRow({ a }: { a: AgentCard }) {
   const working = a.lastRun?.at && (Date.now() - new Date(a.lastRun.at).getTime()) < 20000;
   const quota = Math.min(100, (a.throughputLastHour / 12) * 100);
   return (
-    <div className="rounded-xl border border-white/8 bg-white/[0.02] p-3.5">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3.5 card-hover">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2.5">
-          <div className={cn("h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center", meta.tint)}><Icon className="h-4 w-4" /></div>
+          <div className={cn("h-9 w-9 rounded-lg bg-current/10 ring-1 ring-inset ring-current/15 flex items-center justify-center", meta.tint)}><Icon className="h-4 w-4" /></div>
           <div>
             <div className="text-sm font-semibold flex items-center gap-2">
               {meta.label}
-              <span className={cn("h-1.5 w-1.5 rounded-full", working ? "bg-emerald-400 animate-pulse" : a.enabled ? "bg-emerald-500/40" : "bg-white/20")} />
+              <span className={cn("h-1.5 w-1.5 rounded-full", working ? "bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" : a.enabled ? "bg-emerald-500/40" : "bg-white/20")} />
             </div>
-            <div className="text-[11px] text-white/40">{a.tasksCompleted} taken · {Math.round(a.successRate * 100)}% ok</div>
+            <div className="text-[11px] text-white/40"><span className="num">{a.tasksCompleted}</span> taken · <span className="num">{Math.round(a.successRate * 100)}%</span> ok</div>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-xs font-mono text-white/70">{money(a.cost)}</div>
-          <div className="text-[10px] text-white/35">{kfmt(a.tokens)} tok</div>
+          <div className="text-xs num text-white/80">{money(a.cost)}</div>
+          <div className="text-[10px] text-white/35"><span className="num">{kfmt(a.tokens)}</span> tok</div>
         </div>
       </div>
-      <div className="text-[11px] text-white/45 mb-2 line-clamp-1" title={a.lastRun?.summary ?? ""}>
+      <div className="text-[11px] text-white/45 mb-2.5 line-clamp-1" title={a.lastRun?.summary ?? ""}>
         {a.lastRun?.summary || "Nog niet actief."}
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
-          <div className="h-full bg-white/40 rounded-full" style={{ width: `${quota}%` }} />
+        <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-emerald-500/50 to-emerald-400 rounded-full transition-all duration-500" style={{ width: `${quota}%` }} />
         </div>
-        <span className="text-[10px] text-white/30 font-mono shrink-0">{a.throughputLastHour}/u</span>
+        <span className="text-[10px] text-white/35 num shrink-0">{a.throughputLastHour}/u</span>
       </div>
     </div>
   );
@@ -431,13 +433,23 @@ function SwarmChart({ series, range }: { series: { t: number; runs: number; toke
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" preserveAspectRatio="none" style={{ height: 150 }}>
         <defs>
           <linearGradient id="swarmgrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgb(52 211 153)" stopOpacity="0.35" />
+            <stop offset="0%" stopColor="rgb(52 211 153)" stopOpacity="0.28" />
             <stop offset="100%" stopColor="rgb(52 211 153)" stopOpacity="0" />
           </linearGradient>
+          <filter id="swarmglow" x="-20%" y="-40%" width="140%" height="180%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="rgb(52 211 153)" floodOpacity="0.5" />
+          </filter>
         </defs>
+        {/* zachte basislijn */}
+        <line x1={P} y1={H - P} x2={W - P} y2={H - P} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
         {area && <path d={area} fill="url(#swarmgrad)" />}
-        {line && <path d={line} fill="none" stroke="rgb(52 211 153)" strokeWidth="2" strokeLinejoin="round" />}
-        {pts.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="2" fill="rgb(52 211 153)" />)}
+        {line && <path d={line} fill="none" stroke="rgb(52 211 153)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" filter="url(#swarmglow)" />}
+        {pts.length > 0 && (() => { const last = pts[pts.length - 1]; return (
+          <g>
+            <circle cx={last[0]} cy={last[1]} r="5" fill="rgb(52 211 153)" fillOpacity="0.25" />
+            <circle cx={last[0]} cy={last[1]} r="2.5" fill="rgb(52 211 153)" filter="url(#swarmglow)" />
+          </g>
+        ); })()}
       </svg>
     </div>
   );

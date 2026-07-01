@@ -38,18 +38,18 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
             href={href}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group",
+              "relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group",
               active
-                ? "bg-emerald-500/12 text-white"
+                ? "bg-gradient-to-r from-emerald-500/[0.14] to-emerald-500/[0.03] text-white ring-1 ring-inset ring-emerald-400/15"
                 : "text-white/55 hover:text-white hover:bg-white/[0.04]"
             )}
           >
-            <Icon className={cn("h-4 w-4 shrink-0", active ? "text-emerald-400" : "text-white/45 group-hover:text-white/70")} />
+            {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]" />}
+            <Icon className={cn("h-4 w-4 shrink-0 transition-colors", active ? "text-emerald-400" : "text-white/45 group-hover:text-white/70")} />
             <span className="flex-1 min-w-0">
               <span className="block text-sm font-medium leading-tight">{label}</span>
               <span className="block text-[10px] text-white/35 leading-tight">{hint}</span>
             </span>
-            {active && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
           </Link>
         );
       })}
