@@ -179,7 +179,8 @@ async function sendApproved(): Promise<void> {
 
   // Compliance-gate: zonder afzender-identiteit (bedrijfsnaam + NIP) weigert de
   // mailer élke verzending. Maak dat ZICHTBAAR i.p.v. mails stil te laten hangen.
-  if (!settings.smtp.companyName || !settings.smtp.companyNip) {
+  // (Bewust te omzeilen met ALLOW_SEND_WITHOUT_IDENTITY=1.)
+  if (process.env.ALLOW_SEND_WITHOUT_IDENTITY !== "1" && (!settings.smtp.companyName || !settings.smtp.companyNip)) {
     if (Date.now() - lastIdentityLog > 30 * 60_000) {
       lastIdentityLog = Date.now();
       postMessage({ from: "manager", kind: "alert", body: `⛔ ${approved.length} goedgekeurde mail(s) kunnen niet verstuurd worden: vul Bedrijfsnaam + NIP in bij Instellingen → Afzender-identiteit (wettelijk verplicht in Poolse commerciële mails).` });

@@ -107,7 +107,9 @@ export async function sendEmailToAddress(
     return { ok: false, error: "E-mailadres staat op de suppressielijst" };
   }
   // Compliance-gate: zonder afzender-identiteit (bedrijfsnaam + NIP) niet versturen.
-  if (!smtp.companyName || !smtp.companyNip) {
+  // Bewust te omzeilen met ALLOW_SEND_WITHOUT_IDENTITY=1 (op eigen risico — NIP is
+  // wettelijk verplicht in Poolse commerciële mail en helpt de deliverability).
+  if ((!smtp.companyName || !smtp.companyNip) && process.env.ALLOW_SEND_WITHOUT_IDENTITY !== "1") {
     return { ok: false, error: "Afzender-identiteit ontbreekt (companyName + NIP verplicht in instellingen)" };
   }
   try {

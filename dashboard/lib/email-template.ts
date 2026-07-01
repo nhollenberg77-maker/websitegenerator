@@ -371,7 +371,7 @@ export function generateEmailHtml(
               lub po prostu odpowiedzieć słowem <strong style="color:#4a4b46;">STOP</strong> — usuniemy adres natychmiast.
             </div>
             <div style="margin-top:10px;color:#9a9b95;">
-              ${esc(smtp?.companyName || "[nadawca — uzupełnij w ustawieniach]")}${smtp?.companyAddress ? ` · ${esc(smtp.companyAddress)}` : ""}${smtp?.companyNip ? ` · NIP ${esc(smtp.companyNip)}` : ""}${smtp?.companyRegon ? ` · REGON ${esc(smtp.companyRegon)}` : ""}
+              ${esc(smtp?.companyName || smtp?.fromName || "Strona dla Twojej Firmy")}${smtp?.companyAddress ? ` · ${esc(smtp.companyAddress)}` : ""}${smtp?.companyNip ? ` · NIP ${esc(smtp.companyNip)}` : ""}${smtp?.companyRegon ? ` · REGON ${esc(smtp.companyRegon)}` : ""}
             </div>
           </td>
         </tr>
