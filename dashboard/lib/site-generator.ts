@@ -170,11 +170,11 @@ const QC_FOREIGN = /[぀-ヿ㐀-鿿가-힯Ѐ-ӿ؀-ۿ฀-๿]/;
 export function siteQualityIssues(lead: Lead): string[] {
   const issues: string[] = [];
   const sc = parseSiteContent(lead);
-  const style = getTemplateStyle(lead);
+  // Alleen ECHTE, herstelbare problemen triggeren een herbouw. Ontbrekende
+  // menukaart/prijslijst NIET — een bar/venue kan die per definitie niet hebben,
+  // wat anders een eindeloze herbouw-lus geeft (en het versturen verhongert).
   if (!sc || !sc.about || sc.about.length < 40) issues.push("lege/generieke content");
   if (lead.site_content && QC_FOREIGN.test(lead.site_content)) issues.push("niet-Poolse tekens");
-  if (style === "food" && !(sc?.menu && sc.menu.length)) issues.push("geen menukaart");
-  if (["salon", "medical", "retail"].includes(style) && !(sc?.pricelist && sc.pricelist.length)) issues.push("geen prijslijst");
   return issues;
 }
 
