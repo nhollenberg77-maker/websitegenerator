@@ -47,6 +47,37 @@ export async function generateScreenshot(placeId: string): Promise<string | null
       deviceScaleFactor: DEVICE_SCALE,
     });
     const page = await context.newPage();
+
+    // De site laadt haar hero-foto via een RELATIEF pad (/api/photo?ref=...).
+    // Onder file:// bestaat die route niet → grijze hero op de screenshot.
+    // Daarom onderscheppen we die requests hier en halen de foto rechtstreeks
+    // server-side bij Google op (zelfde logica als app/api/photo/route.ts).
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY || "";
+    await page.route(
+      (url) => url.pathname.includes("/api/photo"),
+      async (route) => {
+        try {
+          const u = new URL(route.request().url());
+          const ref = u.searchParams.get("ref");
+          if (!apiKey || !ref) return route.abort();
+          const w = Math.min(parseInt(u.searchParams.get("w") || "1200", 10) || 1200, 4800);
+          const upstream = await fetch(
+            `https://places.googleapis.com/v1/${ref}/media?maxWidthPx=${w}`,
+            { headers: { "X-Goog-Api-Key": apiKey } }
+          );
+          if (!upstream.ok) return route.abort();
+          const body = Buffer.from(await upstream.arrayBuffer());
+          return route.fulfill({
+            status: 200,
+            contentType: upstream.headers.get("content-type") || "image/jpeg",
+            body,
+          });
+        } catch {
+          return route.abort();
+        }
+      }
+    );
+
     await page.goto(`file://${sitePath}`, {
       waitUntil: "networkidle",
       timeout: 30000,

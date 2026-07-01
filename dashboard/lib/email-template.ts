@@ -72,8 +72,10 @@ function domainFromSiteUrl(siteUrl: string | undefined, slug: string | null): st
 }
 
 function previewUrl(siteUrl: string | undefined, slug: string | null): string {
-  if (siteUrl) return siteUrl;
+  // Een mail heeft ABSOLUTE URL's nodig — een relatief pad (/sites/...) toont de
+  // mailclient als kale "[/sites/...]"-tekst. Gebruik dus het live subdomein.
   if (slug) return `https://${slug}.${FALLBACK_DOMAIN}/`;
+  if (siteUrl && /^https?:\/\//i.test(siteUrl)) return siteUrl;
   return `https://${FALLBACK_DOMAIN}/`;
 }
 
