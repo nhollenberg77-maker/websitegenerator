@@ -1,21 +1,22 @@
 import type { Lead } from "./types";
 import type { SmtpSettings } from "./settings";
 
-const NISZA_PL: Record<string, string> = {
-  roofing_contractor: "pokryciach dachowych",
-  electrician: "instalacjach elektrycznych",
-  plumber: "instalacjach hydraulicznych",
-  painter: "wykończeniach malarskich",
-  general_contractor: "kompleksowych usługach budowlanych",
+// Poolse locatief per stad ("w Krakowie", niet "w Kraków") — inclusief prepositie.
+const CITY_LOCATIVE: Record<string, string> = {
+  "kraków": "w Krakowie", "krakow": "w Krakowie",
+  "warszawa": "w Warszawie",
+  "wrocław": "we Wrocławiu", "wroclaw": "we Wrocławiu",
+  "gdańsk": "w Gdańsku", "gdansk": "w Gdańsku",
+  "gdynia": "w Gdyni",
+  "poznań": "w Poznaniu", "poznan": "w Poznaniu",
+  "łódź": "w Łodzi", "lodz": "w Łodzi",
+  "katowice": "w Katowicach", "szczecin": "w Szczecinie",
+  "lublin": "w Lublinie", "bydgoszcz": "w Bydgoszczy",
 };
-
-const BRANZA_PL: Record<string, string> = {
-  roofing_contractor: "dekarskich",
-  electrician: "elektrycznych",
-  plumber: "hydraulicznych",
-  painter: "malarskich",
-  general_contractor: "budowlanych",
-};
+function cityLocative(city: string | null | undefined): string {
+  if (!city) return "w Waszej okolicy";
+  return CITY_LOCATIVE[city.trim().toLowerCase()] || "w Waszej okolicy";
+}
 
 const REPLY_TO = "tomek@stronadlatwojejfirmy.com.pl";
 const FALLBACK_DOMAIN = "stronadlatwojejfirmy.com.pl";
@@ -140,18 +141,14 @@ export function generateEmailHtml(
 
   const firma = esc(lead.name);
   const firmaKrotka = esc(ai.firma_krotka || shortName(lead.name));
-  const miasto = esc(lead.city_query || "Państwa miasta");
-  const nisza = ai.nisza_pl || NISZA_PL[lead.category_query || ""] || "usługach budowlanych";
-  const branza = ai.branza_pl || BRANZA_PL[lead.category_query || ""] || "budowlanych";
+  const miastoLoc = esc(cityLocative(lead.city_query)); // "w Krakowie", niet "w Kraków"
 
   const linkDomena = esc(domainFromSiteUrl(siteUrl, lead.slug));
   const linkPodglad = esc(previewUrl(siteUrl, lead.slug));
 
-  const heroTitle = esc(ai.hero_title || `Profesjonalne ${nisza} w ${lead.city_query || "Polsce"}`);
+  const heroTitle = esc(ai.hero_title || `${lead.name} — ${lead.city_query || "Polska"}`);
   const heroSub = esc(ai.hero_sub || `${lead.name} — jakość, na której można polegać`);
   const heroCta = esc(ai.hero_cta || "Zobacz ofertę");
-  const niszaEsc = esc(nisza);
-  const branzaEsc = esc(branza);
 
   const replyMailto = `mailto:${replyToEmail}?subject=${encodeURIComponent(`Zainteresowanie — ${lead.name}`)}`;
   const unsubUrl = unsubscribeUrl(lead);
@@ -246,10 +243,10 @@ export function generateEmailHtml(
             <p style="margin:0 0 18px 0;font-weight:500;">Dzień dobry,</p>
 
             <p style="margin:0 0 18px 0;">
-              Trafiliśmy na <strong style="font-weight:600;">${firma}</strong> podczas przeglądania firm ${branzaEsc} w ${miasto}.
-              Zwróciła naszą uwagę Państwa specjalizacja w ${niszaEsc} — to obszar, w którym
-              liczy się precyzja i zaufanie klientów. Pomyśleliśmy, że dobrze zaprojektowana
-              strona może to zaufanie pokazać już od pierwszej wizyty.
+              Trafiliśmy na <strong style="font-weight:600;">${firma}</strong> podczas przeglądania lokalnych firm ${miastoLoc}.
+              Spodobało nam się to, czym się Państwo zajmują — pomyśleliśmy, że dobrze
+              zaprojektowana strona mogłaby pokazać tę jakość już od pierwszej wizyty,
+              zanim klient w ogóle zadzwoni.
             </p>
 
             <p style="margin:0 0 18px 0;">
