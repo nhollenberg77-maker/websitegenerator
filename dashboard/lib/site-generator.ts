@@ -904,7 +904,7 @@ export function generateSiteHtml(lead: Lead): string {
       <span class="emergency-pulse"></span>
       <span class="emergency-label">AWARIE · Działamy 24/7</span>
       <span class="emergency-divider">·</span>
-      <a href="tel:${phoneLnk}" class="emergency-phone">${escapeHtml(phone)}</a>
+      <a href="${phoneLnk}" class="emergency-phone">${escapeHtml(phone)}</a>
     </div>
   </div>` : ""}
 
@@ -919,7 +919,7 @@ export function generateSiteHtml(lead: Lead): string {
         ${navItems.map((n) => `<a href="${n.href}">${n.label}</a>`).join("\n        ")}
       </nav>
       <div class="header-actions">
-        ${hasPhone ? `<a href="tel:${phoneLnk}" class="phone-link">
+        ${hasPhone ? `<a href="${phoneLnk}" class="phone-link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           ${escapeHtml(phone)}
         </a>` : ""}
@@ -935,7 +935,7 @@ export function generateSiteHtml(lead: Lead): string {
         <h1>${escapeHtml(content.heroHeadline)} <em>${escapeHtml(content.heroHeadlineEm)}</em></h1>
         <p class="hero-lead">${businessDesc ? escapeHtml(businessDesc) : escapeHtml(content.heroLead)}</p>
         <div class="hero-ctas">
-          ${hasPhone ? `<a href="tel:${phoneLnk}" class="btn btn-primary btn-lg">
+          ${hasPhone ? `<a href="${phoneLnk}" class="btn btn-primary btn-lg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             Zadzwoń teraz
           </a>
@@ -1054,7 +1054,7 @@ export function generateSiteHtml(lead: Lead): string {
             <span class="area-cities-label">Często odwiedzamy</span>
             ${[city, ...nearbyAreas].map((a) => escapeHtml(a)).join(' · ')}
           </div>
-          ${hasPhone ? `<p class="area-cta">Twojej miejscowości tu nie ma? <a href="tel:${phoneLnk}">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>` : ""}
+          ${hasPhone ? `<p class="area-cta">Twojej miejscowości tu nie ma? <a href="${phoneLnk}">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>` : ""}
         </div>
         ${(lead.latitude && lead.longitude)
           ? `<div class="area-map">
@@ -1081,7 +1081,7 @@ export function generateSiteHtml(lead: Lead): string {
     <h2>Masz pytania? <em>Porozmawiajmy.</em></h2>
     <p>Wycena jest bezpłatna i niezobowiązująca. Najczęściej odpowiadamy tego samego dnia.</p>
     <div class="cta-banner-ctas">
-      ${hasPhone ? `<a href="tel:${phoneLnk}" class="btn btn-primary btn-lg">Zadzwoń: ${escapeHtml(phone)}</a>
+      ${hasPhone ? `<a href="${phoneLnk}" class="btn btn-primary btn-lg">Zadzwoń: ${escapeHtml(phone)}</a>
       <a href="https://wa.me/${waPhone}" class="btn btn-whatsapp btn-lg">Napisz na WhatsApp</a>` : `<a href="#kontakt" class="btn btn-primary btn-lg">Wypełnij formularz</a>`}
     </div>
   </section>
@@ -1096,13 +1096,13 @@ export function generateSiteHtml(lead: Lead): string {
       <div class="contact-grid">
         <div class="contact-info">
           ${hasPhone ? `<h3>Telefon</h3>
-          <a href="tel:${phoneLnk}" class="value">${escapeHtml(phone)}</a>` : ""}
+          <a href="${phoneLnk}" class="value">${escapeHtml(phone)}</a>` : ""}
           ${hasAddress ? `<h3>Adres</h3>
           <span class="value" style="display:block">${escapeHtml(address)}</span>` : ""}
           <h3>Godziny pracy</h3>
           <span class="value" style="font-size: 17px; font-family: var(--body); font-weight: 500">pn-pt 7:00–18:00 · sb 8:00–14:00</span>
           ${hasPhone ? `<div class="contact-cta">
-            <a href="tel:${phoneLnk}" class="btn btn-primary">Zadzwoń</a>
+            <a href="${phoneLnk}" class="btn btn-primary">Zadzwoń</a>
             <a href="https://wa.me/${waPhone}" class="btn btn-whatsapp">WhatsApp</a>
           </div>` : ""}
         </div>
@@ -1147,22 +1147,10 @@ export function generateSiteHtml(lead: Lead): string {
           (function () {
             var recipient = ${JSON.stringify(formRecipient)};
             var firma = ${JSON.stringify(lead.name)};
+            // Wersja demonstracyjna: formularz nie wysyła jeszcze wiadomości.
+            void recipient; void firma;
             window.submitContact = function (form) {
-              var fd = new FormData(form);
-              var lines = [
-                'Imię: ' + (fd.get('imie') || ''),
-                'Telefon: ' + (fd.get('tel') || ''),
-                'E-mail: ' + (fd.get('email') || ''),
-                'Zakres: ' + (fd.get('zakres') || ''),
-                '',
-                (fd.get('wiadomosc') || ''),
-              ];
-              var subject = 'Zapytanie ze strony — ' + (fd.get('imie') || '');
-              var href = 'mailto:' + recipient
-                + '?subject=' + encodeURIComponent(subject)
-                + '&body=' + encodeURIComponent(lines.join('\\n'));
-              window.location.href = href;
-              form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:26px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">Wiadomość gotowa do wysłania</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:340px; margin:0 auto;">Otworzyliśmy Państwa program pocztowy z gotową wiadomością do firmy ' + firma + '. Wystarczy nacisnąć „Wyślij".</p></div>';
+              form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:26px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">To jest wersja demonstracyjna</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:360px; margin:0 auto;">Na gotowej stronie ten formularz będzie wysyłał zapytania prosto do firmy ' + firma + '. Tutaj służy tylko do pokazania, jak będzie wyglądać.</p></div>';
               return false;
             };
           })();
@@ -1196,7 +1184,7 @@ export function generateSiteHtml(lead: Lead): string {
       <div>
         <h4>Kontakt</h4>
         <ul>
-          ${hasPhone ? `<li><a href="tel:${phoneLnk}">${escapeHtml(phone)}</a></li>` : ""}
+          ${hasPhone ? `<li><a href="${phoneLnk}">${escapeHtml(phone)}</a></li>` : ""}
           ${hasAddress ? `<li>${escapeHtml(address)}</li>` : ""}
           <li><a href="#kontakt">Formularz kontaktowy</a></li>
         </ul>
@@ -1209,7 +1197,7 @@ export function generateSiteHtml(lead: Lead): string {
   </footer>
 
   ${hasPhone ? `<div class="mobile-cta">
-    <a href="tel:${phoneLnk}" class="btn btn-primary">
+    <a href="${phoneLnk}" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       Zadzwoń
     </a>
@@ -1221,6 +1209,7 @@ export function generateSiteHtml(lead: Lead): string {
     <a href="#kontakt" class="btn btn-primary" style="flex:1; justify-content:center;">Bezpłatna wycena</a>
   </div>`}
 
+<script>(function(){document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0||h.indexOf('mailto:')===0||h.indexOf('wa.me')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);})();</script>
 </body>
 </html>`;
 }
@@ -1400,6 +1389,7 @@ function generateFoodSiteHtml(lead: Lead): string {
   </div></div></section>
 
   <footer>© ${new Date().getFullYear()} ${fullName}. Szkic strony — wersja demonstracyjna.</footer>
+<script>(function(){document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0||h.indexOf('mailto:')===0||h.indexOf('wa.me')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);})();</script>
 </body>
 </html>`;
 }
@@ -1583,6 +1573,7 @@ function generateAppointmentSiteHtml(lead: Lead, archetype: ApptArchetype): stri
   </div></div></section>
 
   <footer>© ${new Date().getFullYear()} ${fullName}. Szkic strony — wersja demonstracyjna.</footer>
+<script>(function(){document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0||h.indexOf('mailto:')===0||h.indexOf('wa.me')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);})();</script>
 </body>
 </html>`;
 }
@@ -1953,7 +1944,7 @@ function generateServiceSiteHtml(lead: Lead): string {
         ${hasReviews ? `<a href="#opinie">Opinie</a>` : ""}
         <a href="#o-nas">O nas</a>
       </nav>
-      ${hasPhone ? `<a href="tel:${phoneLnk}" class="svc-header-phone">
+      ${hasPhone ? `<a href="${phoneLnk}" class="svc-header-phone">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         ${escapeHtml(phone)}
       </a>` : `<a href="#kontakt" class="btn btn-primary">Bezpłatna wycena</a>`}
@@ -1974,7 +1965,7 @@ function generateServiceSiteHtml(lead: Lead): string {
           <p class="svc-hero-subtitle">${escapeHtml(heroSubtitle)}</p>
           <div class="svc-hero-ctas">
             <a href="#kontakt" class="btn btn-primary btn-lg">Bezpłatna wycena</a>
-            ${hasPhone ? `<a href="tel:${phoneLnk}" class="btn btn-ghost btn-lg">
+            ${hasPhone ? `<a href="${phoneLnk}" class="btn btn-ghost btn-lg">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               ${escapeHtml(phone)}
             </a>` : ""}
@@ -2000,7 +1991,7 @@ function generateServiceSiteHtml(lead: Lead): string {
         ${isEmergency ? `<span class="svc-hero-badge"><span class="svc-pulse"></span>Czynne 24/7</span>` : ""}
       </div>
       <h1 class="svc-hero-tagline">${heroTagline}</h1>
-      ${hasPhone ? `<a href="tel:${phoneLnk}" class="svc-hero-phone-link">
+      ${hasPhone ? `<a href="${phoneLnk}" class="svc-hero-phone-link">
         <span class="svc-hero-phone-label">Zadzwoń</span>
         <span class="svc-hero-phone-number">${escapeHtml(phone)}</span>
         <span class="svc-hero-phone-arrow">→</span>
@@ -2110,7 +2101,7 @@ function generateServiceSiteHtml(lead: Lead): string {
             <span class="svc-area-cities-label">Często odwiedzamy</span>
             ${[city, ...nearbyAreas.slice(0, 8)].map((a) => escapeHtml(a)).join(' · ')}
           </div>
-          ${hasPhone ? `<p class="svc-area-cta">Twojej miejscowości tu nie ma? <a href="tel:${phoneLnk}">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>` : ""}
+          ${hasPhone ? `<p class="svc-area-cta">Twojej miejscowości tu nie ma? <a href="${phoneLnk}">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>` : ""}
         </div>
         ${(lead.latitude && lead.longitude)
           ? `<div class="svc-area-map">
@@ -2132,7 +2123,7 @@ function generateServiceSiteHtml(lead: Lead): string {
       <div class="svc-contact-grid">
         <div class="svc-contact-info">
           ${hasPhone ? `<h3>Telefon</h3>
-          <a href="tel:${phoneLnk}" class="value">${escapeHtml(phone)}</a>` : ""}
+          <a href="${phoneLnk}" class="value">${escapeHtml(phone)}</a>` : ""}
           ${hasAddress ? `<h3>Adres</h3>
           <span class="value" style="font-size:17px">${escapeHtml(address)}</span>` : ""}
           <h3>Godziny pracy</h3>
@@ -2197,7 +2188,7 @@ function generateServiceSiteHtml(lead: Lead): string {
       <div>
         <h4>Kontakt</h4>
         <ul>
-          ${hasPhone ? `<li><a href="tel:${phoneLnk}">${escapeHtml(phone)}</a></li>` : ""}
+          ${hasPhone ? `<li><a href="${phoneLnk}">${escapeHtml(phone)}</a></li>` : ""}
           ${hasAddress ? `<li>${escapeHtml(address)}</li>` : ""}
           <li><a href="#kontakt">Formularz</a></li>
         </ul>
@@ -2219,7 +2210,7 @@ function generateServiceSiteHtml(lead: Lead): string {
   </footer>
 
   ${hasPhone ? `<div class="svc-mobile-cta">
-    <a href="tel:${phoneLnk}" class="btn btn-primary">
+    <a href="${phoneLnk}" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       Zadzwoń
     </a>
@@ -2229,6 +2220,7 @@ function generateServiceSiteHtml(lead: Lead): string {
     </a>
   </div>` : ""}
 
+<script>(function(){document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0||h.indexOf('mailto:')===0||h.indexOf('wa.me')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);})();</script>
 </body>
 </html>`;
 }

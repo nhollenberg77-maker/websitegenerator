@@ -312,7 +312,7 @@
         <a href="#kontakt">Kontakt</a>
       </nav>
       <div class="header-actions">
-        <a href="tel:tel:+48780134474" class="phone-link">
+        <a href="tel:+48780134474" class="phone-link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           780 134 474
         </a>
@@ -328,7 +328,7 @@
         <h1>Wspinaj się w MOOD. <em>I ciesz się kawą na jednym piętrze.</em></h1>
         <p class="hero-lead">MOOD to miejsce dla wspinaczy każdego poziomu. Nasza hala oferuje boulderowe ściany z setkami problemów oznaczonych po kolorach, system board, spraywall oraz dedykowaną strefę rozgrzewki i ćwiczeń. Wszystko znajduje się na jednym piętrze – łatwo, wygodnie i bezpiecznie. Po sesji czeka cię nasza własna kawiarnia z domowym pieczywem, świeżą kawą i przyjazną atmosferą – miejsce na rozmowy i regenerację.</p>
         <div class="hero-ctas">
-          <a href="tel:tel:+48780134474" class="btn btn-primary btn-lg">
+          <a href="tel:+48780134474" class="btn btn-primary btn-lg">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             Zadzwoń teraz
           </a>
@@ -530,7 +530,7 @@
             <span class="area-cities-label">Często odwiedzamy</span>
             Kraków · Wieliczka · Niepołomice · Myślenice · Bochnia · Skawina · Wadowice · Nowy Sącz · Tarnów · Olkusz · Chrzanów
           </div>
-          <p class="area-cta">Twojej miejscowości tu nie ma? <a href="tel:tel:+48780134474">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>
+          <p class="area-cta">Twojej miejscowości tu nie ma? <a href="tel:+48780134474">Zadzwoń</a> — powiemy w 30 sekund, czy dojedziemy.</p>
         </div>
         <div class="area-map">
           <iframe src="https://maps.google.com/maps?q=50.049183799999994,19.9702138&z=11&hl=pl&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa lokalizacji: Kraków"></iframe>
@@ -576,7 +576,7 @@
     <h2>Masz pytania? <em>Porozmawiajmy.</em></h2>
     <p>Wycena jest bezpłatna i niezobowiązująca. Najczęściej odpowiadamy tego samego dnia.</p>
     <div class="cta-banner-ctas">
-      <a href="tel:tel:+48780134474" class="btn btn-primary btn-lg">Zadzwoń: 780 134 474</a>
+      <a href="tel:+48780134474" class="btn btn-primary btn-lg">Zadzwoń: 780 134 474</a>
       <a href="https://wa.me/48780134474" class="btn btn-whatsapp btn-lg">Napisz na WhatsApp</a>
     </div>
   </section>
@@ -591,13 +591,13 @@
       <div class="contact-grid">
         <div class="contact-info">
           <h3>Telefon</h3>
-          <a href="tel:tel:+48780134474" class="value">780 134 474</a>
+          <a href="tel:+48780134474" class="value">780 134 474</a>
           <h3>Adres</h3>
           <span class="value" style="display:block">Stanisława Klimeckiego 14B, 30-706 Kraków</span>
           <h3>Godziny pracy</h3>
           <span class="value" style="font-size: 17px; font-family: var(--body); font-weight: 500">pn-pt 7:00–18:00 · sb 8:00–14:00</span>
           <div class="contact-cta">
-            <a href="tel:tel:+48780134474" class="btn btn-primary">Zadzwoń</a>
+            <a href="tel:+48780134474" class="btn btn-primary">Zadzwoń</a>
             <a href="https://wa.me/48780134474" class="btn btn-whatsapp">WhatsApp</a>
           </div>
         </div>
@@ -646,22 +646,10 @@
           (function () {
             var recipient = "zajecia@climbin.eu";
             var firma = "MOOD";
+            // Wersja demonstracyjna: formularz nie wysyła jeszcze wiadomości.
+            void recipient; void firma;
             window.submitContact = function (form) {
-              var fd = new FormData(form);
-              var lines = [
-                'Imię: ' + (fd.get('imie') || ''),
-                'Telefon: ' + (fd.get('tel') || ''),
-                'E-mail: ' + (fd.get('email') || ''),
-                'Zakres: ' + (fd.get('zakres') || ''),
-                '',
-                (fd.get('wiadomosc') || ''),
-              ];
-              var subject = 'Zapytanie ze strony — ' + (fd.get('imie') || '');
-              var href = 'mailto:' + recipient
-                + '?subject=' + encodeURIComponent(subject)
-                + '&body=' + encodeURIComponent(lines.join('\n'));
-              window.location.href = href;
-              form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:26px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">Wiadomość gotowa do wysłania</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:340px; margin:0 auto;">Otworzyliśmy Państwa program pocztowy z gotową wiadomością do firmy ' + firma + '. Wystarczy nacisnąć „Wyślij".</p></div>';
+              form.innerHTML = '<div style="text-align:center; padding: 48px 24px;"><div style="width:64px; height:64px; border-radius:50%; background:var(--accent-soft); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; margin-bottom:24px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3 style="font-family:var(--display); font-size:26px; font-weight:500; margin-bottom:12px; letter-spacing:-0.025em;">To jest wersja demonstracyjna</h3><p style="color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:360px; margin:0 auto;">Na gotowej stronie ten formularz będzie wysyłał zapytania prosto do firmy ' + firma + '. Tutaj służy tylko do pokazania, jak będzie wyglądać.</p></div>';
               return false;
             };
           })();
@@ -698,7 +686,7 @@
       <div>
         <h4>Kontakt</h4>
         <ul>
-          <li><a href="tel:tel:+48780134474">780 134 474</a></li>
+          <li><a href="tel:+48780134474">780 134 474</a></li>
           <li>Stanisława Klimeckiego 14B, 30-706 Kraków</li>
           <li><a href="#kontakt">Formularz kontaktowy</a></li>
         </ul>
@@ -711,7 +699,7 @@
   </footer>
 
   <div class="mobile-cta">
-    <a href="tel:tel:+48780134474" class="btn btn-primary">
+    <a href="tel:+48780134474" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       Zadzwoń
     </a>
@@ -721,5 +709,6 @@
     </a>
   </div>
 
+<script>(function(){document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('tel:')===0||h.indexOf('mailto:')===0||h.indexOf('wa.me')>-1){e.preventDefault();}},true);document.addEventListener('submit',function(e){e.preventDefault();},true);})();</script>
 </body>
 </html>
