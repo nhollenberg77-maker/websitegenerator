@@ -159,6 +159,7 @@ const UNSUB_BASE = (process.env.DASHBOARD_URL || process.env.NEXT_PUBLIC_DASHBOA
 let lastWindowLog = 0;
 let lastBudgetLog = 0;
 let lastInboxPoll = 0;
+let lastIdentityLog = 0; // throttle voor de "afzender-identiteit ontbreekt"-alert
 const INBOX_POLL_MS = 10 * 60_000; // reply/bounce-check elke 10 min
 let lastDeploy = 0;
 const DEPLOY_INTERVAL_MS = 5 * 60_000; // nieuwe sites + screenshots periodiek live zetten op Vercel
@@ -175,6 +176,16 @@ async function sendApproved(): Promise<void> {
   if (approved.length === 0) return;
   const settings = getSettings();
   if (!isSmtpConfigured()) return; // stil — geen spam in de feed elke tick
+
+  // Compliance-gate: zonder afzender-identiteit (bedrijfsnaam + NIP) weigert de
+  // mailer élke verzending. Maak dat ZICHTBAAR i.p.v. mails stil te laten hangen.
+  if (!settings.smtp.companyName || !settings.smtp.companyNip) {
+    if (Date.now() - lastIdentityLog > 30 * 60_000) {
+      lastIdentityLog = Date.now();
+      postMessage({ from: "manager", kind: "alert", body: `⛔ ${approved.length} goedgekeurde mail(s) kunnen niet verstuurd worden: vul Bedrijfsnaam + NIP in bij Instellingen → Afzender-identiteit (wettelijk verplicht in Poolse commerciële mails).` });
+    }
+    return;
+  }
 
   const policy = getPolicy();
   const now = new Date();
