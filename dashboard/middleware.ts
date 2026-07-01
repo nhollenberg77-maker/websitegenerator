@@ -9,8 +9,9 @@ const BASE_DOMAIN = "stronadlatwojejfirmy.com.pl";
 // - stronadlatwojejfirmy.vercel.app (preview)  → redirect to /local-only
 // - localhost (npm run dev)                    → no-op, everything works normally
 //
-// API routes are 404'd on Vercel (they need filesystem writes that don't work
-// in serverless), but pass through locally.
+// API routes are 404'd on the apex/preview host on Vercel, but pass through on
+// subdomains and locally. /api/photo (Google Places photo proxy) needs
+// GOOGLE_MAPS_API_KEY in the Vercel env to serve images on the live sites.
 export function middleware(req: NextRequest) {
   const host = (req.headers.get("host") || "").toLowerCase().split(":")[0];
   const { pathname } = req.nextUrl;
